@@ -30,6 +30,7 @@ from pydantic_deep.types import SubAgentConfig
 if TYPE_CHECKING:
     from pydantic_ai.toolsets import AbstractToolset
 
+    from pydantic_deep.capabilities.forking import LiveForkCapability
     from pydantic_deep.capabilities.message_queue import MessageQueue
     from pydantic_deep.capabilities.periodic_reminder import PeriodicReminderConfig
 
@@ -136,6 +137,7 @@ def create_deep_agent(
     middleware: Sequence[Any] | None = None,
     plans_dir: str | None = None,
     message_queue: MessageQueue | None = None,
+    forking: bool | LiveForkCapability = False,
     instrument: bool | None = None,
     **agent_kwargs: Any,
 ) -> Agent[DeepAgentDeps, str]: ...
@@ -210,6 +212,7 @@ def create_deep_agent(
     middleware: Sequence[Any] | None = None,
     plans_dir: str | None = None,
     message_queue: MessageQueue | None = None,
+    forking: bool | LiveForkCapability = False,
     instrument: bool | None = None,
     **agent_kwargs: Any,
 ) -> Agent[DeepAgentDeps, OutputDataT]: ...
@@ -282,6 +285,7 @@ def create_deep_agent(  # noqa: C901
     middleware: Sequence[Any] | None = None,
     plans_dir: str | None = None,
     message_queue: MessageQueue | None = None,
+    forking: bool | LiveForkCapability = False,
     instrument: bool | None = None,
     **agent_kwargs: Any,
 ) -> Agent[DeepAgentDeps, OutputDataT] | Agent[DeepAgentDeps, str]:
@@ -470,6 +474,19 @@ def create_deep_agent(  # noqa: C901
             Steering messages are injected before the next LLM call via
             ``MessageQueueCapability``; follow-ups are handled by
             :func:`run_with_queue`. ``None`` (default) disables the feature.
+        forking: Enable Live Run Forking (Stage 1 kernel). ``True`` registers
+            :class:`LiveForkCapability` with defaults (``max_branches=2``,
+            ``max_depth=1``, in-memory store) and the forking toolset
+            (``fork_run``, ``inspect_branches``, ``merge_or_select``,
+            ``terminate_branch``). Pass a pre-configured
+            :class:`LiveForkCapability` instance to customize limits or the
+            fork state store. ``False`` (default) leaves forking off — the
+            feature is opt-in because spawning parallel branches has cost
+            implications. When enabled without ``include_checkpoints=True``,
+            ``fork()`` emits a runtime warning at call time since the
+            ``fork:<id>`` / ``post-fork:<id>`` rewind anchors require a
+            checkpoint store. No CLI surface ships in Stage 1; programmatic
+            and tool-level access only. CLI integration lands in Stage 3.
         model_settings: Provider-specific model settings (temperature, thinking,
             etc.). Passed directly to the pydantic-ai Agent. Common keys:
             ``temperature``, ``max_tokens``, ``anthropic_thinking``,
@@ -1027,6 +1044,24 @@ def create_deep_agent(  # noqa: C901
         )
         all_capabilities.append(PeriodicReminderCapability(config=_reminder_cfg))
 
+    _fork_capability: Any = None
+    if forking:
+        from pydantic_deep.capabilities.forking import LiveForkCapability as _LiveForkCap
+
+        if isinstance(forking, _LiveForkCap):
+            _fork_capability = forking
+        elif forking is True:
+            _fork_capability = _LiveForkCap()
+        else:
+            raise TypeError(
+                f"forking must be bool or LiveForkCapability, got {type(forking).__name__}"
+            )
+        all_capabilities.append(_fork_capability)
+
+        from pydantic_deep.toolsets.forking import create_fork_toolset as _create_fork_ts
+
+        all_toolsets.append(_create_fork_ts())
+
     if middleware:
         all_capabilities.extend(middleware)
 
@@ -1126,6 +1161,8 @@ def create_deep_agent(  # noqa: C901
     # Expose context middleware for CLI /compact and /context commands
     agent._context_middleware = context_mw  # type: ignore[attr-defined]
     agent._task_manager = _subagent_task_manager  # type: ignore[attr-defined]
+    if _fork_capability is not None:
+        _fork_capability._agent_ref = agent
     return agent
 
 

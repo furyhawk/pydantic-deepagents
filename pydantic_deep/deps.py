@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pydantic_deep.capabilities.message_queue import MessageQueue
+    from pydantic_deep.toolsets.forking.coordinator import ForkCoordinator
 
 import chardet
 from pydantic_ai.usage import UsageLimits
@@ -49,6 +50,8 @@ class DeepAgentDeps:
     message_queue: MessageQueue | None = field(
         default=None, repr=False
     )  # Shared queue for mid-run message delivery
+    fork_coordinator: ForkCoordinator | None = field(default=None, repr=False)
+    _fork_depth: int = field(default=0, repr=False)
 
     def __post_init__(self) -> None:
         """Initialize backend with files if using StateBackend."""

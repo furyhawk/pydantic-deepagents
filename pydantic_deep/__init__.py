@@ -103,6 +103,7 @@ from pydantic_deep.capabilities import (
     TeamCapability,
     make_config_for_mode,
 )
+from pydantic_deep.capabilities.forking import LiveForkCapability
 from pydantic_deep.capabilities.hooks import (
     EXIT_ALLOW,
     EXIT_DENY,
@@ -163,6 +164,16 @@ from pydantic_deep.toolsets.context import (
     format_context_prompt,
     load_context_files,
 )
+from pydantic_deep.toolsets.forking import (
+    BranchOverlay,
+    ForkBranchLimitError,
+    ForkCoordinator,
+    ForkDepthLimitError,
+    ForkStateStore,
+    InMemoryForkStateStore,
+    clone_for_branch,
+    create_fork_toolset,
+)
 from pydantic_deep.toolsets.liteparse import (
     PARSE_DOCUMENT_DESCRIPTION,
     SCREENSHOT_DOCUMENT_DESCRIPTION,
@@ -210,8 +221,15 @@ from pydantic_deep.toolsets.teams import (
     create_team_toolset,
 )
 from pydantic_deep.types import (
+    BranchIsolation,
+    BranchSpec,
+    BranchStatus,
     BrowseResult,
     CompiledSubAgent,
+    FileChange,
+    ForkHandle,
+    MergeResult,
+    MergeStrategy,
     ResponseFormat,
     SubAgentConfig,
     Todo,
@@ -392,4 +410,21 @@ __all__ = [
     "CompiledSubAgent",
     "UploadedFile",
     "ResponseFormat",
+    # Live Run Forking (Stage 1)
+    "LiveForkCapability",
+    "ForkCoordinator",
+    "ForkStateStore",
+    "InMemoryForkStateStore",
+    "BranchOverlay",
+    "clone_for_branch",
+    "create_fork_toolset",
+    "ForkBranchLimitError",
+    "ForkDepthLimitError",
+    "BranchSpec",
+    "BranchIsolation",
+    "BranchStatus",
+    "ForkHandle",
+    "MergeStrategy",
+    "MergeResult",
+    "FileChange",
 ]
