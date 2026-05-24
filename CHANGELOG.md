@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.22] - 2026-05-24
+
+### Fixed
+
+- **`AttributeError: 'LocalBackend' object has no attribute '_read_bytes'` at toolset `get_instructions()` time** ([#118](https://github.com/vstorm-co/pydantic-deepagents/pull/118), independently authored by [@mcauthorn](https://github.com/mcauthorn) in [#119](https://github.com/vstorm-co/pydantic-deepagents/pull/119)). `pydantic-ai-backend 0.2.8` promoted the bytes-read entry point on `BackendProtocol` from private `_read_bytes` to public `read_bytes` and (deliberately) kept no transitional alias. With `pydantic-ai-backend>=0.2.7` unbounded, fresh resolutions pulled `0.2.8` transitively, so every toolset that reaches for bytes (`context`, `memory`, `liteparse`, `skills/backend`) blew up at instructions-load time. Word-boundary rename across all call sites and test mocks.
+
+### Changed
+
+- **Bumped `pydantic-ai-backend>=0.2.7 → >=0.2.8`** ([#118](https://github.com/vstorm-co/pydantic-deepagents/pull/118), Renovate) — pulls in the `exists()` predicate, the `read_bytes` rename (see Fixed above), `hashline_edit` per-`(backend, path)` serialization, and the `async_execute` wire-up in the console toolset's `execute` tool.
+- **Bumped `summarization-pydantic-ai>=0.1.4 → >=0.1.5`** ([#118](https://github.com/vstorm-co/pydantic-deepagents/pull/118), Renovate) — batched with the backend bump; pure CI-housekeeping release on the summarization side, no behaviour change.
+
 ## [0.3.21] - 2026-05-24
 
 ### Changed
