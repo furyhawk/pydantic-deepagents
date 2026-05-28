@@ -9,6 +9,7 @@ from pydantic_ai import Agent
 from pydantic_ai._agent_graph import HistoryProcessor
 from pydantic_ai.capabilities import AbstractCapability
 from pydantic_ai.models import Model
+from pydantic_ai.models.fallback import FallbackModel
 from pydantic_ai.output import OutputSpec
 from pydantic_ai.tools import DeferredToolRequests, Tool
 from pydantic_ai_backends import (
@@ -21,6 +22,7 @@ from pydantic_ai_backends import (
 from pydantic_ai_todo import create_todo_toolset, get_todo_system_prompt
 from subagents_pydantic_ai import create_subagent_toolset, get_subagent_system_prompt
 
+from pydantic_deep.capabilities.hooks import HookEvent
 from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.prompts import BASE_PROMPT
 from pydantic_deep.toolsets.skills import Skill, SkillsToolset
@@ -41,6 +43,40 @@ DEFAULT_SUBAGENT_MODEL = "anthropic:claude-sonnet-4-6"
 DEFAULT_SUMMARIZATION_MODEL = "anthropic:claude-haiku-4-5-20251001"
 
 DEFAULT_INSTRUCTIONS = BASE_PROMPT
+
+# Substrings that mark a permanent auth/permission failure — these must NOT trigger
+# fallback (the next model would fail with the same error).
+_AUTH_ERROR_MARKERS = ("401", "403", "unauthorized", "forbidden")
+
+
+def _wrap_with_fallback_and_hooks(
+    primary: str | Model,
+    fallbacks: list[str | Model],
+    fallback_hooks: list[Any],
+    backend: BackendProtocol,
+) -> FallbackModel:
+    """Build a FallbackModel that dispatches MODEL_FALLBACK_TRIGGERED hooks on each
+    transient-error hop. Auth errors (401/403) are not treated as transient — they
+    return False so the original exception propagates."""
+    from pydantic_ai.exceptions import ModelAPIError
+
+    from pydantic_deep.capabilities.hooks import HooksCapability
+
+    hooks_cap = HooksCapability(hooks=fallback_hooks)
+    primary_name = primary if isinstance(primary, str) else str(primary)
+    first_fallback = fallbacks[0]
+    first_fallback_name = first_fallback if isinstance(first_fallback, str) else str(first_fallback)
+
+    async def _fallback_on(exc: Exception) -> bool:
+        if not isinstance(exc, ModelAPIError):
+            return False
+        message = str(exc).lower()
+        if any(marker in message for marker in _AUTH_ERROR_MARKERS):
+            return False
+        await hooks_cap.dispatch_model_fallback(primary_name, first_fallback_name, exc, backend)
+        return True
+
+    return FallbackModel(primary, *fallbacks, fallback_on=_fallback_on)
 
 
 class _DepsTodoProxy:
@@ -71,6 +107,7 @@ class _DepsTodoProxy:
 @overload
 def create_deep_agent(
     model: str | Model | None = None,
+    fallback_model: str | Model | list[str | Model] | None = None,
     model_settings: dict[str, Any] | None = None,
     summarization_model: str | None = None,
     base_prompt: str | None = None,
@@ -144,6 +181,7 @@ def create_deep_agent(
 @overload
 def create_deep_agent(
     model: str | Model | None = None,
+    fallback_model: str | Model | list[str | Model] | None = None,
     model_settings: dict[str, Any] | None = None,
     summarization_model: str | None = None,
     base_prompt: str | None = None,
@@ -217,6 +255,7 @@ def create_deep_agent(
 
 def create_deep_agent(  # noqa: C901
     model: str | Model | None = None,
+    fallback_model: str | Model | list[str | Model] | None = None,
     model_settings: dict[str, Any] | None = None,
     summarization_model: str | None = None,
     base_prompt: str | None = None,
@@ -298,6 +337,11 @@ def create_deep_agent(  # noqa: C901
 
     Args:
         model: Model to use (default: anthropic:claude-opus-4-6).
+        fallback_model: One or more fallback models to try when the primary
+            model fails with a transient error (rate limit, 5xx, timeout).
+            Accepts a single model name/instance or an ordered list forming a
+            fallback chain. Auth/permission errors (401/403) never trigger
+            fallback. ``None`` (default) disables automatic fallback.
         instructions: System prompt for the agent. When provided, replaces the
             default ``BASE_PROMPT`` entirely. Use ``BASE_PROMPT`` from
             ``pydantic_deep`` to build on top of it:
@@ -530,6 +574,19 @@ def create_deep_agent(  # noqa: C901
     model = model or DEFAULT_MODEL
     backend = backend or StateBackend()
     interrupt_on = interrupt_on or {}
+
+    # Wrap primary model with FallbackModel when requested.
+    if fallback_model is not None:
+        _fallbacks: list[str | Model] = (
+            list(fallback_model) if isinstance(fallback_model, list) else [fallback_model]
+        )
+        _fallback_hooks = [
+            h for h in (hooks or []) if h.event == HookEvent.MODEL_FALLBACK_TRIGGERED
+        ]
+        if _fallback_hooks:
+            model = _wrap_with_fallback_and_hooks(model, _fallbacks, _fallback_hooks, backend)
+        else:
+            model = FallbackModel(model, *_fallbacks)
 
     # Build effective subagents list (user-provided + built-ins)
     effective_subagents: list[SubAgentConfig] = list(subagents or [])
