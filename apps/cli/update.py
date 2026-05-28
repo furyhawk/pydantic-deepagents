@@ -113,7 +113,9 @@ def run_update() -> int:
     """
     uv = _find_uv()
     if uv:
-        return subprocess.run([uv, "tool", "upgrade", "pydantic-deep"]).returncode
+        result = subprocess.run([uv, "tool", "upgrade", "pydantic-deep"])
+        if result.returncode == 0:
+            return 0
     return subprocess.run(
         [sys.executable, "-m", "pip", "install", "--upgrade", "pydantic-deep[cli]"]
     ).returncode
