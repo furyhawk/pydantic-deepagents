@@ -456,7 +456,11 @@ def test_clone_for_branch_copy_todos():
     deps = DeepAgentDeps(backend=StateBackend())
     deps.todos.append({"id": "1", "content": "x", "status": "pending"})
     cloned = clone_for_branch(deps, BranchIsolation(todos="copy"))
-    assert cloned.todos == []
+    # "copy" inherits an independent copy of the parent's in-progress plan ...
+    assert cloned.todos == deps.todos
+    assert cloned.todos is not deps.todos
+    # ... and mutating the branch's todos must not affect the parent's.
+    cloned.todos.append({"id": "2", "content": "y", "status": "pending"})
     assert len(deps.todos) == 1
 
 

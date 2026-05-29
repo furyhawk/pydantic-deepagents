@@ -912,7 +912,10 @@ def clone_for_branch(deps: DeepAgentDeps, isolation: BranchIsolation) -> DeepAge
         BranchOverlay(deps.backend) if isolation.backend == "copy" else deps.backend
     )
 
-    new_todos = [] if isolation.todos == "copy" else deps.todos
+    # "copy" → independent copy of the parent's todos so each branch inherits the
+    # in-progress plan but mutations stay branch-local; "share" → same list object
+    # by reference (documented sharing semantics).
+    new_todos = list(deps.todos) if isolation.todos == "copy" else deps.todos
 
     new_message_queue: MessageQueue | None
     if isolation.message_queue == "isolated":
