@@ -30,7 +30,15 @@ _LiteParse: Any = None
 # dedicated CLI-not-found class (>=2.x dropped it), keeping a never-matching class
 # means the parse handlers fall through to the generic "Parse error" branch instead
 # of mislabelling unrelated errors as "CLI not found".
-_CLINotFoundError: type[BaseException] = type("_CLINotFoundError", (Exception,), {})
+#
+# The class identity is kept STABLE across importlib.reload(): the test suite reloads
+# this module, and regenerating the class with a fresh `type(...)` on every load would
+# break `except _CLINotFoundError` matching against the `LiteparseCliNotFoundError`
+# alias that callers (and tests) imported from the *previous* load. Reusing the value
+# already in globals() preserves identity; on first import the default builds it.
+_CLINotFoundError: type[BaseException] = globals().get(
+    "_CLINotFoundError", type("LiteparseCliNotFoundError", (Exception,), {})
+)
 
 try:
     _LiteParse = importlib.import_module("liteparse").LiteParse
