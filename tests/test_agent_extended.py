@@ -574,3 +574,42 @@ class TestFallbackModel:
         result2 = await cast("Awaitable[bool]", _fallback_on_raw(api_error))
         assert result2 is True
         assert len(received) == 1, "hook fired for exhausted chain — should be silent"
+
+    async def test_hop_counter_auto_resets_after_chain_exhausted(self) -> None:
+        """A fresh request after the chain was exhausted resets the hop counter.
+
+        With a two-model chain the counter reaches ``total_models`` after the
+        primary + fallback both fail in one request. The next failure (a new
+        request, same coroutine context) must reset hop to 0 and fire the hook
+        for the primary again — covering the auto-reset branch.
+        """
+        from pydantic_deep.capabilities.hooks import Hook, HookEvent, HookInput, HookResult
+
+        received: list[HookInput] = []
+
+        async def handler(inp: HookInput) -> HookResult:
+            received.append(inp)
+            return HookResult()
+
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            fallback_model=FALLBACK_MODEL,
+            hooks=[Hook(event=HookEvent.MODEL_FALLBACK_TRIGGERED, handler=handler)],
+            web_search=False,
+            web_fetch=False,
+            thinking=False,
+        )
+        assert isinstance(agent.model, FallbackModel)
+        _fallback_on_raw = agent.model._exception_handlers[0]
+        api_error = ModelAPIError("test-model", "rate limit exceeded")
+
+        # First request: primary → fallback exhausts the two-model chain (hop = 2).
+        await cast("Awaitable[bool]", _fallback_on_raw(api_error))
+        await cast("Awaitable[bool]", _fallback_on_raw(api_error))
+        assert len(received) == 1
+
+        # New request, same context: hop (2) >= total_models (2) → reset to 0 and
+        # the primary's failure fires the hook again.
+        result = await cast("Awaitable[bool]", _fallback_on_raw(api_error))
+        assert result is True
+        assert len(received) == 2, "hop counter did not reset after exhaustion"
