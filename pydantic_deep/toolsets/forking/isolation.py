@@ -16,6 +16,7 @@ from __future__ import annotations
 import contextlib
 import logging
 import os
+import shutil
 import subprocess
 import tempfile
 from collections.abc import Generator
@@ -85,15 +86,20 @@ def _rel_under(parent_root: Path, path: str) -> Path:
         return Path(path.lstrip("/"))
 
 
-def _symlink_tree(src: Path, dst: Path) -> None:
-    """Recursively create file-level symlinks in *dst* mirroring *src*.
+def _copy_tree(src: Path, dst: Path) -> None:
+    """Recursively COPY *src* into *dst* (copy-on-write at the file level).
 
-    Directories are recreated; files are symlinked (absolute target).
-    Entries whose name is in :data:`_SNAP_SKIP_DIRS` are silently skipped
-    so the snapshot stays lean even on large projects.
+    Directories are recreated; files are copied as real, independent files.
+    Entries whose name is in :data:`_SNAP_SKIP_DIRS` are silently skipped so
+    the snapshot stays lean even on large projects.
 
-    Symlinks in *src* are re-symlinked rather than followed so we don't
-    accidentally recurse into them.
+    Copying (rather than symlinking) is the core isolation guarantee: the
+    branch runs ``sh -c <cmd>`` against this snapshot with no write
+    interception — only a post-hoc diff. An in-place write (``echo x >>
+    file``, ``sed -i``, a truncating rewrite, a non-atomic editor) modifies
+    the snapshot's own copy and can no longer follow a symlink straight onto
+    the real parent file, so a losing branch's side effects never leak into
+    the parent before merge/winner selection.
     """
     with os.scandir(src) as it:
         for entry in it:
@@ -102,11 +108,21 @@ def _symlink_tree(src: Path, dst: Path) -> None:
             target = dst / entry.name
             if entry.is_dir(follow_symlinks=False):
                 target.mkdir(exist_ok=True)
-                _symlink_tree(Path(entry.path), target)
+                _copy_tree(Path(entry.path), target)
             else:
-                # Symlink to absolute path so the link stays valid even
-                # when cwd changes inside the subprocess.
-                target.symlink_to(Path(entry.path).resolve())
+                # Copy file content + metadata. follow_symlinks resolves a
+                # symlinked source to its target's bytes so the snapshot holds
+                # a detached, independently-writable copy.
+                try:
+                    shutil.copy2(entry.path, target, follow_symlinks=True)
+                except OSError as exc:
+                    # A dangling symlink or unreadable file shouldn't abort the
+                    # whole snapshot; skip it (it simply won't appear in the view).
+                    logger.warning(
+                        "branch snapshot: failed to copy %s into snapshot (%s); skipping",
+                        entry.path,
+                        exc,
+                    )
 
 
 @contextlib.contextmanager
@@ -119,11 +135,11 @@ def _branch_snapshot(
     """Yield a temp directory that presents an isolated view of the branch.
 
     Layout:
-    - Parent files → file-level symlinks (reading works; deleting the
-      symlink leaves the real file untouched).
+    - Parent files → detached file copies (reading works; in-place writes
+      land on the copy, never the real parent file).
     - Overlay writes → real files (the branch's in-progress content is
       visible to the subprocess).
-    - Deleted paths → corresponding symlink/file removed.
+    - Deleted paths → corresponding file removed.
 
     The temp directory is deleted when the context exits regardless of
     exceptions.  The caller should rewrite any absolute references to
@@ -134,8 +150,8 @@ def _branch_snapshot(
     with tempfile.TemporaryDirectory(prefix="branch-snap-") as tmp_dir:
         tmp = Path(tmp_dir)
 
-        # 1. Symlink parent tree.
-        _symlink_tree(parent_root, tmp)
+        # 1. Copy parent tree (copy-on-write isolation — see _copy_tree).
+        _copy_tree(parent_root, tmp)
 
         # 2. Overlay writes: collect unique touched paths (last write wins).
         touched = {c.path for c in changes if c.op in ("write", "edit")} - deleted

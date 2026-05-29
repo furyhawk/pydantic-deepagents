@@ -1777,11 +1777,12 @@ def test_execute_create_file_propagates_write_to_overlay(tmp_path: Path) -> None
 
 
 def test_execute_modify_existing_propagates_write_to_overlay(tmp_path: Path) -> None:
-    """Modifying an existing file via execute captures the change in the overlay.
+    """Modifying an existing file via execute captures the change in the overlay
+    WITHOUT touching the real parent file (copy-on-write isolation).
 
-    Note: shell ``>`` redirections follow symlinks, so the real file may also
-    be modified.  The critical invariant is that the overlay records the update
-    so that a subsequent merge or flush propagates the correct content.
+    Regression for the symlink-escape bug: the snapshot copies parent files, so an
+    in-place ``>`` redirection lands on the copy, never the real parent. The
+    overlay still records the update for a later merge/flush.
     """
     from pydantic_ai_backends import LocalBackend
 
@@ -1797,6 +1798,9 @@ def test_execute_modify_existing_propagates_write_to_overlay(tmp_path: Path) -> 
     # Overlay must have captured the modified version.
     assert overlay.exists(str(real_file))
     assert "modified" in overlay.read(str(real_file))
+    # CRITICAL: the real parent file must be untouched — the branch write did not
+    # escape onto the parent.
+    assert real_file.read_text() == "original content"
 
 
 def test_execute_mv_propagates_delete_and_create_to_overlay(tmp_path: Path) -> None:
@@ -2064,13 +2068,13 @@ def test_collect_state_does_not_record_nonempty_directories(tmp_path: Path) -> N
 
 
 # ---------------------------------------------------------------------------
-# _symlink_tree — subdirectory recursion and _SNAP_SKIP_DIRS skip
+# _copy_tree — subdirectory recursion and _SNAP_SKIP_DIRS skip
 # ---------------------------------------------------------------------------
 
 
-def test_symlink_tree_recurses_into_subdirectory(tmp_path: Path) -> None:
-    """_symlink_tree mirrors subdirectory structure and skips _SNAP_SKIP_DIRS."""
-    from pydantic_deep.toolsets.forking.isolation import _SNAP_SKIP_DIRS, _symlink_tree
+def test_copy_tree_recurses_into_subdirectory(tmp_path: Path) -> None:
+    """_copy_tree mirrors subdirectory structure as real copies and skips _SNAP_SKIP_DIRS."""
+    from pydantic_deep.toolsets.forking.isolation import _SNAP_SKIP_DIRS, _copy_tree
 
     src = tmp_path / "src"
     src.mkdir()
@@ -2085,12 +2089,21 @@ def test_symlink_tree_recurses_into_subdirectory(tmp_path: Path) -> None:
 
     dst = tmp_path / "dst"
     dst.mkdir()
-    _symlink_tree(src, dst)
+    _copy_tree(src, dst)
 
-    assert (dst / "root_file.py").is_symlink()
+    # Files are detached real copies, NOT symlinks (copy-on-write isolation).
+    assert (dst / "root_file.py").is_file()
+    assert not (dst / "root_file.py").is_symlink()
+    assert (dst / "root_file.py").read_text() == "root"
     assert (dst / "subdir").is_dir()
-    assert (dst / "subdir" / "nested.py").is_symlink()
+    assert (dst / "subdir" / "nested.py").is_file()
+    assert not (dst / "subdir" / "nested.py").is_symlink()
+    assert (dst / "subdir" / "nested.py").read_text() == "nested"
     assert not (dst / skip_name).exists()
+
+    # Writing into the copy must not touch the source (the isolation guarantee).
+    (dst / "root_file.py").write_text("branch-modified")
+    assert (src / "root_file.py").read_text() == "root"
 
 
 # ---------------------------------------------------------------------------
