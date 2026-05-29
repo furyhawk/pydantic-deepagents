@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextvars
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
@@ -32,6 +33,7 @@ from pydantic_deep.types import SubAgentConfig
 if TYPE_CHECKING:
     from pydantic_ai.toolsets import AbstractToolset
 
+    from pydantic_deep.capabilities.forking import LiveForkCapability
     from pydantic_deep.capabilities.message_queue import MessageQueue
     from pydantic_deep.capabilities.periodic_reminder import PeriodicReminderConfig
 
@@ -48,6 +50,15 @@ DEFAULT_INSTRUCTIONS = BASE_PROMPT
 # fallback (the next model would fail with the same error).
 _AUTH_ERROR_MARKERS = ("401", "403", "unauthorized", "forbidden")
 
+# Per-asyncio-context hop counter used by _fallback_on to track which hop in the
+# fallback chain is currently in flight.  ContextVar is correct for concurrent
+# asyncio tasks (each task gets its own copy).  For sequential ``await agent.run()``
+# calls in the same coroutine without a task boundary the counter persists; in that
+# case it resets automatically once the chain is fully exhausted.
+_fallback_hop_cv: contextvars.ContextVar[int] = contextvars.ContextVar(
+    "_pd_fallback_hop", default=0
+)
+
 
 def _wrap_with_fallback_and_hooks(
     primary: str | Model,
@@ -55,17 +66,25 @@ def _wrap_with_fallback_and_hooks(
     fallback_hooks: list[Any],
     backend: BackendProtocol,
 ) -> FallbackModel:
-    """Build a FallbackModel that dispatches MODEL_FALLBACK_TRIGGERED hooks on each
-    transient-error hop. Auth errors (401/403) are not treated as transient — they
-    return False so the original exception propagates."""
+    """Build a FallbackModel with auth-error filtering and optional hook dispatch.
+
+    Auth errors (401/403/unauthorized/forbidden) always return False so the
+    original exception propagates without triggering a fallback.
+
+    Hook dispatch (MODEL_FALLBACK_TRIGGERED) fires only when there is a subsequent
+    model to try; the final model's failure is silently returned as True (chain
+    exhausted) without emitting a spurious event.
+    """
     from pydantic_ai.exceptions import ModelAPIError
 
     from pydantic_deep.capabilities.hooks import HooksCapability
 
     hooks_cap = HooksCapability(hooks=fallback_hooks)
-    primary_name = primary if isinstance(primary, str) else str(primary)
-    first_fallback = fallbacks[0]
-    first_fallback_name = first_fallback if isinstance(first_fallback, str) else str(first_fallback)
+    # Build a flat list of model names for accurate from/to reporting.
+    model_chain: list[str] = [primary if isinstance(primary, str) else str(primary)] + [
+        f if isinstance(f, str) else str(f) for f in fallbacks
+    ]
+    total_models = len(model_chain)
 
     async def _fallback_on(exc: Exception) -> bool:
         if not isinstance(exc, ModelAPIError):
@@ -73,7 +92,17 @@ def _wrap_with_fallback_and_hooks(
         message = str(exc).lower()
         if any(marker in message for marker in _AUTH_ERROR_MARKERS):
             return False
-        await hooks_cap.dispatch_model_fallback(primary_name, first_fallback_name, exc, backend)
+        hop = _fallback_hop_cv.get()
+        # Auto-reset: if hop >= total_models the chain was fully exhausted in the
+        # previous request (sequential awaits in the same coroutine context).
+        if hop >= total_models:
+            hop = 0
+        _fallback_hop_cv.set(hop + 1)
+        # Only fire the hook when there is actually a next model to fall back to.
+        if hop < len(fallbacks):
+            await hooks_cap.dispatch_model_fallback(
+                model_chain[hop], model_chain[hop + 1], exc, backend
+            )
         return True
 
     return FallbackModel(primary, *fallbacks, fallback_on=_fallback_on)
@@ -173,6 +202,7 @@ def create_deep_agent(
     middleware: Sequence[Any] | None = None,
     plans_dir: str | None = None,
     message_queue: MessageQueue | None = None,
+    forking: bool | LiveForkCapability = False,
     instrument: bool | None = None,
     **agent_kwargs: Any,
 ) -> Agent[DeepAgentDeps, str]: ...
@@ -248,6 +278,7 @@ def create_deep_agent(
     middleware: Sequence[Any] | None = None,
     plans_dir: str | None = None,
     message_queue: MessageQueue | None = None,
+    forking: bool | LiveForkCapability = False,
     instrument: bool | None = None,
     **agent_kwargs: Any,
 ) -> Agent[DeepAgentDeps, OutputDataT]: ...
@@ -321,6 +352,7 @@ def create_deep_agent(  # noqa: C901
     middleware: Sequence[Any] | None = None,
     plans_dir: str | None = None,
     message_queue: MessageQueue | None = None,
+    forking: bool | LiveForkCapability = False,
     instrument: bool | None = None,
     **agent_kwargs: Any,
 ) -> Agent[DeepAgentDeps, OutputDataT] | Agent[DeepAgentDeps, str]:
@@ -514,6 +546,20 @@ def create_deep_agent(  # noqa: C901
             Steering messages are injected before the next LLM call via
             ``MessageQueueCapability``; follow-ups are handled by
             :func:`run_with_queue`. ``None`` (default) disables the feature.
+        forking: Enable Live Run Forking. ``True`` registers
+            :class:`LiveForkCapability` with defaults (``max_branches=10``,
+            ``max_depth=2``, in-memory store) and the forking toolset
+            (``fork_run``, ``inspect_branches``, ``merge_or_select``,
+            ``terminate_branch``, ``diff_branches``, ``fork_cost``). Pass a
+            pre-configured :class:`LiveForkCapability` instance to customize
+            limits or the fork state store. ``False`` (default) leaves
+            forking off — the feature is opt-in because spawning parallel
+            branches has cost implications. When enabled without
+            ``include_checkpoints=True``, ``fork()`` emits a runtime warning
+            at call time since the ``fork:<id>`` / ``post-fork:<id>`` rewind
+            anchors require a checkpoint store. Per-branch budgets are
+            enforced via ``BranchSpec.budget_usd``; fork-wide aggregate caps
+            via :attr:`LiveForkCapability.aggregate_budget_usd`.
         model_settings: Provider-specific model settings (temperature, thinking,
             etc.). Passed directly to the pydantic-ai Agent. Common keys:
             ``temperature``, ``max_tokens``, ``anthropic_thinking``,
@@ -583,10 +629,7 @@ def create_deep_agent(  # noqa: C901
         _fallback_hooks = [
             h for h in (hooks or []) if h.event == HookEvent.MODEL_FALLBACK_TRIGGERED
         ]
-        if _fallback_hooks:
-            model = _wrap_with_fallback_and_hooks(model, _fallbacks, _fallback_hooks, backend)
-        else:
-            model = FallbackModel(model, *_fallbacks)
+        model = _wrap_with_fallback_and_hooks(model, _fallbacks, _fallback_hooks, backend)
 
     # Build effective subagents list (user-provided + built-ins)
     effective_subagents: list[SubAgentConfig] = list(subagents or [])
@@ -625,7 +668,6 @@ def create_deep_agent(  # noqa: C901
             for tool in toolset.tools.values():
                 tool.max_retries = max_retries
 
-    # Build toolsets list
     all_toolsets: list[AbstractToolset[DeepAgentDeps]] = []
 
     _todo_proxy: _DepsTodoProxy | None = None
@@ -635,13 +677,13 @@ def create_deep_agent(  # noqa: C901
         all_toolsets.append(todo_toolset)
 
     if include_filesystem:
-        # Determine approval requirements from interrupt_on
         require_write_approval = interrupt_on.get("write_file", False) or interrupt_on.get(
             "edit_file", False
         )
-        require_execute_approval = interrupt_on.get("execute", True)
+        # Default execute to gated whenever any interrupt is enabled (the approval channel
+        # only exists then); an empty interrupt_on stays ungated. Explicit value wins.
+        require_execute_approval = interrupt_on.get("execute", any(interrupt_on.values()))
 
-        # Determine if execute should be included
         # If explicitly set, use that; otherwise auto-detect from backend type
         should_include_execute = (
             include_execute if include_execute is not None else isinstance(backend, SandboxProtocol)
@@ -661,7 +703,6 @@ def create_deep_agent(  # noqa: C901
     _subagent_task_manager: Any | None = None
     subagent_toolset: Any | None = None
     if include_subagents:
-        # Subagents use the same model as the main agent
         subagent_model = model
 
         # Deep agent factory for subagents — subagents are full deep agents
@@ -769,7 +810,6 @@ def create_deep_agent(  # noqa: C901
     # Skills toolset
     skills_toolset = None
     if include_skills:
-        # Normalize skill_directories to list[str | BackendSkillsDirectory]
         directories: list[str | BackendSkillsDirectory] | None = None
         if skill_directories:
             directories = []
@@ -913,7 +953,6 @@ def create_deep_agent(  # noqa: C901
         resolved = resolve_style(output_style, styles_dir)
         base_instructions = base_instructions + "\n\n" + format_style_prompt(resolved)
 
-    # Build agent kwargs with optional output_type and history_processors
     agent_create_kwargs: dict[str, Any] = {
         "deps_type": DeepAgentDeps,
         "toolsets": all_toolsets,
@@ -921,7 +960,6 @@ def create_deep_agent(  # noqa: C901
         "retries": retries,
     }
 
-    # Determine if any tools require approval (interrupt_on has True values)
     has_interrupt_tools = any(interrupt_on.values())
 
     if output_type is not None:
@@ -934,15 +972,11 @@ def create_deep_agent(  # noqa: C901
         # No custom output_type but interrupt_on is used
         agent_create_kwargs["output_type"] = [str, DeferredToolRequests]
 
-    # Build combined history processors list
     all_processors: list[Any] = list(history_processors or [])
 
     # patch_tool_calls capability is added later (see capabilities section below).
     _patch_tool_calls = patch_tool_calls
 
-    # Eviction capability is added later (see capabilities section below).
-    # Previously this was a history processor; now it uses after_tool_execute
-    # to intercept large outputs before they enter message history.
     _eviction_token_limit = eviction_token_limit
     _max_binary_content = max_binary_content
     _on_eviction = on_eviction
@@ -997,18 +1031,28 @@ def create_deep_agent(  # noqa: C901
         from pydantic_ai_shields import CostTracking
 
         model_name = model if isinstance(model, str) else None
-        cost_cap = CostTracking(
-            model_name=model_name,
-            budget_usd=cost_budget_usd,
-            on_cost_update=on_cost_update,
-        )
+        if forking:
+            from pydantic_deep.toolsets.forking.coordinator import (
+                _PerBranchCostTracking,
+            )
+
+            cost_cap = _PerBranchCostTracking(
+                model_name=model_name,
+                budget_usd=cost_budget_usd,
+                on_cost_update=on_cost_update,
+            )
+        else:
+            cost_cap = CostTracking(
+                model_name=model_name,
+                budget_usd=cost_budget_usd,
+                on_cost_update=on_cost_update,
+            )
 
     if all_processors:
         agent_create_kwargs["history_processors"] = all_processors
 
-    # Build effective model_settings with prompt caching defaults.
     # Anthropic-specific keys are silently ignored by non-Anthropic models,
-    # so we always set them — no provider detection needed.
+    # so we set them unconditionally — no provider detection needed.
     effective_model_settings: dict[str, Any] = {
         "anthropic_cache_instructions": True,
         "anthropic_cache_tool_definitions": True,
@@ -1019,11 +1063,9 @@ def create_deep_agent(  # noqa: C901
         effective_model_settings.update(model_settings)
     agent_create_kwargs["model_settings"] = effective_model_settings
 
-    # Apply instrumentation
     if instrument is not None:  # pragma: no cover
         agent_create_kwargs["instrument"] = instrument
 
-    # Build capabilities list
     all_capabilities: list[Any] = []
 
     if _patch_tool_calls:
@@ -1064,7 +1106,10 @@ def create_deep_agent(  # noqa: C901
     if stuck_loop_detection:
         from pydantic_deep.capabilities.stuck_loop import StuckLoopDetection
 
-        all_capabilities.append(StuckLoopDetection())
+        # Polling tools are intentionally called many times with identical
+        # arguments — exempt them so the detector doesn't fire on normal usage.
+        _sld_ignore: set[str] = {"inspect_branches"} if forking else set()
+        all_capabilities.append(StuckLoopDetection(ignore_tools=_sld_ignore))
 
     if message_queue is not None:
         from pydantic_deep.capabilities.message_queue import MessageQueueCapability
@@ -1083,6 +1128,24 @@ def create_deep_agent(  # noqa: C901
             else PeriodicReminderConfig()
         )
         all_capabilities.append(PeriodicReminderCapability(config=_reminder_cfg))
+
+    _fork_capability: Any = None
+    if forking:
+        from pydantic_deep.capabilities.forking import LiveForkCapability as _LiveForkCap
+
+        if isinstance(forking, _LiveForkCap):
+            _fork_capability = forking
+        elif forking is True:
+            _fork_capability = _LiveForkCap()
+        else:
+            raise TypeError(
+                f"forking must be bool or LiveForkCapability, got {type(forking).__name__}"
+            )
+        all_capabilities.append(_fork_capability)
+
+        from pydantic_deep.toolsets.forking import create_fork_toolset as _create_fork_ts
+
+        all_toolsets.append(_create_fork_ts())
 
     if middleware:
         all_capabilities.extend(middleware)
@@ -1183,6 +1246,8 @@ def create_deep_agent(  # noqa: C901
     # Expose context middleware for CLI /compact and /context commands
     agent._context_middleware = context_mw  # type: ignore[attr-defined]
     agent._task_manager = _subagent_task_manager  # type: ignore[attr-defined]
+    if _fork_capability is not None:
+        _fork_capability._agent_ref = agent
     return agent
 
 

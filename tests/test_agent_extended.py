@@ -123,6 +123,84 @@ This is a test skill.
         )
         assert agent is not None
 
+    @staticmethod
+    def _execute_requires_approval(agent: object) -> bool | None:
+        """Return the resolved ``requires_approval`` flag of the console ``execute`` tool.
+
+        Returns ``None`` if the console toolset / execute tool is not present.
+        """
+        seen: set[int] = set()
+
+        def find_console(obj: object) -> object | None:
+            if id(obj) in seen:
+                return None
+            seen.add(id(obj))
+            if getattr(obj, "id", None) == "deep-console":
+                return obj
+            for attr in ("toolsets", "toolset", "wrapped", "_toolset", "tools", "_toolsets"):
+                child = getattr(obj, attr, None)
+                if child is None:
+                    continue
+                if isinstance(child, dict):
+                    items = list(child.values())
+                elif isinstance(child, (list, tuple, set)):
+                    items = list(child)
+                else:
+                    items = [child]
+                for item in items:
+                    found = find_console(item)
+                    if found is not None:
+                        return found
+            return None
+
+        console = find_console(agent)
+        if console is None:
+            return None
+        execute = getattr(console, "tools", {}).get("execute")
+        if execute is None:
+            return None
+        return getattr(execute, "requires_approval", None)
+
+    def test_execute_gated_when_other_interrupt_enabled(self):
+        """A non-empty interrupt_on that omits execute still gates shell execute.
+
+        Regression: the default must follow ``any(interrupt_on.values())`` so a caller
+        enabling edit/write interrupts keeps shell ``execute`` behind human approval.
+        """
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            interrupt_on={"edit_file": True},
+            include_execute=True,
+        )
+        assert self._execute_requires_approval(agent) is True
+
+    def test_execute_not_gated_when_interrupt_on_empty(self):
+        """An empty interrupt_on wires no interrupt tools, so execute defaults ungated."""
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            interrupt_on={},
+            include_execute=True,
+        )
+        assert self._execute_requires_approval(agent) is False
+
+    def test_explicit_execute_false_overrides_default(self):
+        """An explicit {"execute": False} wins even when other interrupts are enabled."""
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            interrupt_on={"execute": False, "edit_file": True},
+            include_execute=True,
+        )
+        assert self._execute_requires_approval(agent) is False
+
+    def test_explicit_execute_true_gates(self):
+        """An explicit {"execute": True} gates execute."""
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            interrupt_on={"execute": True},
+            include_execute=True,
+        )
+        assert self._execute_requires_approval(agent) is True
+
     def test_create_with_user_capabilities(self):
         """Test creating with user-provided capabilities."""
         from pydantic_ai.capabilities import Thinking
@@ -433,3 +511,66 @@ class TestFallbackModel:
             result = await _fallback_on
             assert result is False, f"Expected False for auth error: {auth_msg!r}"
         assert received == []
+
+    def test_fallback_model_always_uses_auth_filtering_without_hooks(self) -> None:
+        """FallbackModel is always wrapped with auth-filtering fallback_on, even when
+        no MODEL_FALLBACK_TRIGGERED hook is registered."""
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            fallback_model=FALLBACK_MODEL,
+            web_search=False,
+            web_fetch=False,
+            thinking=False,
+        )
+        assert isinstance(agent.model, FallbackModel)
+        # A custom fallback_on must be installed regardless of hooks.
+        assert agent.model._exception_handlers, "expected a custom fallback_on handler"
+
+    async def test_auth_error_not_forwarded_without_hooks(self) -> None:
+        """Auth errors (401/403) must not trigger fallback even with no hooks registered."""
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            fallback_model=FALLBACK_MODEL,
+            web_search=False,
+            web_fetch=False,
+            thinking=False,
+        )
+        assert isinstance(agent.model, FallbackModel)
+        _fallback_on = cast(
+            "Awaitable[bool]",
+            agent.model._exception_handlers[0](ModelAPIError("m", "401 unauthorized")),
+        )
+        result = await _fallback_on
+        assert result is False, "auth error must not trigger fallback (no hooks case)"
+
+    async def test_hook_not_fired_for_last_model_in_exhausted_chain(self) -> None:
+        """When the last model in the chain fails, no MODEL_FALLBACK_TRIGGERED hook fires."""
+        from pydantic_deep.capabilities.hooks import Hook, HookEvent, HookInput, HookResult
+
+        received: list[HookInput] = []
+
+        async def handler(inp: HookInput) -> HookResult:
+            received.append(inp)
+            return HookResult()
+
+        agent = create_deep_agent(
+            model=TEST_MODEL,
+            fallback_model=FALLBACK_MODEL,
+            hooks=[Hook(event=HookEvent.MODEL_FALLBACK_TRIGGERED, handler=handler)],
+            web_search=False,
+            web_fetch=False,
+            thinking=False,
+        )
+        assert isinstance(agent.model, FallbackModel)
+        _fallback_on_raw = agent.model._exception_handlers[0]
+        api_error = ModelAPIError("test-model", "rate limit exceeded")
+
+        # First call: primary fails → hook fires (there is a fallback to try).
+        result1 = await cast("Awaitable[bool]", _fallback_on_raw(api_error))
+        assert result1 is True
+        assert len(received) == 1
+
+        # Second call: last fallback fails (chain exhausted) → hook must NOT fire.
+        result2 = await cast("Awaitable[bool]", _fallback_on_raw(api_error))
+        assert result2 is True
+        assert len(received) == 1, "hook fired for exhausted chain — should be silent"

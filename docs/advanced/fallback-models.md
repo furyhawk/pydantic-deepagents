@@ -76,7 +76,7 @@ The `HookInput` payload for this event:
 |-------|-------|
 | `tool_input["primary"]` | Name of the primary model |
 | `tool_input["fallback"]` | Name of the **first** fallback in the chain (see limitation below) |
-| `tool_error` | The original `ModelAPIError` instance |
+| `tool_error` | The stringified error message (`str(exc)`) — not the exception object itself |
 
 ## Limitations and caveats
 
