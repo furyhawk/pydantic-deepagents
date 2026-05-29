@@ -26,7 +26,7 @@ from __future__ import annotations
 import json
 import shutil
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -147,12 +147,20 @@ class ForkMaterializer:
 
 
 def _safe_relative(path: str) -> Path:
-    """Return ``path`` as a :class:`Path` rooted relative to materializer dirs.
+    """Return ``path`` as a :class:`Path` confined under the materializer dirs.
 
     Strips a leading ``/`` so absolute-style paths (``/src/foo.py``) land
-    under the materializer root instead of escaping to the filesystem root.
+    under the materializer root instead of escaping to the filesystem root, and
+    drops any ``..`` / ``.`` components so a crafted path (``../../etc/cron.d/x``)
+    cannot resolve outside the materializer root. The result is always relative
+    and never traverses above its eventual base directory.
     """
-    return Path(path.lstrip("/"))
+    parts = [
+        segment
+        for segment in PurePosixPath(path.lstrip("/")).parts
+        if segment not in ("", ".", "..")
+    ]
+    return Path(*parts) if parts else Path()
 
 
 __all__ = ["ForkMaterializer"]

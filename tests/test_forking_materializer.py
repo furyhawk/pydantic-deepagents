@@ -278,6 +278,18 @@ def test_safe_relative_strips_leading_slash(tmp_path: Path) -> None:
     assert target.is_relative_to(tmp_path / "fork1" / "branches" / "approach_a")
 
 
+def test_safe_relative_neutralizes_parent_traversal(tmp_path: Path) -> None:
+    m = ForkMaterializer(root=tmp_path / "fork1", fork_id="fork1")
+    branch_base = tmp_path / "fork1" / "branches" / "approach_a"
+    parent_base = tmp_path / "fork1" / "parent"
+    # ``..`` segments must not let a write escape the materializer root.
+    for evil in ("../../etc/cron.d/x", "a/../../b", "/../../etc/passwd", "foo/../../../bar"):
+        bt = m.branch_path("approach_a", evil)
+        pt = m.parent_path(evil)
+        assert bt.is_relative_to(branch_base), f"branch path escaped for {evil!r}: {bt}"
+        assert pt.is_relative_to(parent_base), f"parent path escaped for {evil!r}: {pt}"
+
+
 def test_cleanup_on_already_removed_dir_is_safe(tmp_path: Path) -> None:
     m = ForkMaterializer(root=tmp_path / "fork1", fork_id="fork1")
     import shutil
