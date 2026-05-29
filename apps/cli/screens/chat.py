@@ -226,16 +226,13 @@ class ChatScreen(Screen):
 
         sa_widget = side.query_one(SubagentsWidget)
         defaults = []
-        # Show built-in subagents as available
         agent = getattr(self.app, "agent", None)
         if agent:
-            # Extract subagent names from the task manager
             mgr = getattr(agent, "_task_manager", None)
             if mgr:
                 for name in sorted(getattr(mgr, "_agents", {}).keys()):
                     defaults.append({"name": name, "status": "idle", "description": ""})
         if not defaults:
-            # Fallback — show common built-ins
             defaults = [
                 {"name": "planner", "status": "idle", "description": ""},
                 {"name": "research", "status": "idle", "description": ""},
@@ -342,7 +339,6 @@ class ChatScreen(Screen):
             session_dir.mkdir(parents=True, exist_ok=True)
             self._session_dir = session_dir
 
-            # Initialize per-session debug logger
             from apps.cli.debug_log import setup_logger
 
             setup_logger(self._session_id)
@@ -410,7 +406,6 @@ class ChatScreen(Screen):
             status = self.query_one(StatusBar)
             status.message_count = len(history)
 
-            # Sum tokens from all response messages
             total_input = 0
             total_output = 0
             for msg in history:
@@ -422,7 +417,6 @@ class ChatScreen(Screen):
                 if hasattr(usage, "output_tokens"):
                     total_output += usage.output_tokens or 0
 
-            # Update token breakdown
             status.total_input_tokens = total_input
             status.total_output_tokens = total_output
 
@@ -457,14 +451,12 @@ class ChatScreen(Screen):
 
         from pydantic_ai.messages import ModelResponse, TextPart
 
-        # Add to UI
         msg_list = self.query_one(MessageList)
         assistant = msg_list.begin_assistant_message()
         assistant.append_text(text)
         assistant.finalize_text()
         msg_list.end_assistant_message()
 
-        # Add to message history so it persists
         try:
             synthetic = ModelResponse(
                 parts=[TextPart(content=text)],
@@ -507,7 +499,6 @@ class ChatScreen(Screen):
         except Exception:
             pass
 
-        # Show bootstrapped files
         bootstrapped = getattr(self, "_bootstrapped_files", [])
         if bootstrapped:
             lines.append(f"Created: {', '.join(bootstrapped)}")
@@ -641,24 +632,21 @@ class ChatScreen(Screen):
                 self._increment_queue_badge(steering=False)
             return
 
-        # Shell command
         if text.startswith("!"):
             app.run_shell_command(text[1:])  # type: ignore[attr-defined]
             return
 
-        # Slash command (but not things like "I used /path/to/file")
+        # Slash command — but not paths like "I used /path/to/file" (the // guard).
         if text.startswith("/") and not text.startswith("//"):
             app.handle_command(text)  # type: ignore[attr-defined]
             return
 
-        # User typed `>>foo` while idle — strip the steering prefix and run as a normal prompt
+        # `>>foo` while idle: strip the steering prefix and run as a normal prompt.
         if text.startswith(">>"):
             text = text[2:].lstrip()
 
-        # Expand @file references — read files and append content to prompt
         text = self._expand_file_refs(text)
 
-        # Regular prompt → add to message list and run agent
         msg_list = self.query_one(MessageList)
         msg_list.append_user_message(text)
         self._run_agent(text)
@@ -836,7 +824,6 @@ class ChatScreen(Screen):
                                         msg_list.scroll_end(animate=False)
                                     pending[call_id] = (args, _time.monotonic())
 
-                                    # Feature 8: Track subagent task launches
                                     if tool_name == "task":
                                         sa_name = args.get("subagent_type") or args.get(
                                             "name", "subagent"
@@ -849,17 +836,14 @@ class ChatScreen(Screen):
                                         }
                                         self._update_subagents_panel(_subagent_tasks)
 
-                                    # Feature 9: Track team tool events
                                     if tool_name in _TEAM_TOOLS:
                                         self._update_subagents_panel(
                                             _subagent_tasks,
                                             team_event=(tool_name, args),
                                         )
 
-                                    # Show overlay during merge_or_select so the user has feedback
-                                    # while the tool awaits the winner task and flushes overlays;
-                                    # ``abort`` returns fast enough that a flashing overlay is
-                                    # noise, so it's still excluded.
+                                    # Overlay during merge_or_select (it awaits the winner +
+                                    # flushes); abort returns fast enough that an overlay is noise.
                                     _mos_action = (
                                         args.get("action", "")
                                         if tool_name == "merge_or_select"
@@ -913,17 +897,14 @@ class ChatScreen(Screen):
                                         "output_length": len(raw),
                                     }
                                     if tool_name == "task":
-                                        # Log full subagent output for debugging
                                         log_kwargs["output"] = raw[:5000]
                                     log.debug("Tool call completed", **log_kwargs)
-                                    # Save structured tool trace for /improve
                                     self._append_tool_log(tool_name, args, raw, elapsed, is_error)
                                     if tool_name not in _TODO_TOOLS:
                                         assistant.complete_tool_call(
                                             call_id, raw, elapsed, is_error
                                         )
 
-                                    # Feature 8: Update subagent status on completion
                                     if call_id in _subagent_tasks:
                                         _subagent_tasks[call_id]["status"] = (
                                             "error" if is_error else "completed"
@@ -935,8 +916,7 @@ class ChatScreen(Screen):
 
                                         reconcile_active_fork(app)
 
-                                    # Dismiss overlay + reconcile active_fork so panels disappear
-                                    # the same turn instead of lingering until end-of-run.
+                                    # Dismiss overlay + reconcile this turn so panels don't linger.
                                     if tool_name == "merge_or_select":
                                         overlay = getattr(self, "_passive_judge_overlay", None)
                                         if overlay is not None:
@@ -954,7 +934,6 @@ class ChatScreen(Screen):
             assistant.finalize_text()
 
             if result is not None:
-                # Show per-turn usage on the assistant message
                 try:
                     usage = result.usage()
                     assistant.set_usage(
@@ -971,10 +950,8 @@ class ChatScreen(Screen):
                     total_messages=len(app.message_history),  # type: ignore[arg-type]
                 )
 
-                # Calculate cost/tokens from message history (authoritative)
                 self._sync_status_from_history()
 
-                # Check for DeferredToolRequests (approval flow)
                 from pydantic_ai.tools import DeferredToolRequests
 
                 if isinstance(result.output, DeferredToolRequests):
@@ -990,7 +967,6 @@ class ChatScreen(Screen):
                         future: asyncio.Future[str] = asyncio.Future()
                         tool_args = call.args if isinstance(call.args, dict) else {}
 
-                        # Show approval modal and wait for user decision
                         from apps.cli.modals.approval import ApprovalModal
 
                         self.app.push_screen(
@@ -1012,7 +988,6 @@ class ChatScreen(Screen):
                         else:
                             approvals[call.tool_call_id] = ToolApproved()
 
-                    # Continue agent with approval decisions
                     header.is_streaming = True
                     assistant_cont = msg_list.begin_assistant_message()
 
@@ -1094,10 +1069,9 @@ class ChatScreen(Screen):
 
                 reconcile_active_fork(app)
 
-                # Auto-save session
                 self._save_session()
 
-                # Drain follow-up queue and schedule next run if pending.
+                # Drain the follow-up queue and schedule the next run if pending.
                 _queue = app.queue
                 if _queue is not None:
                     _follow_up_msgs = await _queue.drain_follow_up()
@@ -1134,7 +1108,6 @@ class ChatScreen(Screen):
 
             msg_list.remove_last_if_empty()
 
-            # Always save session — even after errors or cancellation
             self._save_session()
             app.is_streaming = False
             header.is_streaming = False
@@ -1205,7 +1178,6 @@ class ChatScreen(Screen):
             try:
                 if full_path.is_file():
                     content = full_path.read_text()
-                    # Truncate large files
                     if len(content) > 50_000:
                         content = content[:50_000] + "\n... (truncated)"
                     return f'\n\n<file path="{filepath}">\n{content}\n</file>\n'
@@ -1310,7 +1282,6 @@ class ChatScreen(Screen):
         todos = event.todos
         status.total_todos = len(todos)
         status.active_todos = sum(1 for t in todos if getattr(t, "status", "") == "completed")
-        # Update side panel
         side = self.query_one(SidePanel)
         todos_widget = side.query_one("TodosWidget")
         todos_widget.todos = todos  # type: ignore[attr-defined]
@@ -1338,11 +1309,9 @@ class ChatScreen(Screen):
 
             agents_list: list[dict[str, Any]] = []
 
-            # Add tracked subagent tasks
             for info in subagent_tasks.values():
                 agents_list.append(info)
 
-            # Add team event info if present
             if team_event:
                 tool_name, args = team_event
                 if tool_name == "spawn_team":
@@ -1369,7 +1338,6 @@ class ChatScreen(Screen):
 
             sa_widget.agents = agents_list
 
-            # Show the side panel if we have subagent/team content
             if agents_list:
                 side.show_if_needed(self.app.size.width, True)
         except Exception:

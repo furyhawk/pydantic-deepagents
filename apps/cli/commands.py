@@ -91,7 +91,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
         async def _handle(result: str | None) -> None:
             if result:
                 app.model_name = result
-                # Try to reconfigure agent with new model
                 app.reconfigure_agent(model=result)
 
         app.push_screen(ModelPickerModal(app.model_name), _handle)
@@ -99,7 +98,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
     elif cmd == "/context":
         from apps.cli.modals.context_view import ContextViewModal
 
-        # Calculate from message history
         total_input = 0
         for msg in app.message_history:
             usage = getattr(msg, "usage", None)
@@ -147,7 +145,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
                         for cap in getattr(agent, "_capabilities", []):
                             cap_type = type(cap).__name__
                             if "ContextManager" in cap_type:
-                                # Found ContextManagerCapability — trigger compression
                                 compress = getattr(cap, "compress", None)
                                 if compress is not None:
                                     app.notify("Compacting with LLM...", severity="information")
@@ -167,7 +164,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
                 app.notify(f"Unknown compact mode: {mode}", severity="warning")
                 return
 
-            # Update status bar message count
             try:
                 status = app.screen.query_one(StatusBar)
                 status.message_count = len(app.message_history)
@@ -177,7 +173,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
         app.push_screen(CompactModal(), _handle_compact)
 
     elif cmd == "/copy-all":
-        # Copy entire conversation as text
         try:
             from apps.cli.widgets.assistant_message import AssistantMessage
             from apps.cli.widgets.message_list import MessageList
@@ -204,7 +199,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
             app.notify(f"Failed to copy: {e}", severity="error")
 
     elif cmd == "/cost":
-        # Calculate from message history for accuracy
         total_input = 0
         total_output = 0
         for msg in app.message_history:
@@ -263,7 +257,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
 
         async def _handle_remember(result: str | None) -> None:
             if result:
-                # Append to MEMORY.md
                 import os
 
                 memory_path = os.path.join(app.working_dir, ".pydantic-deep", "main", "MEMORY.md")
@@ -298,7 +291,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
         async def _handle_load(session_id: str | None) -> None:  # noqa: C901
             if not session_id:
                 return
-            # Load session messages
             try:
                 import json
 
@@ -315,7 +307,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
                 history = ModelMessagesTypeAdapter.validate_json(messages_path.read_bytes())
                 app.message_history = list(history)
 
-                # Clear messages and replay loaded history in the UI
                 from apps.cli.widgets.message_list import MessageList
 
                 msg_list = app.screen.query_one(MessageList)
@@ -335,7 +326,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
                     if isinstance(part, ToolReturnPart)
                 }
 
-                # Replay messages into the message list
                 for msg in history:
                     for part in msg.parts:
                         if isinstance(part, UserPromptPart):
@@ -365,22 +355,18 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
                                     part.tool_call_id, content, 0.0, looks_like_error(content)
                                 )
 
-                # Finalize any open assistant message
                 if msg_list.current_assistant is not None:
                     msg_list.current_assistant.finalize_text()
                     msg_list.end_assistant_message()
 
-                # Show notification
                 app.notify(
                     f"Loaded session: {len(history)} messages",
                     severity="information",
                 )
 
-                # Update status bar
                 status = app.screen.query_one(StatusBar)
                 status.message_count = len(history)
 
-                # Scroll to bottom
                 msg_list.scroll_end(animate=False)
             except Exception as e:
                 app.notify(f"Failed to load session: {e}", severity="error")
@@ -481,7 +467,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
     elif cmd == "/provider":
         from apps.cli.screens.onboarding import _PROVIDERS, ApiKeyModal, ProviderPickerModal
 
-        # Map provider_id to default model
         _PROVIDER_DEFAULT_MODELS = {
             "openrouter": "openrouter:anthropic/claude-sonnet-4",
             "anthropic": "anthropic:claude-sonnet-4-6",
@@ -495,7 +480,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
             if provider_id == "ollama":
                 app.reconfigure_agent(model="ollama:llama3.3")
                 return
-            # Find the provider info
             for pid, name, env_var, url in _PROVIDERS:
                 if pid == provider_id:
                     default_model = _PROVIDER_DEFAULT_MODELS.get(pid, "")
@@ -523,7 +507,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
         if arg:
             if apply_theme(app, arg):
                 app.notify(f"Theme: {arg}")
-                # Save to config
                 try:
                     from apps.cli.config import DEFAULT_CONFIG_PATH, set_config_value
 
@@ -602,7 +585,6 @@ async def dispatch_command(app: DeepApp, command: str) -> None:  # noqa: C901
             prompt = f"Use the {skill_name} skill."
             if arg:
                 prompt += f" {arg}"
-            # Post as user message
             from apps.cli.widgets.message_list import MessageList
 
             try:
@@ -1058,10 +1040,8 @@ async def _dispatch_fork_open_diff(app: DeepApp, _path_arg: str | None) -> None:
             app.notify("Cannot build diff report", severity="error")
             return
         statuses = session.inspect()
-        # Browse-only: /fork diff inspects, it does not resolve. Without view_only
-        # the modal renders the "pick a winner" hint and binds Enter to a pick that
-        # is silently discarded (push_screen has no callback) — looking like a merge
-        # that does nothing. view_only makes Enter simply close the browse view.
+        # Browse-only (view_only): /fork diff inspects, it doesn't resolve — Enter just closes
+        # rather than committing a pick that push_screen would silently discard.
         app.push_screen(MergePickerModal(report, statuses, session.label_to_id, view_only=True))
         return
 
