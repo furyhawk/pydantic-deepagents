@@ -158,8 +158,15 @@ class BranchPanelWidget(Vertical):
     def mark_status(self, state: BranchState, reason: str | None = None) -> None:
         """Update the branch's status badge and optional reason text."""
         if state == "running":
+            # Reset the replay watermark AND clear the rendered list together.
+            # replay_messages_append re-slices from _last_replayed_len=0, so leaving
+            # the old messages mounted would re-render the whole transcript on top
+            # of itself (duplicated). A done→running flip (continued turn) replays
+            # the full history afresh, so a clean list is correct.
             self._last_replayed_len = 0
             self._rendered_call_ids = set()
+            with contextlib.suppress(NoMatches):
+                self.query_one(MessageList).clear_messages()
         self.reason = reason
         self.status = state
 
@@ -283,14 +290,16 @@ class BranchPanelWidget(Vertical):
                     self._rendered_call_ids.add(call_id)
                 elif isinstance(part, ToolReturnPart):
                     content_str = str(part.content)
-                    assistant_msg = msg_list.current_assistant
-                    if assistant_msg is not None:
-                        assistant_msg.complete_tool_call(
-                            part.tool_call_id,
-                            content_str,
-                            0.0,
-                            looks_like_error(content_str),
-                        )
+                    # Look the call up by id across rendered messages — not via
+                    # current_assistant, which may be None (a prior tick's slice
+                    # ended with a text part) or a different message than the one
+                    # holding the matching ToolCallPart across the tick boundary.
+                    msg_list.complete_tool_call_by_id(
+                        part.tool_call_id,
+                        content_str,
+                        0.0,
+                        looks_like_error(content_str),
+                    )
 
         self._last_replayed_len = len(messages)
 

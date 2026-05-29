@@ -1528,6 +1528,110 @@ class TestIncrementalReplay:
             assert panel._last_replayed_len == 2
             await _drain_tasks(session)
 
+    async def test_e1b_c_tool_return_completes_across_text_part_boundary(
+        self, fork_app: DeepApp
+    ) -> None:
+        """tick N ends with a TextPart (current_assistant→None); tick N+1's
+        ToolReturnPart for a call from tick N must still complete it in place,
+        not leave the tool row spinning forever."""
+        from pydantic_ai.messages import (
+            ModelRequest,
+            ModelResponse,
+            TextPart,
+            ToolCallPart,
+            ToolReturnPart,
+        )
+
+        from apps.cli.widgets.assistant_message import AssistantMessage
+        from apps.cli.widgets.message_list import MessageList
+
+        async with fork_app.run_test(size=(140, 40)) as pilot:
+            await pilot.pause()
+            session = await _start_fork(fork_app)
+            await pilot.pause()
+
+            panel = list(fork_app.screen.query(BranchPanelWidget))[0]
+            panel._last_replayed_len = 0
+            panel._rendered_call_ids = set()
+
+            # Tick N: a tool call followed by a text part — the trailing text ends
+            # the assistant message, setting current_assistant to None.
+            tick1 = [
+                ModelResponse(
+                    parts=[
+                        ToolCallPart(tool_name="ls", args="{}", tool_call_id="c1"),
+                        TextPart(content="done"),
+                    ]
+                )
+            ]
+            panel.replay_messages_append(tick1)
+            await pilot.pause()
+
+            # Tick N+1: the return for c1 arrives.
+            tick2 = tick1 + [
+                ModelRequest(
+                    parts=[ToolReturnPart(tool_name="ls", content="file.txt", tool_call_id="c1")]
+                )
+            ]
+            panel.replay_messages_append(tick2)
+            await pilot.pause()
+
+            msg_list = panel.query_one(MessageList)
+            widget = None
+            for child in msg_list.children:
+                if isinstance(child, AssistantMessage) and child.has_tool_call("c1"):
+                    widget = child._tool_widgets["c1"]
+            assert widget is not None, "tool-call widget for c1 not found"
+            # The call must be completed (not stuck pending) despite the tick boundary.
+            assert widget.status == "success"
+            await _drain_tasks(session)
+
+    async def test_e1b_d_running_transition_clears_list_no_duplicate(
+        self, fork_app: DeepApp
+    ) -> None:
+        """A done→running mark_status must clear the rendered list so the next
+        full replay doesn't duplicate the transcript on top of itself."""
+        from pydantic_ai.messages import ModelResponse, TextPart
+
+        from apps.cli.widgets.message_list import MessageList
+        from apps.cli.widgets.user_message import UserMessage
+
+        async with fork_app.run_test(size=(140, 40)) as pilot:
+            await pilot.pause()
+            session = await _start_fork(fork_app)
+            await pilot.pause()
+
+            panel = list(fork_app.screen.query(BranchPanelWidget))[0]
+            msg_list = panel.query_one(MessageList)
+            # Start from a clean panel (the fork setup pre-populates it).
+            msg_list.clear_messages()
+            panel._last_replayed_len = 0
+            panel._rendered_call_ids = set()
+
+            from pydantic_ai.messages import ModelRequest, UserPromptPart
+
+            history = [
+                ModelRequest(parts=[UserPromptPart(content="hi there")]),
+                ModelResponse(parts=[TextPart(content="hello back")]),
+            ]
+            panel.replay_messages_append(history)
+            await pilot.pause()
+            users_before = [c for c in msg_list.children if isinstance(c, UserMessage)]
+            assert len(users_before) == 1
+
+            # done → running resets the watermark; it must also clear the list.
+            panel.mark_status("running")
+            await pilot.pause()
+            assert panel._last_replayed_len == 0
+            assert len([c for c in msg_list.children]) == 0
+
+            # Re-replaying the full history must not duplicate the prior render.
+            panel.replay_messages_append(history)
+            await pilot.pause()
+            users_after = [c for c in msg_list.children if isinstance(c, UserMessage)]
+            assert len(users_after) == 1
+            await _drain_tasks(session)
+
     async def test_e1b_c_full_replay_on_done_is_consistent(self, fork_app: DeepApp) -> None:
         """E1B.c — on task done, full replay_messages runs and panel is consistent."""
         from pydantic_ai.messages import ModelResponse, TextPart

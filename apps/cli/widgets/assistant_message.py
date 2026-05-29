@@ -107,6 +107,10 @@ class AssistantMessage(Widget):
             self.mount(widget)
         return widget
 
+    def has_tool_call(self, call_id: str) -> bool:
+        """True when this message holds the tool-call widget for ``call_id``."""
+        return call_id in self._tool_widgets
+
     def complete_tool_call(
         self,
         call_id: str,
