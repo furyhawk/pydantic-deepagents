@@ -1406,6 +1406,18 @@ class ForkCoordinator:
         for rt in self.branches.values():
             if not rt.task.done():
                 rt.task.cancel()
+                # Await the task to quiescence *before* cleanup, mirroring
+                # merge_or_select / abort_fork. A branch still unwinding mid-write
+                # (BranchOverlay.write -> materializer.flush_change -> write_bytes)
+                # could otherwise run after the rmtree and recreate part of the fork
+                # directory, leaking an orphaned dir across aborted parent runs.
+                with contextlib.suppress(asyncio.CancelledError, asyncio.TimeoutError):
+                    try:
+                        await asyncio.wait_for(rt.task, timeout=_CANCEL_CLEANUP_TIMEOUT_S)
+                    except Exception:  # pragma: no cover - defensive
+                        logger.warning(
+                            "aclose: branch %s cleanup raised", rt.status.id, exc_info=True
+                        )
         if self.materializer is not None:  # pragma: no branch - fork() always allocates one
             self.materializer.cleanup()
 

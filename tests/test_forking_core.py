@@ -46,6 +46,7 @@ def _make_coordinator(
     max_branches: int = 2,
     max_depth: int = 1,
     checkpoint_store: Any = None,
+    materializer_root: Path | None = None,
 ) -> ForkCoordinator:
     return ForkCoordinator(
         agent=agent,
@@ -54,6 +55,7 @@ def _make_coordinator(
         max_depth=max_depth,
         store=InMemoryForkStateStore(),
         checkpoint_store=checkpoint_store,
+        materializer_root=materializer_root,
     )
 
 
@@ -803,6 +805,51 @@ async def test_coordinator_aclose_cancels_outstanding_tasks():
     await asyncio.sleep(0)
     rt = next(iter(coord.branches.values()))
     assert rt.task.cancelled()
+
+
+async def test_coordinator_aclose_awaits_tasks_before_cleanup(tmp_path: Path):
+    """aclose must await cancelled branch tasks to quiescence *before* rmtree.
+
+    Otherwise a branch still unwinding mid-write can recreate part of the fork
+    directory after cleanup, leaking an orphaned dir. The slow agent here keeps
+    running until cancelled and only finishes its unwind after an extra await.
+    """
+    deps = DeepAgentDeps(backend=StateBackend())
+    started = asyncio.Event()
+
+    class _SlowUnwindAgent:
+        async def run(self, *args: Any, **kwargs: Any) -> Any:
+            started.set()
+            try:
+                await asyncio.Event().wait()  # block forever until cancelled
+            except asyncio.CancelledError:
+                # Simulate cleanup work during unwind that yields control.
+                await asyncio.sleep(0)
+                raise
+
+    materializer_root = tmp_path / "forks"
+    coord = _make_coordinator(
+        _SlowUnwindAgent(),
+        deps,
+        checkpoint_store=InMemoryCheckpointStore(),
+        materializer_root=materializer_root,
+    )
+    await coord.fork(
+        [BranchSpec(label="a", steer="A")],
+        parent_history=_seed_history("p"),
+    )
+    await started.wait()
+    fork_dir = coord.materializer.root
+    assert fork_dir.exists()
+
+    await coord.aclose()
+
+    rt = next(iter(coord.branches.values()))
+    # The fix awaits the task: it is fully done (not merely scheduled for cancel)
+    # by the time aclose returns — no extra event-loop tick needed.
+    assert rt.task.done()
+    # And the fork directory is removed with nothing left behind.
+    assert not fork_dir.exists()
 
 
 # ---------------------------------------------------------------------------
