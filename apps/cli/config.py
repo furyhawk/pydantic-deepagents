@@ -87,6 +87,11 @@ _INT_FIELDS = frozenset({"max_history", "thinking_budget", "fork_branch_count"})
 
 _FLOAT_FIELDS = frozenset({"temperature", "fork_aggregate_budget_usd", "fork_confidence_threshold"})
 
+#: Float fields declared ``float | None`` — only these may be coerced to ``None``.
+#: Non-optional float fields (e.g. ``fork_confidence_threshold``) must reject empty/
+#: ``none``/``null`` so a stored ``None`` can't later crash numeric validation.
+_OPTIONAL_FLOAT_FIELDS = frozenset({"temperature", "fork_aggregate_budget_usd"})
+
 _FORK_MERGE_STRATEGY_VALUES = frozenset({"manual", "auto", "auto_with_fallback", "vote"})
 
 
@@ -343,7 +348,10 @@ def _coerce_value(key: str, value: str) -> Any:
         return int(value)
     if key in _FLOAT_FIELDS:
         if value.lower() in ("none", "null", ""):
-            return None
+            if key in _OPTIONAL_FLOAT_FIELDS:
+                return None
+            msg = f"{key} requires a numeric value; '{value}' is not allowed"
+            raise ValueError(msg)
         return float(value)
     if key in ("shell_allow_list", "approve_tools"):
         return [v.strip() for v in value.split(",") if v.strip()]

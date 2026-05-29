@@ -199,6 +199,24 @@ class TestCoerceValue:
     def test_string_value(self) -> None:
         assert _coerce_value("model", "openai:gpt-4o") == "openai:gpt-4o"
 
+    def test_optional_float_none(self) -> None:
+        # float | None fields may be cleared to None.
+        for field in ("temperature", "fork_aggregate_budget_usd"):
+            assert _coerce_value(field, "none") is None
+            assert _coerce_value(field, "null") is None
+            assert _coerce_value(field, "") is None
+
+    def test_float_value(self) -> None:
+        assert _coerce_value("fork_confidence_threshold", "0.5") == 0.5
+        assert _coerce_value("temperature", "0.7") == 0.7
+
+    def test_non_optional_float_rejects_none(self) -> None:
+        # fork_confidence_threshold is a non-optional float (default 0.80); empty/
+        # none/null must raise rather than store None and later crash validation.
+        for bad in ("none", "null", ""):
+            with pytest.raises(ValueError, match="requires a numeric value"):
+                _coerce_value("fork_confidence_threshold", bad)
+
 
 class TestWriteToml:
     """Tests for _write_toml()."""
