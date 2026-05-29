@@ -1058,7 +1058,11 @@ async def _dispatch_fork_open_diff(app: DeepApp, _path_arg: str | None) -> None:
             app.notify("Cannot build diff report", severity="error")
             return
         statuses = session.inspect()
-        app.push_screen(MergePickerModal(report, statuses, session.label_to_id))
+        # Browse-only: /fork diff inspects, it does not resolve. Without view_only
+        # the modal renders the "pick a winner" hint and binds Enter to a pick that
+        # is silently discarded (push_screen has no callback) — looking like a merge
+        # that does nothing. view_only makes Enter simply close the browse view.
+        app.push_screen(MergePickerModal(report, statuses, session.label_to_id, view_only=True))
         return
 
     _open_diff_picker(app, kind=kind, initial_branch_id=None)

@@ -1018,13 +1018,23 @@ class TestForkOpenDiffCommand:
                 await dispatch_command(fork_app, "/fork diff foo.py")
                 await pilot.pause()
 
-            assert any(isinstance(screen, MergePickerModal) for screen in fork_app.screen_stack)
+            modal = next(
+                (s for s in fork_app.screen_stack if isinstance(s, MergePickerModal)), None
+            )
+            assert modal is not None
+            # The fallback must be browse-mode, not a pick-mode modal whose Enter is
+            # silently discarded (the silent-no-op bug).
+            assert modal._view_only is True
 
-            for screen in list(fork_app.screen_stack):
-                if isinstance(screen, MergePickerModal):
-                    screen.dismiss(None)
-                    break
+            # Pressing Enter in browse mode must NOT commit a merge: it just closes,
+            # leaving the active fork unchanged.
+            active_before = fork_app.active_fork
+            modal.action_pick_selected()
             await pilot.pause()
+            assert fork_app.active_fork is active_before
+            assert not any(
+                isinstance(s, MergePickerModal) for s in fork_app.screen_stack
+            )
             await session.abort()
 
     async def test_open_diff_without_active_fork_notifies(self, fork_app: DeepApp) -> None:
