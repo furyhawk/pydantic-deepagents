@@ -295,10 +295,14 @@ def build_diff_report(
 
     union_touched: set[str] = set().union(*touched_per_branch.values()) if runtimes else set()
 
-    if paths_filter is not None:
-        paths_to_report = sorted(set(paths_filter))
-    else:
-        paths_to_report = sorted(union_touched)
+    report_set = set(paths_filter) if paths_filter is not None else union_touched
+    # Classify EVERY touched path so the summary metrics (agreement_score,
+    # split_paths, …) describe the whole fork. The display filter only narrows
+    # which PathDiff entries are returned — it must NOT change the agreement
+    # metric, otherwise filtering out a genuinely-conflicting path would falsely
+    # report agreement_score == 1.0 (numerator and denominator would be scoped
+    # to different path sets).
+    paths_to_classify = sorted(union_touched | report_set)
 
     parent_backend: _BytesReadable | None = None
     for runtime in runtimes:
@@ -311,7 +315,7 @@ def build_diff_report(
     unanimous_paths = 0
     split_paths = 0
 
-    for path in paths_to_report:
+    for path in paths_to_classify:
         if parent_backend is None:
             parent_text, parent_raw = None, None
         else:
@@ -329,15 +333,21 @@ def build_diff_report(
             branches_for_path[runtime.status.id] = change
 
         agreement = _classify_agreement(branches_for_path)
-        path_diffs.append(
-            PathDiff(
-                path=path,
-                parent_content=parent_text,
-                branches=branches_for_path,
-                agreement=agreement,
-            )
-        )
 
+        # PathDiff entries respect the display filter ...
+        if path in report_set:
+            path_diffs.append(
+                PathDiff(
+                    path=path,
+                    parent_content=parent_text,
+                    branches=branches_for_path,
+                    agreement=agreement,
+                )
+            )
+
+        # ... but summary metrics count over the full touched union only.
+        if path not in union_touched:
+            continue
         if agreement in ("unanimous_change", "unanimous_no_change"):
             unanimous_paths += 1
         elif agreement == "split":

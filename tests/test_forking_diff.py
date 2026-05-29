@@ -310,6 +310,35 @@ async def test_diff_paths_filter_keeps_untouched_paths_for_transparency() -> Non
     assert report.summary.total_paths_touched == 1
 
 
+async def test_diff_agreement_score_not_falsely_perfect_when_split_filtered_out() -> None:
+    """Filtering out a genuinely-conflicting path must NOT inflate agreement_score.
+
+    Regression: split_paths was counted over the filtered set while the
+    denominator was the full union, so filtering away a real split path yielded
+    agreement_score == 1.0 ("perfect agreement") despite the branches conflicting.
+    """
+    parent = StateBackend()
+    overlay_a = await _overlay_with_writes(parent, {"conflict.py": "alpha\n"})
+    overlay_b = await _overlay_with_writes(parent, {"conflict.py": "beta\n"})
+
+    report = build_diff_report(
+        "fork-6c",
+        [
+            await _make_runtime(branch_id="a", label="alpha", overlay=overlay_a),
+            await _make_runtime(branch_id="b", label="beta", overlay=overlay_b),
+        ],
+        # Hide the conflicting path from the displayed diff.
+        paths_filter=["unrelated.py"],
+    )
+
+    # The conflict path is not shown ...
+    assert [pd.path for pd in report.paths] == ["unrelated.py"]
+    # ... but the metric still reflects the real conflict (scored over the full union).
+    assert report.summary.split_paths == 1
+    assert report.summary.total_paths_touched == 1
+    assert report.summary.agreement_score == 0.0
+
+
 # ---------------------------------------------------------------------------
 # 7. agreement_score arithmetic across mixed scenarios
 # ---------------------------------------------------------------------------
