@@ -105,6 +105,10 @@ from pydantic_deep.capabilities import (
 )
 from pydantic_deep.capabilities.forking import LiveForkCapability
 from pydantic_deep.capabilities.hooks import (
+    DEFAULT_BLOCKED_COMMANDS,
+    DEFAULT_BLOCKED_READ_PATHS,
+    DEFAULT_BLOCKED_WRITE_PATHS,
+    DEFAULT_SECRET_PATTERNS,
     EXIT_ALLOW,
     EXIT_DENY,
     Hook,
@@ -112,6 +116,7 @@ from pydantic_deep.capabilities.hooks import (
     HookInput,
     HookResult,
     HooksCapability,
+    default_security_hook,
 )
 from pydantic_deep.deps import DEFAULT_USAGE_LIMITS as DEFAULT_USAGE_LIMITS
 from pydantic_deep.deps import DeepAgentDeps
@@ -376,12 +381,17 @@ __all__ = [
     "create_summarization_processor",
     "create_sliding_window_processor",
     # Hooks (Claude Code-style lifecycle hooks)
+    "DEFAULT_BLOCKED_COMMANDS",
+    "DEFAULT_BLOCKED_READ_PATHS",
+    "DEFAULT_BLOCKED_WRITE_PATHS",
+    "DEFAULT_SECRET_PATTERNS",
     "Hook",
     "HookEvent",
     "HookInput",
     "HookResult",
     "EXIT_ALLOW",
     "EXIT_DENY",
+    "default_security_hook",
     # Checkpointing
     "Checkpoint",
     "CheckpointStore",
