@@ -555,10 +555,7 @@ class ChatScreen(Screen):
         active_fork = app.active_fork
 
         if active_fork is not None:
-            # \S+ (not \w+) so hyphenated/dotted labels like `approach-a` — which
-            # ForkPickerModal accepts — can be steered. The label is resolved
-            # against the live branches below, so an over-broad capture just falls
-            # through to the unknown-branch notice.
+            # \S+ (not \w+) so hyphenated labels like `approach-a` steer; resolved below.
             match = re.match(r"^>>(\S+)\s+(.*)", text)
             if match is not None:
                 branch_id_or_label, msg = match.group(1), match.group(2).strip()

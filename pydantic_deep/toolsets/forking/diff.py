@@ -296,12 +296,8 @@ def build_diff_report(
     union_touched: set[str] = set().union(*touched_per_branch.values()) if runtimes else set()
 
     report_set = set(paths_filter) if paths_filter is not None else union_touched
-    # Classify EVERY touched path so the summary metrics (agreement_score,
-    # split_paths, …) describe the whole fork. The display filter only narrows
-    # which PathDiff entries are returned — it must NOT change the agreement
-    # metric, otherwise filtering out a genuinely-conflicting path would falsely
-    # report agreement_score == 1.0 (numerator and denominator would be scoped
-    # to different path sets).
+    # Summary metrics cover the full touched union regardless of the display filter, so
+    # filtering out a conflicting path can't falsely inflate agreement_score.
     paths_to_classify = sorted(union_touched | report_set)
 
     parent_backend: _BytesReadable | None = None

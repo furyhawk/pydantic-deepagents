@@ -127,14 +127,11 @@ def _copy_tree(src: Path, dst: Path) -> None:
                 target.mkdir(exist_ok=True)
                 _copy_tree(Path(entry.path), target)
             else:
-                # Copy file content + metadata. follow_symlinks resolves a
-                # symlinked source to its target's bytes so the snapshot holds
-                # a detached, independently-writable copy.
+                # Copy (follow symlinks) so the snapshot is a detached, writable copy.
                 try:
                     shutil.copy2(entry.path, target, follow_symlinks=True)
                 except OSError as exc:
-                    # A dangling symlink or unreadable file shouldn't abort the
-                    # whole snapshot; skip it (it simply won't appear in the view).
+                    # Skip an unreadable entry (e.g. a dangling symlink) rather than abort.
                     logger.warning(
                         "branch snapshot: failed to copy %s into snapshot (%s); skipping",
                         entry.path,
@@ -167,18 +164,15 @@ def _branch_snapshot(
     with tempfile.TemporaryDirectory(prefix="branch-snap-") as tmp_dir:
         tmp = Path(tmp_dir)
 
-        # 1. Copy parent tree (copy-on-write isolation — see _copy_tree).
         _copy_tree(parent_root, tmp)
 
-        # 2. Overlay writes: collect unique touched paths (last write wins).
+        # Overlay writes (last write wins) override the copied parent files.
         touched = {c.path for c in changes if c.op in ("write", "edit")} - deleted
 
         for path in touched:
             try:
                 content = overlay.read_bytes(path)
             except (FileNotFoundError, KeyError, OSError) as exc:
-                # Surface so a missing in-progress edit doesn't silently
-                # make the snapshot disagree with the branch.
                 logger.warning(
                     "branch snapshot: cannot read overlay path %s (%s); skipping",
                     path,
@@ -191,7 +185,7 @@ def _branch_snapshot(
                 dst.unlink()
             dst.write_bytes(content)
 
-        # 3. Deleted paths: remove symlinks so they are absent in the snapshot.
+        # Branch-deleted paths are removed from the snapshot.
         for path in deleted:
             dst = tmp / _rel_under(parent_root, path)
             if dst.is_symlink() or dst.exists():
@@ -728,11 +722,8 @@ class BranchOverlay:
         applied_changes = 0
 
         for change in self._changes:
-            # Non-destructive conflict handling: a third actor (another agent, the
-            # user saving, another tool) changed this path on the parent since the
-            # fork. Skip replaying the branch's version so we never clobber the
-            # newer parent content with last-write-wins. The path is already in
-            # `conflicts` for the caller to surface and resolve manually.
+            # Skip paths a third actor changed since the fork — replaying would clobber
+            # the newer parent content. They stay in `conflicts` for manual resolution.
             if change.path in conflict_set:
                 continue
             if change.op == "delete":
@@ -970,9 +961,7 @@ def clone_for_branch(deps: DeepAgentDeps, isolation: BranchIsolation) -> DeepAge
         BranchOverlay(deps.backend) if isolation.backend == "copy" else deps.backend
     )
 
-    # "copy" → independent copy of the parent's todos so each branch inherits the
-    # in-progress plan but mutations stay branch-local; "share" → same list object
-    # by reference (documented sharing semantics).
+    # "copy" → independent copy so branch todo edits stay local; "share" → same list.
     new_todos = list(deps.todos) if isolation.todos == "copy" else deps.todos
 
     new_message_queue: MessageQueue | None

@@ -758,10 +758,7 @@ class ForkCoordinator:
                     "only 'done' branches accept new turns."
                 )
             prev_result = runtime.task.result()
-            # all_messages() already contains the FULL conversation (seed + every
-            # prior turn's request/response tail). Seed the new turn from it directly;
-            # adding a separately-accumulated tail would re-append the previous turn
-            # and duplicate request/response pairs after the second continued turn.
+            # all_messages() already holds the full conversation; a separate tail duplicates it.
             effective_history = list(prev_result.all_messages())
 
             runtime.status.state = "running"
@@ -899,11 +896,8 @@ class ForkCoordinator:
             raise RuntimeError("merge_or_select called before fork()")
 
         winner = self.branches[target_id]
-        # Await the winning branch *outside* self._lock. The winner may be parked on a
-        # pending human tool-approval (await request.response.get()) for an unbounded
-        # time; holding the lock across that await would freeze every other lock user
-        # (fork(), run_on_branch(), abort, the budget watcher, ...). Once it resolves we
-        # take the lock only for the fast merge mutation below.
+        # Await the winner outside the lock — it may park on human approval indefinitely,
+        # which would freeze every other lock user. Take the lock only for the merge below.
         try:
             result = await winner.task
             history_after_merge = list(result.all_messages())
@@ -920,17 +914,12 @@ class ForkCoordinator:
                     f"Winning branch {target_id!r} was cancelled before merge."
                 ) from None
         except Exception as exc:
-            # The branch raised its own exception (state "failed"). Surface it as a
-            # typed RuntimeError so callers (e.g. the merge_or_select tool) can handle
-            # it gracefully instead of having the raw branch exception abort the run.
+            # Wrap a failed branch's own exception so callers can handle it gracefully.
             raise RuntimeError(f"Winning branch {target_id!r} failed before merge: {exc}") from exc
 
         async with self._lock:
-            # Cancel + await every losing branch to quiescence BEFORE flushing the
-            # winner. BranchOverlay reads fall through to the shared parent backend,
-            # so flushing the winner first would let a not-yet-cancelled loser read
-            # the winner's just-flushed bytes for a path it never touched — leaking
-            # cross-branch state into that loser's tool results / partial_history.
+            # Quiesce losers before flushing the winner: their overlay reads fall through
+            # to the parent, so an un-cancelled loser could observe the winner's flushed bytes.
             discarded: list[str] = []
             for bid, rt in list(self.branches.items()):
                 if bid == target_id:
@@ -1109,13 +1098,10 @@ class ForkCoordinator:
             else:
                 return 1.0 if returncode == 0 else 0.0
             finally:
-                # Reap the child on ANY exit — timeout, normal return, or a
-                # CancelledError raised into proc.wait() by a parent abort — so the
-                # test subprocess can never be orphaned/zombied.
+                # Reap on any exit (timeout/return/cancellation) so the child can't be orphaned.
                 await _reap_process(proc)
         finally:
-            # Shield the snapshot tempdir cleanup: it must complete even if this
-            # coroutine is being cancelled, otherwise the temp snapshot dir leaks.
+            # Shield the tempdir cleanup so it completes even under cancellation.
             await asyncio.shield(loop.run_in_executor(None, snap_ctx.__exit__, None, None, None))
 
     async def _build_branch_outcomes(self) -> tuple[list[BranchOutcome], str]:
@@ -1275,12 +1261,8 @@ class ForkCoordinator:
                 judge_usage=None,
             )
 
-        # Skip re-invoking the judge only when the user re-opens /merge with an
-        # identical strategy. The key includes confidence_threshold and the judge
-        # model(s), not just kind — otherwise a second /merge with the same kind but
-        # a different threshold or judge panel would return a stale outcome whose
-        # auto_eligible / effective_confidence reflect the old threshold and never
-        # consults the new judges.
+        # Reuse the cached outcome only for an identical strategy — the key spans
+        # threshold + judge model(s), not just kind, so a changed threshold/panel re-runs.
         strategy_key = _strategy_cache_key(effective_strategy)
         if self._cached_outcome is not None and self._cached_outcome_key == strategy_key:
             logger.debug("resolve: returning cached outcome (key=%r)", strategy_key)
@@ -1468,11 +1450,7 @@ class ForkCoordinator:
         for rt in self.branches.values():
             if not rt.task.done():
                 rt.task.cancel()
-                # Await the task to quiescence *before* cleanup, mirroring
-                # merge_or_select / abort_fork. A branch still unwinding mid-write
-                # (BranchOverlay.write -> materializer.flush_change -> write_bytes)
-                # could otherwise run after the rmtree and recreate part of the fork
-                # directory, leaking an orphaned dir across aborted parent runs.
+                # Await before cleanup so a mid-write branch can't recreate the fork dir.
                 with contextlib.suppress(asyncio.CancelledError, asyncio.TimeoutError):
                     try:
                         await asyncio.wait_for(rt.task, timeout=_CANCEL_CLEANUP_TIMEOUT_S)

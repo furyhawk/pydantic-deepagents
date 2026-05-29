@@ -596,16 +596,11 @@ def create_deep_agent(  # noqa: C901
         all_toolsets.append(todo_toolset)
 
     if include_filesystem:
-        # Determine approval requirements from interrupt_on
         require_write_approval = interrupt_on.get("write_file", False) or interrupt_on.get(
             "edit_file", False
         )
-        # When `interrupt_on` enables any interrupt, default execute to gated too:
-        # DeferredToolRequests is wired in that case (has_interrupt_tools is True), so the
-        # approval channel exists and a caller who enabled e.g. edit interrupts keeps shell
-        # execute gated as before. For an empty `interrupt_on` no interrupt tools are wired,
-        # so default to False to avoid the previously broken "execute deferred but no channel"
-        # state. An explicit {"execute": ...} always wins.
+        # Default execute to gated whenever any interrupt is enabled (the approval channel
+        # only exists then); an empty interrupt_on stays ungated. Explicit value wins.
         require_execute_approval = interrupt_on.get("execute", any(interrupt_on.values()))
 
         # Determine if execute should be included
