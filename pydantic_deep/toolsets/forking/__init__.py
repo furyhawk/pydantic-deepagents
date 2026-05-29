@@ -310,7 +310,10 @@ def create_fork_toolset(  # noqa: C901
 
         try:
             result = await coordinator.merge_or_select(action)
-        except ValueError as e:
+        except (ValueError, RuntimeError) as e:
+            # ValueError → bad/unknown action; RuntimeError → winner cancelled,
+            # budget-exhausted, failed (its own exception is wrapped), or called
+            # before fork(). All are reported gracefully rather than aborting the run.
             return f"merge_or_select failed: {e}"
         return (
             f"Merged fork {result.fork_id}: winner={_winner_str(result.winner_branch_id)}, "

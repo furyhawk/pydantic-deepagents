@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import warnings
 from pathlib import Path
 from typing import Any, cast
@@ -828,6 +829,40 @@ async def test_merge_or_select_raises_if_winner_cancelled():
     await asyncio.sleep(0)
     with pytest.raises(RuntimeError):
         await coord.merge_or_select(f"pick:{branch_id}")
+
+
+async def test_merge_or_select_wraps_failed_winner_exception():
+    """A *failed* winner (branch raised) yields a typed RuntimeError, not the raw exc.
+
+    This is the path the merge_or_select tool catches via ``except (ValueError,
+    RuntimeError)`` — proving picking a failed branch resolves gracefully instead
+    of aborting agent.run().
+    """
+    deps = DeepAgentDeps(backend=StateBackend())
+
+    class _FailingAgent:
+        async def run(self, *args: Any, **kwargs: Any) -> Any:
+            raise ValueError("branch blew up")
+
+    coord = _make_coordinator(_FailingAgent(), deps, checkpoint_store=InMemoryCheckpointStore())
+    await coord.fork(
+        [BranchSpec(label="a", steer="A")],
+        parent_history=_seed_history("p"),
+    )
+    branch_id = next(iter(coord.branches))
+    # Let the branch task run and fail.
+    rt = coord.branches[branch_id]
+    with contextlib.suppress(Exception):
+        await rt.task
+    await asyncio.sleep(0)
+    assert rt.status.state == "failed"
+
+    with pytest.raises(RuntimeError) as excinfo:
+        await coord.merge_or_select(f"pick:{branch_id}")
+    # The raw ValueError is wrapped, not propagated, so the tool's RuntimeError
+    # handler catches it and returns a graceful string.
+    assert "failed before merge" in str(excinfo.value)
+    assert "branch blew up" in str(excinfo.value)
 
 
 # ---------------------------------------------------------------------------

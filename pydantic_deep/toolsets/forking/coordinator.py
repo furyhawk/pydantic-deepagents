@@ -861,6 +861,13 @@ class ForkCoordinator:
                     raise RuntimeError(
                         f"Winning branch {target_id!r} was cancelled before merge."
                     ) from None
+            except Exception as exc:
+                # The branch raised its own exception (state "failed"). Surface it as a
+                # typed RuntimeError so callers (e.g. the merge_or_select tool) can handle
+                # it gracefully instead of having the raw branch exception abort the run.
+                raise RuntimeError(
+                    f"Winning branch {target_id!r} failed before merge: {exc}"
+                ) from exc
 
             applied_paths: list[str] = []
             applied_changes = 0
