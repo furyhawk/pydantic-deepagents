@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 
 from apps.cli import clipboard_image as ci
 from apps.cli.app import DeepApp
 from apps.cli.commands import dispatch_command
-from apps.cli.screens.chat import _format_turn_summary
+from apps.cli.screens.chat import ChatScreen, _format_turn_summary
 
 
 @pytest.fixture
@@ -45,7 +47,7 @@ async def test_paste_command_delegates(app: DeepApp, monkeypatch: pytest.MonkeyP
         monkeypatch.setattr(ci, "grab_clipboard_image", lambda: (b"\x89PNG x", "image/png"))
         await dispatch_command(app, "/paste")
         await pilot.pause()
-        assert len(app.screen._pending_images) == 1  # type: ignore[attr-defined]
+        assert len(cast(ChatScreen, app.screen)._pending_images) == 1
 
 
 async def test_approval_modal_position_label() -> None:
@@ -61,7 +63,7 @@ async def test_approval_modal_position_label() -> None:
     # Render it to ensure the "(1 of 3)" suffix path executes.
     from textual.app import App, ComposeResult
 
-    class _H(App):
+    class _H(App[None]):
         def compose(self) -> ComposeResult:
             yield from ()
 

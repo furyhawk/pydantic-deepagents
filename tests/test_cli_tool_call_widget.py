@@ -61,7 +61,7 @@ async def test_widget_edit_diff_and_header_badge() -> None:
 
     captured: dict[str, ToolCallWidget] = {}
 
-    class _Harness(App):
+    class _Harness(App[None]):
         def compose(self) -> ComposeResult:
             w = ToolCallWidget(
                 "edit_file",
@@ -93,7 +93,7 @@ async def test_widget_write_file_preview_and_execute_command() -> None:
 
     captured: dict[str, ToolCallWidget] = {}
 
-    class _Harness(App):
+    class _Harness(App[None]):
         def compose(self) -> ComposeResult:
             wexec = ToolCallWidget("execute", {"command": "ls -la /tmp"}, "e1")
             wwrite = ToolCallWidget(
@@ -125,7 +125,7 @@ async def test_widget_write_file_overwrite_shows_minus_diff() -> None:
 
     captured: dict[str, ToolCallWidget] = {}
 
-    class _Harness(App):
+    class _Harness(App[None]):
         def compose(self) -> ComposeResult:
             w = ToolCallWidget(
                 "write_file",
@@ -159,7 +159,7 @@ async def test_widget_mark_cancelling() -> None:
 
     captured: dict[str, ToolCallWidget] = {}
 
-    class _Harness(App):
+    class _Harness(App[None]):
         def compose(self) -> ComposeResult:
             w = ToolCallWidget("execute", {"command": "sleep 10"}, "c1")
             captured["w"] = w

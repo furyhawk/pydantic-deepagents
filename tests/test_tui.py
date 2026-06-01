@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 
 from apps.cli.app import DeepApp
@@ -156,8 +158,8 @@ class TestReconfigureAgent:
         assert captured["on_cost_update"] is sentinel_cost
         assert captured["on_context_update"] is sentinel_ctx
         assert captured["on_reminder"] is sentinel_rem
-        assert app.agent == "AGENT"
-        assert app.deps == "DEPS"
+        assert cast(object, app.agent) == "AGENT"
+        assert cast(object, app.deps) == "DEPS"
 
 
 class TestSearchModal:

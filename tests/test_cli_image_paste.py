@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
 from apps.cli import clipboard_image as ci
 from apps.cli.app import DeepApp
 from apps.cli.messages import UserSubmitted
+from apps.cli.screens.chat import ChatScreen
 
 _PNG = b"\x89PNG\r\nfake-bytes"
 
@@ -24,10 +26,10 @@ async def test_attach_clipboard_image_no_image(
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
         monkeypatch.setattr(ci, "grab_clipboard_image", lambda: None)
-        screen = app.screen
-        screen.attach_clipboard_image()  # type: ignore[attr-defined]
+        screen = cast(ChatScreen, app.screen)
+        screen.attach_clipboard_image()
         await pilot.pause()
-        assert screen._pending_images == []  # type: ignore[attr-defined]
+        assert screen._pending_images == []
 
 
 async def test_attach_and_submit_builds_multimodal_prompt(
@@ -37,19 +39,19 @@ async def test_attach_and_submit_builds_multimodal_prompt(
         await pilot.pause()
         await pilot.pause()
         monkeypatch.setattr(ci, "grab_clipboard_image", lambda: (_PNG, "image/png"))
-        screen = app.screen
-        app.agent = object()  # truthy: pass the "agent configured" guard
+        screen = cast(ChatScreen, app.screen)
+        monkeypatch.setattr(app, "agent", object())  # truthy: pass the guard
 
         captured: dict[str, Any] = {}
         monkeypatch.setattr(
             screen, "_run_agent", lambda prompt: captured.__setitem__("prompt", prompt)
         )
 
-        screen.attach_clipboard_image()  # type: ignore[attr-defined]
+        screen.attach_clipboard_image()
         await pilot.pause()
-        assert len(screen._pending_images) == 1  # type: ignore[attr-defined]
+        assert len(screen._pending_images) == 1
 
-        await screen.on_user_submitted(UserSubmitted("describe this"))  # type: ignore[attr-defined]
+        await screen.on_user_submitted(UserSubmitted("describe this"))
         await pilot.pause()
 
         prompt = captured["prompt"]
@@ -61,36 +63,36 @@ async def test_attach_and_submit_builds_multimodal_prompt(
         assert isinstance(prompt[1], BinaryContent)
         assert prompt[1].data == _PNG
         # Pending images cleared after submit.
-        assert screen._pending_images == []  # type: ignore[attr-defined]
+        assert screen._pending_images == []
 
 
 async def test_at_reference_image_attaches_as_multimodal(
-    app: DeepApp, monkeypatch: pytest.MonkeyPatch, tmp_path
+    app: DeepApp, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     img = tmp_path / "shot.png"
     img.write_bytes(_PNG)
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
+        screen = cast(ChatScreen, app.screen)
         monkeypatch.setattr(app, "working_dir", str(tmp_path), raising=False)
-        expanded = screen._expand_file_refs("look at @shot.png please")  # type: ignore[attr-defined]
+        expanded = screen._expand_file_refs("look at @shot.png please")
         assert "[image: shot.png]" in expanded
-        assert len(screen._pending_images) == 1  # type: ignore[attr-defined]
-        assert screen._pending_images[0][1] == "image/png"  # type: ignore[attr-defined]
+        assert len(screen._pending_images) == 1
+        assert screen._pending_images[0][1] == "image/png"
 
 
 async def test_at_reference_text_still_inlined(
-    app: DeepApp, monkeypatch: pytest.MonkeyPatch, tmp_path
+    app: DeepApp, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     f = tmp_path / "note.txt"
     f.write_text("hello world")
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
+        screen = cast(ChatScreen, app.screen)
         monkeypatch.setattr(app, "working_dir", str(tmp_path), raising=False)
-        expanded = screen._expand_file_refs("see @note.txt")  # type: ignore[attr-defined]
+        expanded = screen._expand_file_refs("see @note.txt")
         assert "hello world" in expanded
-        assert screen._pending_images == []  # type: ignore[attr-defined]
+        assert screen._pending_images == []
 
 
 async def test_submit_without_agent_keeps_images(
@@ -99,17 +101,17 @@ async def test_submit_without_agent_keeps_images(
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
         monkeypatch.setattr(ci, "grab_clipboard_image", lambda: (_PNG, "image/png"))
-        screen = app.screen
-        app.agent = None  # no agent configured
+        screen = cast(ChatScreen, app.screen)
+        monkeypatch.setattr(app, "agent", None)  # no agent configured
         ran: dict[str, Any] = {}
         monkeypatch.setattr(screen, "_run_agent", lambda p: ran.__setitem__("ran", True))
 
-        screen.attach_clipboard_image()  # type: ignore[attr-defined]
+        screen.attach_clipboard_image()
         await pilot.pause()
-        await screen.on_user_submitted(UserSubmitted("hi"))  # type: ignore[attr-defined]
+        await screen.on_user_submitted(UserSubmitted("hi"))
         await pilot.pause()
         # Image preserved, agent not run.
-        assert len(screen._pending_images) == 1  # type: ignore[attr-defined]
+        assert len(screen._pending_images) == 1
         assert "ran" not in ran
 
 
@@ -128,29 +130,29 @@ async def test_capture_old_content_skips_large_and_sentinel(app: DeepApp) -> Non
     backend = _Backend()
 
     class _Deps:
-        pass
+        backend: Any
 
     deps = _Deps()
-    deps.backend = backend  # type: ignore[attr-defined]
+    deps.backend = backend
 
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
-        app.deps = deps  # type: ignore[attr-defined]
+        screen = cast(ChatScreen, app.screen)
+        app.deps = deps
 
         backend.data = b"old text"
-        args: dict = {"file_path": "/x", "content": "new"}
-        screen._capture_old_content("write_file", args)  # type: ignore[attr-defined]
+        args: dict[str, Any] = {"file_path": "/x", "content": "new"}
+        screen._capture_old_content("write_file", args)
         assert args["_old_content"] == "old text"
 
         backend.data = b"x" * (ChatScreen._MAX_DIFF_READ_BYTES + 1)
-        big: dict = {"file_path": "/x", "content": "new"}
-        screen._capture_old_content("write_file", big)  # type: ignore[attr-defined]
+        big: dict[str, Any] = {"file_path": "/x", "content": "new"}
+        screen._capture_old_content("write_file", big)
         assert "_old_content" not in big
 
         backend.data = b"[Error: not found]"
-        err: dict = {"file_path": "/x", "content": "new"}
-        screen._capture_old_content("write_file", err)  # type: ignore[attr-defined]
+        err: dict[str, Any] = {"file_path": "/x", "content": "new"}
+        screen._capture_old_content("write_file", err)
         assert "_old_content" not in err
 
 
@@ -173,13 +175,13 @@ async def test_subagents_panel_keeps_idle_agents(app: DeepApp) -> None:
 
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
+        screen = cast(ChatScreen, app.screen)
         # Default baseline (no agent configured) is planner + research.
-        known = screen._known_subagents  # type: ignore[attr-defined]
+        known = screen._known_subagents
         assert "planner" in known and "research" in known
 
         # One task running for 'planner'; 'research' must stay visible as idle.
-        screen._update_subagents_panel(  # type: ignore[attr-defined]
+        screen._update_subagents_panel(
             {"call-1": {"name": "planner", "status": "running", "description": "plan it"}}
         )
         await pilot.pause()
@@ -196,7 +198,7 @@ async def test_subagents_panel_keeps_idle_agents(app: DeepApp) -> None:
 async def test_capture_old_content_for_write_file(app: DeepApp) -> None:
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
+        screen = cast(ChatScreen, app.screen)
 
         class _FakeBackend:
             def exists(self, path: str) -> bool:
@@ -208,21 +210,21 @@ async def test_capture_old_content_for_write_file(app: DeepApp) -> None:
         class _Deps:
             backend = _FakeBackend()
 
-        app.deps = _Deps()  # type: ignore[attr-defined]
+        app.deps = _Deps()
         args = {"file_path": "/x.md", "content": "new"}
-        screen._capture_old_content("write_file", args)  # type: ignore[attr-defined]
+        screen._capture_old_content("write_file", args)
         assert args["_old_content"] == "old content here"
 
         # Non-write tools are untouched.
         other = {"command": "ls"}
-        screen._capture_old_content("execute", other)  # type: ignore[attr-defined]
+        screen._capture_old_content("execute", other)
         assert "_old_content" not in other
 
 
 async def test_capture_old_content_missing_file(app: DeepApp) -> None:
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
+        screen = cast(ChatScreen, app.screen)
 
         class _FakeBackend:
             def exists(self, path: str) -> bool:
@@ -234,9 +236,9 @@ async def test_capture_old_content_missing_file(app: DeepApp) -> None:
         class _Deps:
             backend = _FakeBackend()
 
-        app.deps = _Deps()  # type: ignore[attr-defined]
+        app.deps = _Deps()
         args = {"file_path": "/missing.md", "content": "new"}
-        screen._capture_old_content("write_file", args)  # type: ignore[attr-defined]
+        screen._capture_old_content("write_file", args)
         assert "_old_content" not in args
 
 
@@ -248,7 +250,9 @@ async def test_ctrl_v_triggers_paste(app: DeepApp, monkeypatch: pytest.MonkeyPat
         monkeypatch.setattr(
             app.screen, "attach_clipboard_image", lambda: called.__setitem__("hit", True)
         )
-        app.screen.query_one("InputArea").focus_input()  # type: ignore[attr-defined]
+        from apps.cli.widgets.input_area import InputArea
+
+        app.screen.query_one(InputArea).focus_input()
         await pilot.pause()
         await pilot.press("ctrl+v")
         await pilot.pause()

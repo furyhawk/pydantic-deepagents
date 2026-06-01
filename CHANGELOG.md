@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Bumped core companion dependencies** to their latest releases: `pydantic-ai-backend` 0.2.9 → 0.2.10, `pydantic-ai-todo` 0.2.3 → 0.2.4, `pydantic-ai-shields` 0.3.3 → 0.3.4, `subagents-pydantic-ai` 0.2.5 → 0.2.6, `summarization-pydantic-ai` 0.1.5 → 0.1.6 (minimums raised in `pyproject.toml`, `uv.lock` updated). Full suite + type checks green against the new versions.
 - **Docstring and import hygiene (internal; no behavior change).** Converted reStructuredText-style double-backtick inline code in docstrings, comments, and docs to single-backtick Markdown, so it renders correctly under the mkdocstrings Markdown handler. Hoisted function-local imports to module top where safe — 8 in `pydantic_deep/` and 101 across the bundled `apps/` — while leaving the CLI's intentionally-lazy entrypoint imports (which keep `--help`/`--version` fast and stay patchable in tests), conditional imports, optional-dependency `try` imports, and circular-import-avoidance imports in place.
 
 ### Fixed

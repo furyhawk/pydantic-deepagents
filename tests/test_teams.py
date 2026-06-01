@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from pydantic_ai.models.test import TestModel
@@ -657,7 +657,7 @@ class TestAgentTeam:
 
         async def worker() -> None:
             await asyncio.sleep(0.01)
-            team.task_manager.get_handle("tid12345").result = "mgr done"
+            cast(Any, team.task_manager).get_handle("tid12345").result = "mgr done"
 
         team.task_manager.add("tid12345", asyncio.create_task(worker()))
         team._handles["agent-0"].task_id = "tid12345"
@@ -673,7 +673,7 @@ class TestAgentTeam:
         await team.spawn()
 
         async def failing() -> None:
-            team.task_manager.get_handle("tid99999").error = "mgr boom"
+            cast(Any, team.task_manager).get_handle("tid99999").error = "mgr boom"
             raise ValueError("mgr boom")
 
         team.task_manager.add("tid99999", asyncio.create_task(failing()))

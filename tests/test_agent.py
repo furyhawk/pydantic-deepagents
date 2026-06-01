@@ -1,5 +1,7 @@
 """Tests for the agent factory."""
 
+from typing import Any
+
 import pytest
 from pydantic_ai.models.test import TestModel
 
@@ -66,7 +68,7 @@ class TestCreateDeepAgent:
         assert agent is not None
 
     @staticmethod
-    def _default_factory(**parent_kwargs):
+    def _default_factory(**parent_kwargs: object) -> Any:
         """Build the default subagent factory the way create_deep_agent does.
 
         Tests the factory in isolation rather than reaching into the caller's
@@ -628,7 +630,7 @@ class TestDepsTodoProxy:
         todo_a = Todo(content="A task", status="pending", active_form="Doing A")
         todo_b = Todo(content="B task", status="pending", active_form="Doing B")
 
-        async def run(deps: DeepAgentDeps, todo: Todo, other_starts: asyncio.Event) -> list:
+        async def run(deps: DeepAgentDeps, todo: Todo, other_starts: asyncio.Event) -> list[Any]:
             proxy._deps = deps
             # Yield so the sibling task can bind its own deps in between, which
             # would clobber a shared attribute but not an isolated ContextVar.

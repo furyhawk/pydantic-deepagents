@@ -1021,9 +1021,7 @@ class TestImprovementAnalyzer:
     async def test_apply_changes_update_section_name_in_prose(self, tmp_path: Path) -> None:
         # The section name appears in body prose but is NOT a heading. It must not
         # be mistaken for the section header, so no real heading matches -> append.
-        (tmp_path / "SOUL.md").write_text(
-            "# Intro\n\nWe discuss Preferences here in prose.\n"
-        )
+        (tmp_path / "SOUL.md").write_text("# Intro\n\nWe discuss Preferences here in prose.\n")
         a = ImprovementAnalyzer(model="test", working_dir=tmp_path)
         changes = [
             ProposedChange(
@@ -1079,7 +1077,7 @@ class TestImprovementAnalyzer:
         changes = [
             ProposedChange(
                 target_file="SOUL.md",
-                change_type="unknown",  # type: ignore[arg-type]
+                change_type="unknown",
                 section=None,
                 content="test",
                 reason="test",

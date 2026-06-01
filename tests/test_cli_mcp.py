@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
 from apps.cli import mcp_store
-from pydantic_deep.mcp import MCPServerConfig
+from apps.cli.keystore import get_stored_keys
+from apps.cli.modals.mcp_view import MCPViewModal
+from apps.cli.screens.chat import ChatScreen
+from pydantic_deep.mcp import MCPProbeResult, MCPServerConfig
 
 
 @pytest.fixture
@@ -90,11 +94,11 @@ def test_mcp_logout_removes_token(project_dir: Path, monkeypatch: pytest.MonkeyP
     import os
 
     assert os.environ.get("LOGOUT_KEY") == "secret"
-    assert "LOGOUT_KEY" in mcp_store.get_stored_keys()
+    assert "LOGOUT_KEY" in get_stored_keys()
 
     mcp_store.mcp_logout("LOGOUT_KEY")
     assert os.environ.get("LOGOUT_KEY") is None
-    assert "LOGOUT_KEY" not in mcp_store.get_stored_keys()
+    assert "LOGOUT_KEY" not in get_stored_keys()
 
 
 def test_secret_resolver_env_and_keystore(
@@ -129,7 +133,7 @@ def test_build_servers_for_agent_handles_missing_dep(
     reg.set_enabled("deepwiki", True)
     mcp_store.save_mcp_registry(reg)
 
-    def _boom(self: object, **kwargs: object) -> list:
+    def _boom(self: object, **kwargs: object) -> list[Any]:
         raise MCPNotInstalledError("nope")
 
     monkeypatch.setattr("pydantic_deep.mcp.registry.MCPRegistry.build_active", _boom)
@@ -152,7 +156,7 @@ def test_mcp_oauth_storage_missing_backend(monkeypatch: pytest.MonkeyPatch) -> N
 
     real_import = builtins.__import__
 
-    def _fake_import(name: str, *args: object, **kwargs: object):
+    def _fake_import(name: str, *args: object, **kwargs: object) -> Any:
         if name == "key_value.aio.stores.disk":
             raise ImportError("no disk backend")
         return real_import(name, *args, **kwargs)
@@ -238,14 +242,13 @@ async def test_mcp_modal_opens_and_navigates(
         lambda: mcp_store.load_mcp_registry(resolver=lambda k: None),
     )
     from apps.cli.app import DeepApp
-    from apps.cli.modals.mcp_view import MCPViewModal
 
     app = DeepApp(model="test", version="0.0.0")
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.pause()
         await app.push_screen(MCPViewModal())
         await pilot.pause()
-        modal = app.screen
+        modal = cast(MCPViewModal, app.screen)
         assert isinstance(modal, MCPViewModal)
         start = modal._index
         modal.action_move(1)
@@ -255,7 +258,8 @@ async def test_mcp_modal_opens_and_navigates(
         assert selected is not None
         before = selected.enabled
         modal.action_toggle()
-        assert modal._selected().enabled is not before
+        sel = modal._selected()
+        assert sel is not None and sel.enabled is not before
         assert modal._dirty is True
 
 
@@ -268,7 +272,6 @@ async def test_mcp_modal_inline_test_status(
         lambda: mcp_store.load_mcp_registry(resolver=lambda k: None),
     )
     from apps.cli.app import DeepApp
-    from apps.cli.modals.mcp_view import MCPViewModal
     from pydantic_deep.mcp import MCPProbeResult
 
     app = DeepApp(model="test", version="0.0.0")
@@ -276,17 +279,19 @@ async def test_mcp_modal_inline_test_status(
         await pilot.pause()
         await app.push_screen(MCPViewModal())
         await pilot.pause()
-        modal = app.screen
+        modal = cast(MCPViewModal, app.screen)
 
         # Stub build (no real connection) + probe result.
         monkeypatch.setattr(modal._registry, "build", lambda c: object())
 
-        async def _ok(server, timeout=10.0):
+        async def _ok(server: object, timeout: float = 10.0) -> MCPProbeResult:
             return MCPProbeResult(ok=True, tool_count=4, tool_names=["a", "b", "c", "d"])
 
         monkeypatch.setattr("apps.cli.modals.mcp_view.probe_mcp_server", _ok)
 
-        name = modal._selected().name
+        sel = modal._selected()
+        assert sel is not None
+        name = sel.name
         modal.action_test()
         assert modal._test_status[name] == "[dim]· testing…[/dim]"
         # Drive the worker to completion.
@@ -307,7 +312,6 @@ async def test_mcp_modal_inline_test_failure(
         lambda: mcp_store.load_mcp_registry(resolver=lambda k: None),
     )
     from apps.cli.app import DeepApp
-    from apps.cli.modals.mcp_view import MCPViewModal
     from pydantic_deep.mcp import MCPProbeResult
 
     app = DeepApp(model="test", version="0.0.0")
@@ -315,14 +319,16 @@ async def test_mcp_modal_inline_test_failure(
         await pilot.pause()
         await app.push_screen(MCPViewModal())
         await pilot.pause()
-        modal = app.screen
+        modal = cast(MCPViewModal, app.screen)
         monkeypatch.setattr(modal._registry, "build", lambda c: object())
 
-        async def _fail(server, timeout=10.0):
+        async def _fail(server: object, timeout: float = 10.0) -> MCPProbeResult:
             return MCPProbeResult(ok=False, error="Client failed to connect")
 
         monkeypatch.setattr("apps.cli.modals.mcp_view.probe_mcp_server", _fail)
-        name = modal._selected().name
+        sel = modal._selected()
+        assert sel is not None
+        name = sel.name
         modal.action_test()
         await modal.workers.wait_for_complete()
         await pilot.pause()
@@ -335,22 +341,22 @@ async def test_notify_degraded_mcp_once(project_dir: Path, monkeypatch: pytest.M
     app = DeepApp(model="test", version="0.0.0")
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
+        screen = cast(ChatScreen, app.screen)
         msgs: list[str] = []
         monkeypatch.setattr(app, "notify", lambda m, **k: msgs.append(m))
 
         class _Deps:
             mcp_degraded = {"figma"}
 
-        app.deps = _Deps()  # type: ignore[attr-defined]
+        app.deps = _Deps()
 
-        screen._notify_degraded_mcp()  # type: ignore[attr-defined]
+        screen._notify_degraded_mcp()
         screen._notify_degraded_mcp()  # second call: already notified, no new toast
         assert sum("figma" in m for m in msgs) == 1
 
         # A newly-degraded server notifies again.
-        app.deps.mcp_degraded = {"figma", "context7"}  # type: ignore[attr-defined]
-        screen._notify_degraded_mcp()  # type: ignore[attr-defined]
+        app.deps.mcp_degraded = {"figma", "context7"}
+        screen._notify_degraded_mcp()
         assert any("context7" in m for m in msgs)
 
 
@@ -362,17 +368,17 @@ async def test_notify_degraded_mcp_empty(
     app = DeepApp(model="test", version="0.0.0")
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
-        screen = app.screen
+        screen = cast(ChatScreen, app.screen)
         msgs: list[str] = []
         monkeypatch.setattr(app, "notify", lambda m, **k: msgs.append(m))
         # No deps / empty set -> no notification, no crash.
-        screen._notify_degraded_mcp()  # type: ignore[attr-defined]
+        screen._notify_degraded_mcp()
 
         class _Deps:
             mcp_degraded: set[str] = set()
 
-        app.deps = _Deps()  # type: ignore[attr-defined]
-        screen._notify_degraded_mcp()  # type: ignore[attr-defined]
+        app.deps = _Deps()
+        screen._notify_degraded_mcp()
         assert msgs == []
 
 
@@ -382,14 +388,13 @@ async def test_mcp_modal_add_and_remove(project_dir: Path, monkeypatch: pytest.M
         lambda: mcp_store.load_mcp_registry(resolver=lambda k: None),
     )
     from apps.cli.app import DeepApp
-    from apps.cli.modals.mcp_view import MCPViewModal
 
     app = DeepApp(model="test", version="0.0.0")
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.pause()
         await app.push_screen(MCPViewModal())
         await pilot.pause()
-        modal = app.screen
+        modal = cast(MCPViewModal, app.screen)
         n0 = len(modal._servers())
         modal._registry.add(
             MCPServerConfig(name="zzz", transport="http", url="http://z/mcp", enabled=True)
@@ -397,7 +402,8 @@ async def test_mcp_modal_add_and_remove(project_dir: Path, monkeypatch: pytest.M
         modal._refresh_list()
         # Select the custom server and remove it.
         modal._index = len(modal._servers()) - 1
-        assert modal._selected().name == "zzz"
+        sel = modal._selected()
+        assert sel is not None and sel.name == "zzz"
         modal.action_delete()
         assert len(modal._servers()) == n0
 
@@ -418,7 +424,6 @@ async def test_mcp_modal_import_claude_code(
         ],
     )
     from apps.cli.app import DeepApp
-    from apps.cli.modals.mcp_view import MCPViewModal
 
     app = DeepApp(model="test", version="0.0.0")
     msgs: list[str] = []
@@ -427,12 +432,13 @@ async def test_mcp_modal_import_claude_code(
         monkeypatch.setattr(app, "notify", lambda m, **k: msgs.append(m))
         await app.push_screen(MCPViewModal())
         await pilot.pause()
-        modal = app.screen
+        modal = cast(MCPViewModal, app.screen)
         modal.action_import_claude_code()
         names = {s.name for s in modal._servers()}
         assert "my-cc-server" in names  # new custom server imported
         # builtin 'github' was not overwritten by the import.
         gh = modal._registry.get("github")
+        assert gh is not None
         assert gh.builtin is True and gh.url == "https://api.githubcopilot.com/mcp/"
         assert any("Imported 1" in m for m in msgs)
 
@@ -444,7 +450,6 @@ async def test_mcp_modal_import_empty(project_dir: Path, monkeypatch: pytest.Mon
     )
     monkeypatch.setattr("apps.cli.modals.mcp_view.import_claude_code_servers", lambda: [])
     from apps.cli.app import DeepApp
-    from apps.cli.modals.mcp_view import MCPViewModal
 
     app = DeepApp(model="test", version="0.0.0")
     msgs: list[str] = []
@@ -453,7 +458,7 @@ async def test_mcp_modal_import_empty(project_dir: Path, monkeypatch: pytest.Mon
         monkeypatch.setattr(app, "notify", lambda m, **k: msgs.append(m))
         await app.push_screen(MCPViewModal())
         await pilot.pause()
-        app.screen.action_import_claude_code()
+        cast(MCPViewModal, app.screen).action_import_claude_code()
         assert any("No MCP servers found" in m for m in msgs)
 
 
@@ -463,12 +468,11 @@ async def test_mcp_modal_import_error(project_dir: Path, monkeypatch: pytest.Mon
         lambda: mcp_store.load_mcp_registry(resolver=lambda k: None),
     )
 
-    def _boom() -> list:
+    def _boom() -> list[Any]:
         raise RuntimeError("disk on fire")
 
     monkeypatch.setattr("apps.cli.modals.mcp_view.import_claude_code_servers", _boom)
     from apps.cli.app import DeepApp
-    from apps.cli.modals.mcp_view import MCPViewModal
 
     app = DeepApp(model="test", version="0.0.0")
     msgs: list[str] = []
@@ -477,5 +481,5 @@ async def test_mcp_modal_import_error(project_dir: Path, monkeypatch: pytest.Mon
         monkeypatch.setattr(app, "notify", lambda m, **k: msgs.append(m))
         await app.push_screen(MCPViewModal())
         await pilot.pause()
-        app.screen.action_import_claude_code()
+        cast(MCPViewModal, app.screen).action_import_claude_code()
         assert any("Import failed" in m for m in msgs)

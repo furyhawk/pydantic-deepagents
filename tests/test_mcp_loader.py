@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from pydantic_deep.mcp import expand_env_vars, parse_mcp_servers
@@ -46,14 +48,13 @@ def test_parse_http_stdio_sse(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_parse_skips_ws_and_malformed() -> None:
-    servers = parse_mcp_servers(
-        {
-            "ws1": {"type": "ws", "url": "wss://x/socket"},
-            "notdict": "oops",
-            "empty": {},
-            "ok": {"url": "https://z/mcp"},
-        }
-    )
+    raw: dict[str, Any] = {
+        "ws1": {"type": "ws", "url": "wss://x/socket"},
+        "notdict": "oops",
+        "empty": {},
+        "ok": {"url": "https://z/mcp"},
+    }
+    servers = parse_mcp_servers(raw)
     names = {s.name for s in servers}
     assert names == {"ok"}
 

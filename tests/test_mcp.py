@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any
+
 import pytest
 
 from pydantic_deep.mcp import (
@@ -18,6 +21,12 @@ from pydantic_deep.mcp import (
     probe_mcp_server,
 )
 from pydantic_deep.mcp import registry as registry_mod
+
+
+def _transport(toolset: Any) -> Any:
+    """FastMCP transport of a built MCP toolset (typed Any for test access)."""
+    return toolset.client.transport
+
 
 # ── config: MCPAuth ──────────────────────────────────────────────────────
 
@@ -90,12 +99,12 @@ def test_build_oauth_server() -> None:
         name="figma", transport="http", url="https://mcp.figma.com/mcp", auth=MCPAuth(kind="oauth")
     )
     ts = build_mcp_server(cfg, lambda k: None)
-    assert ts.client.transport.url == "https://mcp.figma.com/mcp"
+    assert _transport(ts).url == "https://mcp.figma.com/mcp"
     # OAuth is wired onto the transport (not a static header).
-    assert getattr(ts.client.transport, "auth", None) is not None
+    assert getattr(_transport(ts), "auth", None) is not None
 
 
-def test_build_oauth_server_with_persistent_storage(tmp_path) -> None:
+def test_build_oauth_server_with_persistent_storage(tmp_path: Path) -> None:
     from key_value.aio.stores.disk import DiskStore
 
     cfg = MCPServerConfig(
@@ -103,8 +112,8 @@ def test_build_oauth_server_with_persistent_storage(tmp_path) -> None:
     )
     store = DiskStore(directory=str(tmp_path / "oauth"))
     ts = build_mcp_server(cfg, lambda k: None, oauth_token_storage=store)
-    assert ts.client.transport.url == "https://mcp.figma.com/mcp"
-    assert getattr(ts.client.transport, "auth", None) is not None
+    assert _transport(ts).url == "https://mcp.figma.com/mcp"
+    assert getattr(_transport(ts), "auth", None) is not None
 
 
 def test_build_oauth_with_client_name() -> None:
@@ -117,10 +126,10 @@ def test_build_oauth_with_client_name() -> None:
         auth=MCPAuth(kind="oauth", client_name="My Client"),
     )
     ts = build_mcp_server(cfg, lambda k: None)
-    assert getattr(ts.client.transport, "auth", None) is not None
+    assert getattr(_transport(ts), "auth", None) is not None
 
 
-def test_registry_threads_oauth_storage(tmp_path) -> None:
+def test_registry_threads_oauth_storage(tmp_path: Path) -> None:
     from key_value.aio.stores.disk import DiskStore
 
     store = DiskStore(directory=str(tmp_path / "oauth"))
@@ -130,7 +139,7 @@ def test_registry_threads_oauth_storage(tmp_path) -> None:
     )
     reg.add(cfg)
     ts = reg.build(cfg)
-    assert ts.client.transport.url == "https://mcp.figma.com/mcp"
+    assert _transport(ts).url == "https://mcp.figma.com/mcp"
 
 
 def test_config_requires_auth_property() -> None:
@@ -228,8 +237,8 @@ def test_build_http_with_bearer() -> None:
         name="gh", transport="http", url="http://x/mcp", auth=MCPAuth(secret_key="K")
     )
     ts = build_mcp_server(cfg, lambda k: "tok")
-    assert ts.client.transport.url == "http://x/mcp"
-    assert ts.client.transport.headers["Authorization"] == "Bearer tok"
+    assert _transport(ts).url == "http://x/mcp"
+    assert _transport(ts).headers["Authorization"] == "Bearer tok"
 
 
 def test_build_http_header_kind() -> None:
@@ -240,7 +249,7 @@ def test_build_http_header_kind() -> None:
         auth=MCPAuth(secret_key="K", kind="header", header="X-Token", value_template="{token}"),
     )
     ts = build_mcp_server(cfg, lambda k: "raw")
-    assert ts.client.transport.headers["X-Token"] == "raw"
+    assert _transport(ts).headers["X-Token"] == "raw"
 
 
 def test_build_http_no_token_leaves_headers() -> None:
@@ -248,7 +257,7 @@ def test_build_http_no_token_leaves_headers() -> None:
         name="x", transport="http", url="http://x/mcp", auth=MCPAuth(secret_key="K")
     )
     ts = build_mcp_server(cfg, lambda k: None)
-    assert "Authorization" not in (ts.client.transport.headers or {})
+    assert "Authorization" not in (_transport(ts).headers or {})
 
 
 def test_build_stdio_with_env_auth_explicit_var() -> None:
@@ -260,9 +269,9 @@ def test_build_stdio_with_env_auth_explicit_var() -> None:
         auth=MCPAuth(secret_key="K", kind="env", env_var="GH_TOKEN"),
     )
     ts = build_mcp_server(cfg, lambda k: "tok")
-    assert ts.client.transport.command == "npx"
-    assert ts.client.transport.args == ["-y", "pkg"]
-    assert ts.client.transport.env["GH_TOKEN"] == "tok"
+    assert _transport(ts).command == "npx"
+    assert _transport(ts).args == ["-y", "pkg"]
+    assert _transport(ts).env["GH_TOKEN"] == "tok"
 
 
 def test_build_stdio_env_auth_defaults_to_secret_key() -> None:
@@ -273,7 +282,7 @@ def test_build_stdio_env_auth_defaults_to_secret_key() -> None:
         auth=MCPAuth(secret_key="MY_KEY", kind="env"),
     )
     ts = build_mcp_server(cfg, lambda k: "tok")
-    assert ts.client.transport.env["MY_KEY"] == "tok"
+    assert _transport(ts).env["MY_KEY"] == "tok"
 
 
 def test_build_with_tool_prefix_wraps() -> None:
@@ -285,12 +294,12 @@ def test_build_with_tool_prefix_wraps() -> None:
 def test_build_default_resolver(monkeypatch: pytest.MonkeyPatch) -> None:
     cfg = MCPServerConfig(name="x", transport="http", url="http://x/mcp")
     ts = build_mcp_server(cfg)  # no resolver -> env-based default
-    assert ts.client.transport.url == "http://x/mcp"
+    assert _transport(ts).url == "http://x/mcp"
     monkeypatch.setenv("UNUSED", "1")
 
 
 def test_build_raises_when_mcp_missing(monkeypatch: pytest.MonkeyPatch) -> None:
-    def _boom() -> tuple:
+    def _boom() -> tuple[Any, ...]:
         raise ImportError("no mcp")
 
     monkeypatch.setattr(registry_mod, "_load_mcp_classes", _boom)
@@ -369,7 +378,7 @@ def test_registry_build_delegates() -> None:
     )
     reg.add(cfg)
     ts = reg.build(cfg)
-    assert ts.client.transport.headers["Authorization"] == "Bearer t"
+    assert _transport(ts).headers["Authorization"] == "Bearer t"
 
 
 # ── probe_mcp_server ─────────────────────────────────────────────────────
@@ -505,15 +514,15 @@ async def test_resilient_passthrough_when_healthy() -> None:
     from pydantic_deep.mcp import make_resilient
 
     fake = _FakeWrapped()
-    w = make_resilient(fake, "srv")  # type: ignore[arg-type]
+    w = make_resilient(fake, "srv")
     ctx = object()
-    prepared = await w.for_run(ctx)  # type: ignore[arg-type]
+    prepared = await w.for_run(ctx)
     assert prepared is w  # wrapped unchanged -> same wrapper instance
     await w.__aenter__()
     assert fake.entered is True
-    tools = await w.get_tools(ctx)  # type: ignore[arg-type]
+    tools = await w.get_tools(ctx)
     assert "t" in tools
-    instr = await w.get_instructions(ctx)  # type: ignore[arg-type]
+    instr = await w.get_instructions(ctx)
     assert instr == "instructions"
     assert await w.__aexit__(None, None, None) is None
     assert fake.exited is True
@@ -523,13 +532,13 @@ async def test_resilient_degrades_on_connect_failure() -> None:
     from pydantic_deep.mcp import make_resilient
 
     fake = _FakeWrapped(fail={"aenter"})
-    w = make_resilient(fake, "srv")  # type: ignore[arg-type]
+    w = make_resilient(fake, "srv")
     ctx = object()
-    await w.for_run(ctx)  # type: ignore[arg-type]
+    await w.for_run(ctx)
     await w.__aenter__()  # swallows connect failure
     # Degraded: no tools, no instructions, aexit is a no-op.
-    assert await w.get_tools(ctx) == {}  # type: ignore[arg-type]
-    assert await w.get_instructions(ctx) is None  # type: ignore[arg-type]
+    assert await w.get_tools(ctx) == {}
+    assert await w.get_instructions(ctx) is None
     assert await w.__aexit__(None, None, None) is None
     # Entering again while degraded short-circuits.
     assert await w.__aenter__() is w
@@ -539,27 +548,27 @@ async def test_resilient_degrades_on_for_run_failure() -> None:
     from pydantic_deep.mcp import make_resilient
 
     fake = _FakeWrapped(fail={"for_run"})
-    w = make_resilient(fake, "srv")  # type: ignore[arg-type]
+    w = make_resilient(fake, "srv")
     ctx = object()
-    prepared = await w.for_run(ctx)  # type: ignore[arg-type]
+    prepared = await w.for_run(ctx)
     assert prepared is w
     # for_run failed -> __aenter__ skips the wrapped, tools empty.
     await w.__aenter__()
     assert fake.entered is False
-    assert await w.get_tools(ctx) == {}  # type: ignore[arg-type]
+    assert await w.get_tools(ctx) == {}
 
 
 async def test_resilient_degrades_on_get_tools_failure() -> None:
     from pydantic_deep.mcp import make_resilient
 
     fake = _FakeWrapped(fail={"get_tools"})
-    w = make_resilient(fake, "srv")  # type: ignore[arg-type]
+    w = make_resilient(fake, "srv")
     ctx = object()
-    await w.for_run(ctx)  # type: ignore[arg-type]
+    await w.for_run(ctx)
     await w.__aenter__()
-    assert await w.get_tools(ctx) == {}  # type: ignore[arg-type]
+    assert await w.get_tools(ctx) == {}
     # Now flagged failed -> instructions also degrade.
-    assert await w.get_instructions(ctx) is None  # type: ignore[arg-type]
+    assert await w.get_instructions(ctx) is None
 
 
 async def test_resilient_on_degraded_fires_once() -> None:
@@ -567,12 +576,12 @@ async def test_resilient_on_degraded_fires_once() -> None:
 
     calls: list[tuple[str, str]] = []
     fake = _FakeWrapped(fail={"aenter"})
-    w = make_resilient(fake, "srv", on_degraded=lambda n, r: calls.append((n, r)))  # type: ignore[arg-type]
+    w = make_resilient(fake, "srv", on_degraded=lambda n, r: calls.append((n, r)))
     ctx = object()
     # Two runs, both fail to connect — callback fires only once.
-    await w.for_run(ctx)  # type: ignore[arg-type]
+    await w.for_run(ctx)
     await w.__aenter__()
-    await w.for_run(ctx)  # type: ignore[arg-type]
+    await w.for_run(ctx)
     await w.__aenter__()
     assert len(calls) == 1
     assert calls[0][0] == "srv"
@@ -585,11 +594,11 @@ async def test_resilient_on_degraded_exception_suppressed() -> None:
         raise RuntimeError("callback boom")
 
     fake = _FakeWrapped(fail={"aenter"})
-    w = make_resilient(fake, "srv", on_degraded=_boom)  # type: ignore[arg-type]
+    w = make_resilient(fake, "srv", on_degraded=_boom)
     ctx = object()
-    await w.for_run(ctx)  # type: ignore[arg-type]
+    await w.for_run(ctx)
     await w.__aenter__()  # callback raises internally -> suppressed
-    assert await w.get_tools(ctx) == {}  # type: ignore[arg-type]
+    assert await w.get_tools(ctx) == {}
 
 
 def test_build_active_forwards_on_degraded() -> None:
@@ -605,11 +614,11 @@ async def test_resilient_instructions_and_exit_failures_swallowed() -> None:
     from pydantic_deep.mcp import make_resilient
 
     fake = _FakeWrapped(fail={"instr", "aexit"})
-    w = make_resilient(fake, "srv")  # type: ignore[arg-type]
+    w = make_resilient(fake, "srv")
     ctx = object()
-    await w.for_run(ctx)  # type: ignore[arg-type]
+    await w.for_run(ctx)
     await w.__aenter__()
     # get_instructions raises internally -> None (not flagged failed by instr path)
-    assert await w.get_instructions(ctx) is None  # type: ignore[arg-type]
+    assert await w.get_instructions(ctx) is None
     # __aexit__ raises internally -> swallowed to None
     assert await w.__aexit__(None, None, None) is None

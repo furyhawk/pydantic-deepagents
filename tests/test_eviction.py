@@ -293,7 +293,7 @@ class TestEvictionProcessor:
         ctx = _make_ctx(backend)
 
         image = BinaryContent(data=b"\x89PNG" + b"\x00" * 100_000, media_type="image/png")
-        part = _make_tool_return(image, tool_call_id="call_bin")  # type: ignore[arg-type]
+        part = _make_tool_return(image, tool_call_id="call_bin")
         messages: list[ModelMessage] = [
             ModelRequest(parts=[part], timestamp=datetime(2024, 1, 1, tzinfo=timezone.utc))
         ]

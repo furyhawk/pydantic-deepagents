@@ -630,7 +630,7 @@ class TestRunWithQueue:
         agent = _FakeAgent(queue)
         deps = DeepAgentDeps()
 
-        result = await run_with_queue(agent, "initial", deps=deps, queue=queue)  # type: ignore[arg-type]
+        result = await run_with_queue(agent, "initial", deps=deps, queue=queue)
 
         # The late steering was drained and delivered as a new turn, not left behind.
         assert await queue.drain_steering() == []
