@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.24] - 2026-06-01
+
+### Fixed
+
+- **Branch cost no longer drops off freshly mounted fork-tab chips** (`apps/cli/widgets/fork_tabs.py`). `ForkTabsWidget.watch_statuses` mounts chips asynchronously (`await self.mount(...)`), so when the poll loop sets `statuses` then `branch_costs` in the same tick, `watch_branch_costs`'s single `call_after_refresh` pass could fire before a chip's mount completed and the `$x.xx` cost never landed — surfacing as a flaky full-suite test failure. Costs are now re-applied as a guaranteed final step at the end of `watch_statuses`, once the chips are actually mounted, closing the race deterministically.
+
 ## [0.3.23] - 2026-06-01
 
 ### Added
