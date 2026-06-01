@@ -168,9 +168,7 @@ class ImprovementReport:
     """Number of sessions that failed extraction."""
     last_error: Exception | None = field(default=None, repr=False)
     """Last extraction error (for diagnostics)."""
-    extraction_errors: list[tuple[str, Exception]] = field(
-        default_factory=list, repr=False
-    )
+    extraction_errors: list[tuple[str, Exception]] = field(default_factory=list, repr=False)
     """All extraction failures as (session_id, error) pairs (for diagnostics)."""
     timestamp: str = ""
     """ISO timestamp of when the report was generated."""

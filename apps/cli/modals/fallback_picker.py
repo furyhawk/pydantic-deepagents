@@ -60,7 +60,6 @@ class FallbackPickerModal(ModalScreen[str | None]):
         self._current_fallback = current_fallback
 
     def compose(self) -> ComposeResult:
-
         with Vertical(id="fallback-container"):
             yield Static(f"[bold]Select fallback for[/bold] [cyan]{self._primary_model}[/cyan]")
 

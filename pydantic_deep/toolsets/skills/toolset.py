@@ -479,9 +479,7 @@ class SkillsToolset(FunctionToolset):
         for skill in sorted(self._skills.values(), key=lambda s: s.name):
             skills_list_lines.append("<skill>")
             skills_list_lines.append(f"<name>{xml_escape(skill.name)}</name>")
-            skills_list_lines.append(
-                f"<description>{xml_escape(skill.description)}</description>"
-            )
+            skills_list_lines.append(f"<description>{xml_escape(skill.description)}</description>")
             skills_list_lines.append("</skill>")
         skills_list = "\n".join(skills_list_lines)
 

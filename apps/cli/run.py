@@ -83,7 +83,6 @@ async def execute_headless(  # noqa: C901
         Exit code (0 for success, 1 for error).
     """
 
-
     ensure_initialized(Path(working_dir))
 
     agent_kwargs: dict[str, Any] = {
@@ -170,7 +169,6 @@ async def _run_verbose(  # noqa: C901
     agent: Any, task: str, deps: Any, run_kwargs: dict[str, Any]
 ) -> Any:
     """Run agent with verbose progress on stderr."""
-
 
     _log = lambda msg: print(msg, file=sys.stderr, flush=True)  # noqa: E731
     start = _time.monotonic()

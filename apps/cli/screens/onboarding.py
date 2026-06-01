@@ -150,7 +150,6 @@ class ApiKeyModal(ModalScreen[str | None]):
             self.app.notify("Please enter a key", severity="warning")
             return
 
-
         save_key(self._env_var, key)
         self.dismiss(key)
 

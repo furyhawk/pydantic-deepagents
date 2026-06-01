@@ -509,10 +509,7 @@ class BrowserToolset(FunctionToolset[Any]):
                 "right": (300, 0),
             }
             if direction.lower() not in delta_map:
-                return (
-                    f"Error: invalid direction {direction!r}; "
-                    "use up/down/left/right"
-                )
+                return f"Error: invalid direction {direction!r}; use up/down/left/right"
             dx, dy = delta_map[direction.lower()]
             if x is not None and y is not None:
                 await page.mouse.move(x, y)

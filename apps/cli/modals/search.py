@@ -76,7 +76,6 @@ class SearchModal(ModalScreen[str | None]):
             )
 
     def on_mount(self) -> None:
-
         self.query_one("#search-input", FilterInput).focus()
 
     def _collect_messages(self) -> list[tuple[int, str, str]]:

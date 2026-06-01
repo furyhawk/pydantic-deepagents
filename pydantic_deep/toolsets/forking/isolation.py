@@ -623,7 +623,6 @@ class BranchOverlay:
         return self._run_in_snapshot(command, timeout)
 
     async def async_execute(self, command: str, timeout: int | None = None) -> ExecuteResponse:
-
         return await asyncio.to_thread(self._run_in_snapshot, command, timeout)
 
     def grep_raw(

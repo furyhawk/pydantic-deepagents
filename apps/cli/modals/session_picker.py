@@ -102,7 +102,6 @@ class SessionPickerModal(ModalScreen[str | None]):
         self._sessions: list[dict[str, str]] = []
 
     def compose(self) -> ComposeResult:
-
         self._sessions = _load_sessions()
 
         with Vertical(id="session-container"):
@@ -129,7 +128,6 @@ class SessionPickerModal(ModalScreen[str | None]):
         return options
 
     def on_mount(self) -> None:
-
         self.query_one("#session-filter", FilterInput).focus()
 
     def on_input_changed(self, event: Input.Changed) -> None:

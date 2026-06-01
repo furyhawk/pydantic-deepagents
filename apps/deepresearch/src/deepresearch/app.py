@@ -1395,7 +1395,6 @@ async def get_file_content(filepath: str, session_id: str = Query(..., descripti
 
     session = user_sessions[session_id]
 
-
     decoded_path = urllib.parse.unquote(filepath)
     if not decoded_path.startswith("/"):
         decoded_path = "/" + decoded_path
@@ -1419,7 +1418,6 @@ async def get_file_binary(filepath: str, session_id: str = Query(..., descriptio
         raise HTTPException(status_code=404, detail="Session not found")
 
     session = user_sessions[session_id]
-
 
     decoded_path = urllib.parse.unquote(filepath)
     if not decoded_path.startswith("/"):
@@ -1783,7 +1781,6 @@ async def export_report(
         )
 
     def _md_to_html(md_content: str) -> str:
-
         _css = (
             "body{font-family:system-ui;max-width:800px;margin:2rem auto;padding:0 1rem;"
             "line-height:1.6;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid "

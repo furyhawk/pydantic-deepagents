@@ -55,7 +55,6 @@ class SettingsScreen(Screen):
         self._config_path = None
 
     def compose(self) -> ComposeResult:
-
         self._config = load_config()
         self._config_path = DEFAULT_CONFIG_PATH
 

@@ -1344,8 +1344,7 @@ class ChatScreen(Screen):
         names = ", ".join(sorted(new))
         with contextlib.suppress(Exception):
             self.app.notify(
-                f"⚠ MCP server(s) unavailable (not connected): {names}. "
-                "Use /mcp → t to test.",
+                f"⚠ MCP server(s) unavailable (not connected): {names}. Use /mcp → t to test.",
                 severity="warning",
                 timeout=8,
             )

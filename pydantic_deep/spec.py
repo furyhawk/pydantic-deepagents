@@ -269,9 +269,7 @@ class DeepAgent:
             for k, v in items.items():
                 if k in non_spec_keys or k not in spec_fields:
                     passthrough_part[k] = v
-                elif not isinstance(
-                    v, (str, int, float, bool, list, dict, type(None))
-                ):
+                elif not isinstance(v, (str, int, float, bool, list, dict, type(None))):
                     # Non-serializable value for a spec field (e.g., model=TestModel())
                     passthrough_part[k] = v
                 else:

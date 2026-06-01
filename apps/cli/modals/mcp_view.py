@@ -316,8 +316,7 @@ class MCPViewModal(ModalScreen[None]):
             return
         if not imported:
             self.app.notify(
-                "No MCP servers found in Claude Code config "
-                "(.mcp.json / ~/.claude.json).",
+                "No MCP servers found in Claude Code config (.mcp.json / ~/.claude.json).",
                 severity="information",
             )
             return

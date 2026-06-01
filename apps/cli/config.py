@@ -369,8 +369,7 @@ def _coerce_value(key: str, value: str) -> Any:  # noqa: C901
                 continue
             if "=" not in pair:
                 msg = (
-                    f"sandbox_env_vars expects comma-separated KEY=VALUE pairs; "
-                    f"'{pair}' has no '='"
+                    f"sandbox_env_vars expects comma-separated KEY=VALUE pairs; '{pair}' has no '='"
                 )
                 raise ValueError(msg)
             k, v = pair.split("=", 1)
