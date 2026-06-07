@@ -1074,10 +1074,7 @@ class ChatScreen(Screen):
                 # also needs approval (`rd`, then `rmdir`). Handling only the
                 # first round left every later call deferred-but-unsurfaced, so
                 # its tool-call spinner ran forever (issue #136).
-                while (
-                    isinstance(result.output, DeferredToolRequests)
-                    and result.output.approvals
-                ):
+                while isinstance(result.output, DeferredToolRequests) and result.output.approvals:
                     from pydantic_ai.tools import (
                         DeferredToolResults,
                         ToolApproved,
