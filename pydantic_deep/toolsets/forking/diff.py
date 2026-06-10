@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import difflib
 import hashlib
-import inspect
 from typing import TYPE_CHECKING, Any, Protocol
 
 from pydantic_deep.processors.eviction import create_content_preview
@@ -39,16 +38,15 @@ if TYPE_CHECKING:
 
 
 class _BytesReadable(Protocol):
-    """Minimal read surface needed by the diff builder.
+    """Minimal sync read surface needed by the diff builder.
 
-    Accepts both sync backends (BackendProtocol, BranchOverlay) and async
-    backends (AsyncBackendAdapter). The ``_read_path_bytes`` helper uses
-    ``inspect.isawaitable`` to dispatch correctly at runtime, so method
-    return types are ``Any`` to accommodate both signatures.
+    Both ``BackendProtocol`` and ``BranchOverlay`` satisfy this. Using a
+    narrow local protocol keeps strict typing happy without depending on
+    backend-level method signature quirks.
     """
 
-    def exists(self, path: str) -> Any: ...
-    def read_bytes(self, path: str) -> Any: ...
+    def exists(self, path: str) -> bool: ...
+    def read_bytes(self, path: str) -> bytes: ...
 
 
 #: Bytes read from the start of a file when sniffing for binary content.
@@ -83,22 +81,13 @@ def _binary_placeholder(data: bytes, *, digest: str | None = None) -> str:
 async def _read_path_bytes(backend: _BytesReadable, path: str) -> bytes | None:
     """Read `path` from `backend` as raw bytes, or `None` if absent.
 
-    Handles both sync (BranchOverlay) and async (AsyncBackendAdapter) backends.
+    Uses ``exists()`` first because some backends (notably ``StateBackend``)
+    silently return ``b""`` for missing paths instead of raising.
     """
-    exists_result = backend.exists(path)
-    if inspect.isawaitable(
-        exists_result
-    ):  # pragma: no cover - async path unreachable with current callers
-        exists_result = await exists_result
-    if not exists_result:
+    if not backend.exists(path):
         return None
     try:
-        result: Any = backend.read_bytes(path)
-        if inspect.isawaitable(
-            result
-        ):  # pragma: no cover - async path unreachable with current callers
-            result = await result
-        return bytes(result) if result is not None else None
+        return backend.read_bytes(path)
     except (FileNotFoundError, KeyError):  # pragma: no cover - defensive
         return None
 
