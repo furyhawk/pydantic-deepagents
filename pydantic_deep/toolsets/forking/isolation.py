@@ -55,7 +55,9 @@ def _read_backend_bytes(backend: Any, path: str) -> bytes:
     Uses ``read_bytes`` when available, falls back to ``_read_bytes``
     (some backends like ``LocalBackend`` only expose the private method).
     """
-    reader: Any = getattr(backend, "read_bytes", None) or backend._read_bytes
+    reader: Any = getattr(backend, "read_bytes", None)
+    if reader is None:
+        reader = backend._read_bytes
     return bytes(reader(path))
 
 

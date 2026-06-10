@@ -551,9 +551,8 @@ class BackendSkillsDirectory:
         # Discover scripts (only if backend supports execution)
         scripts: list[BackendSkillScript] = []
         if isinstance(self._backend, SandboxProtocol):
-            sandbox_async = ensure_async(self._backend)
             executor = BackendSkillScriptExecutor(
-                backend=sandbox_async,  # type: ignore[arg-type]
+                backend=async_backend,  # type: ignore[arg-type]
                 timeout=self._script_timeout,
             )
             scripts = _discover_backend_scripts(self._backend, skill_dir, name, executor)
