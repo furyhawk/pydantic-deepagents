@@ -107,6 +107,44 @@ async def test_goal_modal_cancel_leaves_no_goal(
         assert app._goal is None
 
 
+def test_goal_evaluator_falls_back_to_main_model(
+    app: DeepApp, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """With no goal_model/reminder_model configured, the evaluator uses the
+    session's main model — not the direct-Anthropic default that needs an
+    ANTHROPIC_API_KEY (which an OpenRouter-only user wouldn't have)."""
+    import apps.cli.config as cfgmod
+    from apps.cli.goal import get_goal_evaluator
+
+    class _Cfg:
+        goal_model = None
+        reminder_model = None
+
+    monkeypatch.setattr(cfgmod, "load_config", lambda: _Cfg())
+    app._goal_evaluator = None
+
+    evaluator = get_goal_evaluator(app)
+    assert evaluator.model == "test"  # the app's main model, not Haiku
+
+
+def test_goal_evaluator_prefers_configured_model(
+    app: DeepApp, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An explicit goal_model still wins over the main-model fallback."""
+    import apps.cli.config as cfgmod
+    from apps.cli.goal import get_goal_evaluator
+
+    class _Cfg:
+        goal_model = "openrouter:anthropic/claude-haiku-4.5"
+        reminder_model = None
+
+    monkeypatch.setattr(cfgmod, "load_config", lambda: _Cfg())
+    app._goal_evaluator = None
+
+    evaluator = get_goal_evaluator(app)
+    assert evaluator.model == "openrouter:anthropic/claude-haiku-4.5"
+
+
 async def test_clear_via_slash_clear(app: DeepApp) -> None:
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()

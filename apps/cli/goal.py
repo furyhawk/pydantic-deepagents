@@ -29,7 +29,10 @@ def get_goal_evaluator(app: DeepApp) -> GoalEvaluator:
     """Return the app's goal evaluator, creating it lazily on first use.
 
     Prefers an explicitly-configured ``goal_model``, then the cheap
-    ``reminder_model``, then the engine default (a small Haiku model).
+    ``reminder_model``, then the session's **main model** — so the evaluator
+    stays on the same provider/key as the rest of the session (e.g. OpenRouter).
+    Only when no model can be resolved at all does it fall back to the engine
+    default (a small Anthropic Haiku), which requires an Anthropic key.
     """
     if app._goal_evaluator is None:
         model: str | None = None
@@ -40,6 +43,11 @@ def get_goal_evaluator(app: DeepApp) -> GoalEvaluator:
             model = getattr(cfg, "goal_model", None) or getattr(cfg, "reminder_model", None)
         except Exception:
             model = None
+        # Fall back to the main session model so an OpenRouter/Ollama/etc. user
+        # isn't silently routed to a direct Anthropic model they have no key for
+        # (mirrors `_resolve_reminder_model`). Otherwise every evaluation fails
+        # with "Evaluator error; continuing." and the goal never completes.
+        model = model or getattr(app, "model_name", None) or getattr(app, "_model", None)
         app._goal_evaluator = GoalEvaluator(model=model) if model else GoalEvaluator()
     return app._goal_evaluator
 
