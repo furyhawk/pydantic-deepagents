@@ -385,7 +385,24 @@ class HooksCapability(AbstractCapability[Any]):
         args: dict[str, Any],
         error: Exception,
     ) -> Any:
-        """Run POST_TOOL_USE_FAILURE hooks."""
+        """Run POST_TOOL_USE_FAILURE hooks.
+
+        If the error is an ``AssertionError`` inside pydantic-ai's
+        ``_raw_execute`` (``validated.validated_args is not None`` assertion)
+        it is converted to a ``ModelRetry`` so the agent can self-correct,
+        since this is a known pydantic-ai internal race in the capabilities
+        chain (#1.107.0).
+        """
+        # pydantic-ai#749: `_raw_execute` asserts `validated_args is not None`
+        # but the value can be lost inside the capability wrap chain.
+        if isinstance(error, AssertionError):
+            from pydantic_ai.exceptions import ModelRetry
+
+            raise ModelRetry(
+                "Tool execution failed due to an internal error. "
+                "Please try a slightly different approach."
+            ) from error
+
         matched = _match_hooks(self.hooks, HookEvent.POST_TOOL_USE_FAILURE, call.tool_name)
         if not matched:
             raise error

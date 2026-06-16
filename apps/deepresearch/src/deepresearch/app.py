@@ -30,9 +30,14 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from the deepresearch app directory so it works regardless
+# of the current working directory the server is started from.
+_env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(dotenv_path=_env_path, override=True)
 
 import urllib.parse  # noqa: E402
 

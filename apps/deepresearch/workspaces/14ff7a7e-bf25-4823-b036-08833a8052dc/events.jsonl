@@ -1,0 +1,597 @@
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:48:17.409802+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:48:17.446022+00:00"}
+{"type": "user_message", "content": "research on agentic agent breakthrough.", "_ts": "2026-06-16T03:48:17.446318+00:00"}
+{"type": "start", "_ts": "2026-06-16T03:48:17.446990+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-16T03:48:17.453604+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T03:48:17.453977+00:00"}
+{"type": "error", "content": "WebSearchTool is not supported with `OpenAIChatModel` and model 'gpt-4.1'. Please use `OpenAIResponsesModel` instead.", "_ts": "2026-06-16T03:48:17.572526+00:00"}
+{"type": "done", "_ts": "2026-06-16T03:48:17.572682+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:51:52.218600+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:51:52.233943+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:51:53.045299+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:51:53.045783+00:00"}
+{"type": "user_message", "content": "research on agentic agent breakthrough.", "_ts": "2026-06-16T03:52:10.035671+00:00"}
+{"type": "start", "_ts": "2026-06-16T03:52:10.036327+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-16T03:52:10.043050+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T03:52:10.043442+00:00"}
+{"type": "error", "content": "status_code: 400, model_name: gpt-5.5-mini, body: {'message': \"The requested model 'gpt-5.5-mini' does not exist.\", 'type': 'invalid_request_error', 'param': 'model', 'code': 'model_not_found'}", "_ts": "2026-06-16T03:52:11.986086+00:00"}
+{"type": "done", "_ts": "2026-06-16T03:52:11.986235+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:53:05.872923+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:53:05.895213+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:53:23.159198+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:53:23.159684+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:53:25.161812+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T03:53:25.162467+00:00"}
+{"type": "user_message", "content": "research on agentic agent breakthrough.", "_ts": "2026-06-16T03:53:28.786174+00:00"}
+{"type": "start", "_ts": "2026-06-16T03:53:28.786972+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-16T03:53:28.793020+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T03:53:28.793403+00:00"}
+{"type": "tool_call_start", "tool_name": "task", "tool_call_id": "call_e9LEaF5E6QdHxZ3YAcKQgB4r", "_ts": "2026-06-16T03:53:41.846913+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "{\"", "_ts": "2026-06-16T03:53:41.848040+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "description", "_ts": "2026-06-16T03:53:41.848661+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\":\"", "_ts": "2026-06-16T03:53:41.849123+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "Create", "_ts": "2026-06-16T03:53:41.888419+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " a", "_ts": "2026-06-16T03:53:41.900996+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " concise", "_ts": "2026-06-16T03:53:41.904576+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " research", "_ts": "2026-06-16T03:53:41.905360+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " plan", "_ts": "2026-06-16T03:53:41.906634+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " for", "_ts": "2026-06-16T03:53:41.908614+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " the", "_ts": "2026-06-16T03:53:41.909417+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " user", "_ts": "2026-06-16T03:53:41.949405+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " request", "_ts": "2026-06-16T03:53:41.950918+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ":", "_ts": "2026-06-16T03:53:41.951711+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " '", "_ts": "2026-06-16T03:53:41.959983+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "research", "_ts": "2026-06-16T03:53:41.961907+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " on", "_ts": "2026-06-16T03:53:41.964075+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " agent", "_ts": "2026-06-16T03:53:41.964503+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ic", "_ts": "2026-06-16T03:53:41.966110+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " agent", "_ts": "2026-06-16T03:53:42.005523+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " breakthrough", "_ts": "2026-06-16T03:53:42.024111+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ".'", "_ts": "2026-06-16T03:53:42.025047+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " Interpret", "_ts": "2026-06-16T03:53:42.025831+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " this", "_ts": "2026-06-16T03:53:42.026398+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " as", "_ts": "2026-06-16T03:53:42.066060+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " breakthroughs", "_ts": "2026-06-16T03:53:42.080526+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " in", "_ts": "2026-06-16T03:53:42.082616+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " agent", "_ts": "2026-06-16T03:53:42.084865+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ic", "_ts": "2026-06-16T03:53:42.086895+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " AI", "_ts": "2026-06-16T03:53:42.089580+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " agents", "_ts": "2026-06-16T03:53:42.090042+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "/", "_ts": "2026-06-16T03:53:42.124403+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "agent", "_ts": "2026-06-16T03:53:42.136648+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ic", "_ts": "2026-06-16T03:53:42.138416+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " AI", "_ts": "2026-06-16T03:53:42.140412+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " systems", "_ts": "2026-06-16T03:53:42.142702+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " from", "_ts": "2026-06-16T03:53:42.184006+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " ", "_ts": "2026-06-16T03:53:42.196375+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "202", "_ts": "2026-06-16T03:53:42.198630+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "4", "_ts": "2026-06-16T03:53:42.201969+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "-", "_ts": "2026-06-16T03:53:42.203477+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "202", "_ts": "2026-06-16T03:53:42.204343+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "6", "_ts": "2026-06-16T03:53:42.205747+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ".", "_ts": "2026-06-16T03:53:42.206242+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " Break", "_ts": "2026-06-16T03:53:42.243203+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " into", "_ts": "2026-06-16T03:53:42.245365+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " ", "_ts": "2026-06-16T03:53:42.302593+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "4", "_ts": "2026-06-16T03:53:42.306284+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "-", "_ts": "2026-06-16T03:53:42.313851+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "5", "_ts": "2026-06-16T03:53:42.315441+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " focused", "_ts": "2026-06-16T03:53:42.316217+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " sub", "_ts": "2026-06-16T03:53:42.362485+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "topics", "_ts": "2026-06-16T03:53:42.371387+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " and", "_ts": "2026-06-16T03:53:42.419217+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " suggest", "_ts": "2026-06-16T03:53:42.432911+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " a", "_ts": "2026-06-16T03:53:42.435652+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " final", "_ts": "2026-06-16T03:53:42.436629+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " report", "_ts": "2026-06-16T03:53:42.437313+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " structure", "_ts": "2026-06-16T03:53:42.437843+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ".", "_ts": "2026-06-16T03:53:42.477115+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " Do", "_ts": "2026-06-16T03:53:42.490750+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " not", "_ts": "2026-06-16T03:53:42.494286+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " ask", "_ts": "2026-06-16T03:53:42.496655+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " clar", "_ts": "2026-06-16T03:53:42.500714+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ifying", "_ts": "2026-06-16T03:53:42.501274+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " questions", "_ts": "2026-06-16T03:53:42.501686+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " unless", "_ts": "2026-06-16T03:53:42.536344+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " absolutely", "_ts": "2026-06-16T03:53:42.551371+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " necessary", "_ts": "2026-06-16T03:53:42.551974+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ";", "_ts": "2026-06-16T03:53:42.555328+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " assume", "_ts": "2026-06-16T03:53:42.594578+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " the", "_ts": "2026-06-16T03:53:42.612082+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " user", "_ts": "2026-06-16T03:53:42.614564+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " wants", "_ts": "2026-06-16T03:53:42.615225+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " a", "_ts": "2026-06-16T03:53:42.653817+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " practical", "_ts": "2026-06-16T03:53:42.668440+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " research", "_ts": "2026-06-16T03:53:42.669291+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " brief", "_ts": "2026-06-16T03:53:42.671986+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " with", "_ts": "2026-06-16T03:53:42.673260+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " current", "_ts": "2026-06-16T03:53:42.673563+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " sources", "_ts": "2026-06-16T03:53:42.714204+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ",", "_ts": "2026-06-16T03:53:42.722948+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " technical", "_ts": "2026-06-16T03:53:42.771660+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " significance", "_ts": "2026-06-16T03:53:42.781760+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ",", "_ts": "2026-06-16T03:53:42.830799+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " limitations", "_ts": "2026-06-16T03:53:42.843663+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ",", "_ts": "2026-06-16T03:53:42.844476+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " and", "_ts": "2026-06-16T03:53:42.891427+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": " outlook", "_ts": "2026-06-16T03:53:42.903093+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ".\",\"", "_ts": "2026-06-16T03:53:42.907245+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "sub", "_ts": "2026-06-16T03:53:42.912693+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "agent", "_ts": "2026-06-16T03:53:42.913191+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "_type", "_ts": "2026-06-16T03:53:42.914491+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\":\"", "_ts": "2026-06-16T03:53:42.915045+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "planner", "_ts": "2026-06-16T03:53:42.915538+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\",\"", "_ts": "2026-06-16T03:53:42.951087+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "mode", "_ts": "2026-06-16T03:53:42.951999+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\":\"", "_ts": "2026-06-16T03:53:42.961896+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "sync", "_ts": "2026-06-16T03:53:42.963471+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\",\"", "_ts": "2026-06-16T03:53:42.964667+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "complex", "_ts": "2026-06-16T03:53:42.967755+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ity", "_ts": "2026-06-16T03:53:42.968189+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\":\"", "_ts": "2026-06-16T03:53:42.968472+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "moder", "_ts": "2026-06-16T03:53:43.009012+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ate", "_ts": "2026-06-16T03:53:43.069821+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\",\"", "_ts": "2026-06-16T03:53:43.071475+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "requires", "_ts": "2026-06-16T03:53:43.075245+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "_user", "_ts": "2026-06-16T03:53:43.075894+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "_context", "_ts": "2026-06-16T03:53:43.076627+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\":", "_ts": "2026-06-16T03:53:43.077248+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "false", "_ts": "2026-06-16T03:53:43.077850+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": ",\"", "_ts": "2026-06-16T03:53:43.136675+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "may", "_ts": "2026-06-16T03:53:43.138743+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "_need", "_ts": "2026-06-16T03:53:43.141300+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "_cl", "_ts": "2026-06-16T03:53:43.144569+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ar", "_ts": "2026-06-16T03:53:43.145018+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "ification", "_ts": "2026-06-16T03:53:43.145715+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "\":", "_ts": "2026-06-16T03:53:43.150045+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "false", "_ts": "2026-06-16T03:53:43.190244+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "}", "_ts": "2026-06-16T03:53:43.191172+00:00"}
+{"type": "tool_start", "tool_name": "task", "args": "{\"description\":\"Create a concise research plan for the user request: 'research on agentic agent breakthrough.' Interpret this as breakthroughs in agentic AI agents/agentic AI systems from 2024-2026. Break into 4-5 focused subtopics and suggest a final report structure. Do not ask clarifying questions unless absolutely necessary; assume the user wants a practical research brief with current sources, technical significance, limitations, and outlook.\",\"subagent_type\":\"planner\",\"mode\":\"sync\",\"complexity\":\"moderate\",\"requires_user_context\":false,\"may_need_clarification\":false}", "_ts": "2026-06-16T03:53:43.890047+00:00"}
+{"type": "status", "content": "Running planner subagent...", "_ts": "2026-06-16T03:53:43.890196+00:00"}
+{"type": "error", "content": "", "_ts": "2026-06-16T03:53:43.892538+00:00"}
+{"type": "done", "_ts": "2026-06-16T03:53:43.892630+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T04:05:45.930960+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T04:05:45.944502+00:00"}
+{"type": "user_message", "content": "research on agentic agent breakthrough.", "_ts": "2026-06-16T04:06:26.310579+00:00"}
+{"type": "start", "_ts": "2026-06-16T04:06:26.311200+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-16T04:06:26.317768+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T04:06:26.318246+00:00"}
+{"type": "tool_call_start", "tool_name": "load_skill", "tool_call_id": "call_Izdra3as5fijAmwuynBuM0JM", "_ts": "2026-06-16T04:06:39.525766+00:00"}
+{"type": "tool_args_delta", "tool_name": "load_skill", "args_delta": "{\"skill_name\":\"research-methodology\"}", "_ts": "2026-06-16T04:06:39.526558+00:00"}
+{"type": "tool_call_start", "tool_name": "load_skill", "tool_call_id": "call_fUrltXyirEMhG5SD8QIu74bu", "_ts": "2026-06-16T04:06:39.697395+00:00"}
+{"type": "tool_args_delta", "tool_name": "load_skill", "args_delta": "{\"skill_name\":\"report-writing\"}", "_ts": "2026-06-16T04:06:39.697713+00:00"}
+{"type": "tool_call_start", "tool_name": "task", "tool_call_id": "call_BqWoA5NhPL6HNpUc1nQTkpmr", "_ts": "2026-06-16T04:06:39.698293+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "{\"description\":\"Create a concise research plan for the topic: recent breakthroughs in agentic AI agents / agentic AI systems. Assume the user wants a current overview through June 2026. Break into 4-5 focused subtopics and proposed final report structure. Do not ask clarifying questions unless absolutely necessary; make reasonable assumptions.\",\"subagent_type\":\"planner\",\"mode\":\"sync\",\"complexity\":\"moderate\",\"requires_user_context\":false,\"may_need_clarification\":false}", "_ts": "2026-06-16T04:06:39.698527+00:00"}
+{"type": "tool_start", "tool_name": "load_skill", "args": "{\"skill_name\":\"research-methodology\"}", "_ts": "2026-06-16T04:06:39.946999+00:00"}
+{"type": "tool_start", "tool_name": "load_skill", "args": "{\"skill_name\":\"report-writing\"}", "_ts": "2026-06-16T04:06:39.947382+00:00"}
+{"type": "tool_start", "tool_name": "task", "args": "{\"description\":\"Create a concise research plan for the topic: recent breakthroughs in agentic AI agents / agentic AI systems. Assume the user wants a current overview through June 2026. Break into 4-5 focused subtopics and proposed final report structure. Do not ask clarifying questions unless absolutely necessary; make reasonable assumptions.\",\"subagent_type\":\"planner\",\"mode\":\"sync\",\"complexity\":\"moderate\",\"requires_user_context\":false,\"may_need_clarification\":false}", "_ts": "2026-06-16T04:06:39.947730+00:00"}
+{"type": "status", "content": "Running planner subagent...", "_ts": "2026-06-16T04:06:39.947842+00:00"}
+{"type": "error", "content": "", "_ts": "2026-06-16T04:06:39.950764+00:00"}
+{"type": "done", "_ts": "2026-06-16T04:06:39.950872+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T04:56:25.849523+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T04:56:26.086390+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T04:56:26.696442+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T04:56:26.696797+00:00"}
+{"type": "user_message", "content": "research on agentic agent breakthrough.", "_ts": "2026-06-16T04:56:51.142111+00:00"}
+{"type": "start", "_ts": "2026-06-16T04:56:51.142724+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-16T04:56:51.148293+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T04:56:51.148659+00:00"}
+{"type": "tool_call_start", "tool_name": "load_skill", "tool_call_id": "call_C7gX08fCg4BwVJJIJeOiNgOQ", "_ts": "2026-06-16T04:57:05.426831+00:00"}
+{"type": "tool_args_delta", "tool_name": "load_skill", "args_delta": "{\"skill_name\":\"research-methodology\"}", "_ts": "2026-06-16T04:57:05.431288+00:00"}
+{"type": "tool_call_start", "tool_name": "load_skill", "tool_call_id": "call_SSKScgCIkAwM62nHJz3NjwU6", "_ts": "2026-06-16T04:57:05.608101+00:00"}
+{"type": "tool_args_delta", "tool_name": "load_skill", "args_delta": "{\"skill_name\":\"report-writing\"}", "_ts": "2026-06-16T04:57:05.608441+00:00"}
+{"type": "tool_call_start", "tool_name": "task", "tool_call_id": "call_y4DdA4K6xG5dOsBhJIZLTwu8", "_ts": "2026-06-16T04:57:05.609005+00:00"}
+{"type": "tool_args_delta", "tool_name": "task", "args_delta": "{\"description\":\"Create a concise research plan for a report on 'agentic agent breakthroughs' in AI. Interpret the topic as recent breakthroughs in agentic AI systems: LLM agents that plan, use tools, call APIs, browse/operate computers, collaborate in multi-agent workflows, and complete long-horizon tasks. Break it into 4-5 focused subtopics; do not ask clarifying questions unless absolutely necessary. Include suggested final report structure.\",\"subagent_type\":\"planner\",\"mode\":\"sync\",\"complexity\":\"moderate\"}", "_ts": "2026-06-16T04:57:05.609265+00:00"}
+{"type": "tool_start", "tool_name": "load_skill", "args": "{\"skill_name\":\"research-methodology\"}", "_ts": "2026-06-16T04:57:05.817886+00:00"}
+{"type": "tool_start", "tool_name": "load_skill", "args": "{\"skill_name\":\"report-writing\"}", "_ts": "2026-06-16T04:57:05.818394+00:00"}
+{"type": "tool_start", "tool_name": "task", "args": "{\"description\":\"Create a concise research plan for a report on 'agentic agent breakthroughs' in AI. Interpret the topic as recent breakthroughs in agentic AI systems: LLM agents that plan, use tools, call APIs, browse/operate computers, collaborate in multi-agent workflows, and complete long-horizon tasks. Break it into 4-5 focused subtopics; do not ask clarifying questions unless absolutely necessary. Include suggested final report structure.\",\"subagent_type\":\"planner\",\"mode\":\"sync\",\"complexity\":\"moderate\"}", "_ts": "2026-06-16T04:57:05.818907+00:00"}
+{"type": "status", "content": "Running planner subagent...", "_ts": "2026-06-16T04:57:05.819025+00:00"}
+{"type": "tool_output", "tool_name": "load_skill", "output": "Tool execution failed due to an internal error. Please try a slightly different approach.", "_ts": "2026-06-16T04:57:05.820049+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "load_skill", "total_calls": 0, "tools_breakdown": {}, "_ts": "2026-06-16T04:57:05.820158+00:00"}
+{"type": "tool_output", "tool_name": "load_skill", "output": "Tool execution failed due to an internal error. Please try a slightly different approach.", "_ts": "2026-06-16T04:57:05.820301+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "load_skill", "total_calls": 0, "tools_breakdown": {}, "_ts": "2026-06-16T04:57:05.820379+00:00"}
+{"type": "tool_output", "tool_name": "task", "output": "Tool execution failed due to an internal error. Please try a slightly different approach.", "_ts": "2026-06-16T04:57:05.820487+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "task", "total_calls": 0, "tools_breakdown": {}, "_ts": "2026-06-16T04:57:05.820566+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T04:57:05.820835+00:00"}
+{"type": "tool_call_start", "tool_name": "write_todos", "tool_call_id": "call_wbFhjhdXKJUclk3ErNiUtBuc", "_ts": "2026-06-16T04:57:08.884136+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "{\"", "_ts": "2026-06-16T04:57:08.884833+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "todos", "_ts": "2026-06-16T04:57:08.885453+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":[", "_ts": "2026-06-16T04:57:08.886347+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "{\"", "_ts": "2026-06-16T04:57:08.887022+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-16T04:57:08.887643+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:08.887924+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-16T04:57:08.888190+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "1", "_ts": "2026-06-16T04:57:08.888466+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:08.902477+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-16T04:57:08.902813+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:08.999185+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Frame", "_ts": "2026-06-16T04:57:09.010759+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " the", "_ts": "2026-06-16T04:57:09.115123+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " scope", "_ts": "2026-06-16T04:57:09.129250+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " and", "_ts": "2026-06-16T04:57:09.176557+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " timeline", "_ts": "2026-06-16T04:57:09.181265+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " for", "_ts": "2026-06-16T04:57:09.187703+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " agent", "_ts": "2026-06-16T04:57:09.191223+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ic", "_ts": "2026-06-16T04:57:09.195922+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " AI", "_ts": "2026-06-16T04:57:09.198524+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " breakthroughs", "_ts": "2026-06-16T04:57:09.201018+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.201932+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-16T04:57:09.202160+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.286849+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "pending", "_ts": "2026-06-16T04:57:09.289305+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.292458+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-16T04:57:09.298785+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-16T04:57:09.299244+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.302697+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Fr", "_ts": "2026-06-16T04:57:09.303641+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "aming", "_ts": "2026-06-16T04:57:09.304757+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " the", "_ts": "2026-06-16T04:57:09.344564+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " scope", "_ts": "2026-06-16T04:57:09.346444+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " and", "_ts": "2026-06-16T04:57:09.348313+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " timeline", "_ts": "2026-06-16T04:57:09.350811+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"},{\"", "_ts": "2026-06-16T04:57:09.355373+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-16T04:57:09.355677+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.356031+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-16T04:57:09.356447+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "2", "_ts": "2026-06-16T04:57:09.399132+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.399734+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-16T04:57:09.400406+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.451905+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Gather", "_ts": "2026-06-16T04:57:09.506173+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " authoritative", "_ts": "2026-06-16T04:57:09.518880+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " sources", "_ts": "2026-06-16T04:57:09.519675+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " on", "_ts": "2026-06-16T04:57:09.564596+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " recent", "_ts": "2026-06-16T04:57:09.575285+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " agent", "_ts": "2026-06-16T04:57:09.578261+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ic", "_ts": "2026-06-16T04:57:09.578991+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " AI", "_ts": "2026-06-16T04:57:09.579861+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " systems", "_ts": "2026-06-16T04:57:09.618293+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " and", "_ts": "2026-06-16T04:57:09.634503+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " benchmarks", "_ts": "2026-06-16T04:57:09.635218+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.637992+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-16T04:57:09.640844+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.643177+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "pending", "_ts": "2026-06-16T04:57:09.644504+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.645950+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-16T04:57:09.675617+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-16T04:57:09.676783+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.685851+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Gather", "_ts": "2026-06-16T04:57:09.687740+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ing", "_ts": "2026-06-16T04:57:09.692380+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " authoritative", "_ts": "2026-06-16T04:57:09.693104+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " sources", "_ts": "2026-06-16T04:57:09.694968+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"},{\"", "_ts": "2026-06-16T04:57:09.695196+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-16T04:57:09.729454+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.744633+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-16T04:57:09.747121+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "3", "_ts": "2026-06-16T04:57:09.750405+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.750913+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-16T04:57:09.751760+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.784132+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Analyze", "_ts": "2026-06-16T04:57:09.798116+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " breakthrough", "_ts": "2026-06-16T04:57:09.798833+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " categories", "_ts": "2026-06-16T04:57:09.839934+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": ",", "_ts": "2026-06-16T04:57:09.898783+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " limitations", "_ts": "2026-06-16T04:57:09.909557+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": ",", "_ts": "2026-06-16T04:57:09.910293+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " and", "_ts": "2026-06-16T04:57:09.951889+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " implications", "_ts": "2026-06-16T04:57:09.969147+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.969829+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-16T04:57:09.970453+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:09.971519+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "pending", "_ts": "2026-06-16T04:57:09.973154+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:09.974688+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-16T04:57:09.975234+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-16T04:57:10.010651+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.020734+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Analy", "_ts": "2026-06-16T04:57:10.023109+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "zing", "_ts": "2026-06-16T04:57:10.024166+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " breakthrough", "_ts": "2026-06-16T04:57:10.025807+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " categories", "_ts": "2026-06-16T04:57:10.080236+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"},{\"", "_ts": "2026-06-16T04:57:10.080818+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-16T04:57:10.081361+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.081882+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-16T04:57:10.082502+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "4", "_ts": "2026-06-16T04:57:10.083110+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:10.084323+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-16T04:57:10.084692+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.119795+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Write", "_ts": "2026-06-16T04:57:10.176482+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " the", "_ts": "2026-06-16T04:57:10.231717+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " final", "_ts": "2026-06-16T04:57:10.248079+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " research", "_ts": "2026-06-16T04:57:10.248827+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " report", "_ts": "2026-06-16T04:57:10.249478+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " to", "_ts": "2026-06-16T04:57:10.287837+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " /", "_ts": "2026-06-16T04:57:10.302986+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "workspace", "_ts": "2026-06-16T04:57:10.305062+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "/report", "_ts": "2026-06-16T04:57:10.306886+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": ".md", "_ts": "2026-06-16T04:57:10.309475+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:10.310731+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-16T04:57:10.311806+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.312051+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "pending", "_ts": "2026-06-16T04:57:10.346090+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:10.346960+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-16T04:57:10.347710+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-16T04:57:10.348383+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.358270+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Writing", "_ts": "2026-06-16T04:57:10.361410+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " the", "_ts": "2026-06-16T04:57:10.361625+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " final", "_ts": "2026-06-16T04:57:10.361821+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " research", "_ts": "2026-06-16T04:57:10.399205+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " report", "_ts": "2026-06-16T04:57:10.412424+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"},{\"", "_ts": "2026-06-16T04:57:10.415523+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-16T04:57:10.417618+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.419619+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-16T04:57:10.420978+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "5", "_ts": "2026-06-16T04:57:10.421295+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:10.421588+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-16T04:57:10.451722+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.465871+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Summ", "_ts": "2026-06-16T04:57:10.467172+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ar", "_ts": "2026-06-16T04:57:10.468156+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ize", "_ts": "2026-06-16T04:57:10.508906+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " key", "_ts": "2026-06-16T04:57:10.523557+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " findings", "_ts": "2026-06-16T04:57:10.525976+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " for", "_ts": "2026-06-16T04:57:10.528900+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " the", "_ts": "2026-06-16T04:57:10.531755+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " user", "_ts": "2026-06-16T04:57:10.533254+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:10.535423+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-16T04:57:10.535646+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.563861+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "pending", "_ts": "2026-06-16T04:57:10.577677+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-16T04:57:10.582519+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-16T04:57:10.584188+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-16T04:57:10.584708+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-16T04:57:10.585531+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Summ", "_ts": "2026-06-16T04:57:10.586934+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ar", "_ts": "2026-06-16T04:57:10.587134+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "izing", "_ts": "2026-06-16T04:57:10.624885+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " key", "_ts": "2026-06-16T04:57:10.628759+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " findings", "_ts": "2026-06-16T04:57:10.631252+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"}", "_ts": "2026-06-16T04:57:10.637346+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "]}", "_ts": "2026-06-16T04:57:10.637604+00:00"}
+{"type": "tool_start", "tool_name": "write_todos", "args": "{\"todos\":[{\"id\":\"t1\",\"content\":\"Frame the scope and timeline for agentic AI breakthroughs\",\"status\":\"pending\",\"active_form\":\"Framing the scope and timeline\"},{\"id\":\"t2\",\"content\":\"Gather authoritative sources on recent agentic AI systems and benchmarks\",\"status\":\"pending\",\"active_form\":\"Gathering authoritative sources\"},{\"id\":\"t3\",\"content\":\"Analyze breakthrough categories, limitations, and implications\",\"status\":\"pending\",\"active_form\":\"Analyzing breakthrough categories\"},{\"id\":\"t4\",\"content\":\"Write the final research report to /workspace/report.md\",\"status\":\"pending\",\"active_form\":\"Writing the final research report\"},{\"id\":\"t5\",\"content\":\"Summarize key findings for the user\",\"status\":\"pending\",\"active_form\":\"Summarizing key findings\"}]}", "_ts": "2026-06-16T04:57:10.885394+00:00"}
+{"type": "todos_update", "todos": [{"id": "t1", "content": "Frame the scope and timeline for agentic AI breakthroughs", "status": "pending", "active_form": "Framing the scope and timeline"}, {"id": "t2", "content": "Gather authoritative sources on recent agentic AI systems and benchmarks", "status": "pending", "active_form": "Gathering authoritative sources"}, {"id": "t3", "content": "Analyze breakthrough categories, limitations, and implications", "status": "pending", "active_form": "Analyzing breakthrough categories"}, {"id": "t4", "content": "Write the final research report to /workspace/report.md", "status": "pending", "active_form": "Writing the final research report"}, {"id": "t5", "content": "Summarize key findings for the user", "status": "pending", "active_form": "Summarizing key findings"}], "_ts": "2026-06-16T04:57:10.885589+00:00"}
+{"type": "tool_output", "tool_name": "write_todos", "output": "Tool execution failed due to an internal error. Please try a slightly different approach.", "_ts": "2026-06-16T04:57:10.886204+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "write_todos", "total_calls": 0, "tools_breakdown": {}, "_ts": "2026-06-16T04:57:10.886300+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T04:57:10.886583+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7a8dbd4819a97079ef4378df446", "_ts": "2026-06-16T04:57:13.084543+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["agentic AI agents breakthroughs 2025 benchmark long horizon tasks SWE-bench Deep Research Operator computer use", "OpenAI Agents SDK Responses API agentic AI March 2025 official", "Anthropic computer use Claude agent benchmark OSWorld October 2024 official", "SWE-bench verified state of AI agents software engineering 2025"], "query": "agentic AI agents breakthroughs 2025 benchmark long horizon tasks SWE-bench Deep Research Operator computer use"}, "_ts": "2026-06-16T04:57:17.382430+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7a8dbd4819a97079ef4378df446", "_ts": "2026-06-16T04:57:17.382899+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7ad27e4819a9ce299be1c4eec32", "_ts": "2026-06-16T04:57:17.384845+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["Anthropic computer use Claude 3.5 Sonnet beta October 2024 official", "Anthropic Claude 4 coding agents system card SWE-bench agentic 2025 official", "METR measuring AI ability to complete long tasks 2025 2026 autonomous agents", "OSWorld benchmark computer use agents paper"], "query": "Anthropic computer use Claude 3.5 Sonnet beta October 2024 official"}, "_ts": "2026-06-16T04:57:22.908890+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7ad27e4819a9ce299be1c4eec32", "_ts": "2026-06-16T04:57:22.909119+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7b2ab74819a8ca758a657979ec6", "_ts": "2026-06-16T04:57:22.913295+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["OpenAI Deep Research autonomous agent February 2025 official", "OpenAI Operator agent January 2025 official computer using agent", "Google Project Mariner AI agent December 2024 official", "Microsoft AutoGen multi-agent framework 2024 2025 official"], "query": "OpenAI Deep Research autonomous agent February 2025 official"}, "_ts": "2026-06-16T04:57:30.076252+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7b2ab74819a8ca758a657979ec6", "_ts": "2026-06-16T04:57:30.076623+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7b9c200819a99220281f311efec", "_ts": "2026-06-16T04:57:30.078301+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["site:deepmind.google Project Mariner agent December 2024 Gemini 2.0 official", "site:blog.google Gemini 2.0 Project Mariner agent official", "site:blog.google Project Astra Mariner Gemini 2.0 universal assistant December 2024", "site:developers.googleblog.com Project Mariner Gemini API Vertex AI agent May 2025"], "query": "site:deepmind.google Project Mariner agent December 2024 Gemini 2.0 official"}, "_ts": "2026-06-16T04:57:33.045397+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7b9c200819a99220281f311efec", "_ts": "2026-06-16T04:57:33.045771+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7bcdbe0819aacf4ab33eb44b647", "_ts": "2026-06-16T04:57:33.054752+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["ReAct Synergizing reasoning and acting in language models paper 2022 tools agents", "Toolformer language models can teach themselves to use tools paper 2023", "Voyager lifelong learning agent Minecraft paper 2023", "SWE-agent paper 2024 GitHub issues autonomous software engineering"], "query": "ReAct Synergizing reasoning and acting in language models paper 2022 tools agents"}, "_ts": "2026-06-16T04:57:41.440933+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7bcdbe0819aacf4ab33eb44b647", "_ts": "2026-06-16T04:57:41.441332+00:00"}
+{"type": "tool_call_start", "tool_name": "ls", "tool_call_id": "call_QjQBcFi8y57XHiyAJGmGuPfc", "_ts": "2026-06-16T04:57:41.623897+00:00"}
+{"type": "tool_args_delta", "tool_name": "ls", "args_delta": "{\"path\":\"/workspace\"}", "_ts": "2026-06-16T04:57:41.656660+00:00"}
+{"type": "tool_start", "tool_name": "ls", "args": "{\"path\":\"/workspace\"}", "_ts": "2026-06-16T04:57:42.778888+00:00"}
+{"type": "tool_output", "tool_name": "ls", "output": "Tool execution failed due to an internal error. Please try a slightly different approach.", "_ts": "2026-06-16T04:57:42.779464+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "ls", "total_calls": 0, "tools_breakdown": {}, "_ts": "2026-06-16T04:57:42.779573+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-16T04:57:42.779942+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7ca0660819a85befd899d8439aa", "_ts": "2026-06-16T04:57:46.253374+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["SWE-bench Verified paper OpenAI 2024 benchmark agent software engineering", "SWE-bench official leaderboard verified 2025 Claude Opus 4.5 80.9", "SWE-bench Verified OpenAI SWE-bench paper 500 problems human verified", "SWE-agent Agent-Computer Interfaces Enable Automated Software Engineering NeurIPS 2024 paper"], "query": "SWE-bench Verified paper OpenAI 2024 benchmark agent software engineering"}, "_ts": "2026-06-16T04:57:53.316008+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7ca0660819a85befd899d8439aa", "_ts": "2026-06-16T04:57:53.316439+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7d23d40819ab1970d75042ec3eb", "_ts": "2026-06-16T04:57:54.442710+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://openai.com/index/new-tools-for-building-agents/"}, "_ts": "2026-06-16T04:57:57.413244+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7d23d40819ab1970d75042ec3eb", "_ts": "2026-06-16T04:57:57.413912+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7d5757c819aad889b1866b7bc27", "_ts": "2026-06-16T04:57:57.720470+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://www.anthropic.com/news/3-5-models-and-computer-use"}, "_ts": "2026-06-16T04:57:59.869247+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7d5757c819aad889b1866b7bc27", "_ts": "2026-06-16T04:57:59.869597+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7d7ece0819ab7547b3d06d2968c", "_ts": "2026-06-16T04:58:00.176792+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"pattern": "Project Mariner", "type": "find_in_page", "url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/google-gemini-ai-update-december-2024/"}, "_ts": "2026-06-16T04:58:02.225102+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7d7ece0819ab7547b3d06d2968c", "_ts": "2026-06-16T04:58:02.225610+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7da686c819aa7ac7e6de26b27be", "_ts": "2026-06-16T04:58:02.632826+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://openai.com/index/introducing-operator/"}, "_ts": "2026-06-16T04:58:07.445170+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7da686c819aa7ac7e6de26b27be", "_ts": "2026-06-16T04:58:07.445548+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7df7d7c819a9cc56c3053f0ce29", "_ts": "2026-06-16T04:58:07.753123+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"pattern": "unified agentic system", "type": "find_in_page", "url": "https://openai.com/index/introducing-chatgpt-agent/"}, "_ts": "2026-06-16T04:58:10.313815+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7df7d7c819a9cc56c3053f0ce29", "_ts": "2026-06-16T04:58:10.314286+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7e47128819a85e703b1f3eb234e", "_ts": "2026-06-16T04:58:12.667183+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://arxiv.org/abs/2210.03629"}, "_ts": "2026-06-16T04:58:15.257562+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7e47128819a85e703b1f3eb234e", "_ts": "2026-06-16T04:58:15.257970+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7e7bd40819a880a839b2d2887cc", "_ts": "2026-06-16T04:58:15.942012+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://arxiv.org/abs/2305.16291"}, "_ts": "2026-06-16T04:58:17.683118+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_09561ebab73884f5006a30d7e7bd40819a880a839b2d2887cc", "_ts": "2026-06-16T04:58:17.683491+00:00"}
+{"type": "text_delta", "content": "## Research brief: agentic AI \u201c", "_ts": "2026-06-16T04:58:25.850211+00:00"}
+{"type": "text_delta", "content": "breakthroughs\u201d as of June 16, 2026\n\n**", "_ts": "2026-06-16T04:58:25.966504+00:00"}
+{"type": "text_delta", "content": "Short answer:** the breakthrough", "_ts": "2026-06-16T04:58:26.088732+00:00"}
+{"type": "text_delta", "content": " is not one single agent. It is the convergence of **reasoning models + tool use + computer/browser control + long-context memory + multi-agent orchestration + better evaluation**. Agents are moving from \u201cchatbots that answer\u201d toward systems that can **plan, use tools, browse, write code, operate GUIs, check", "_ts": "2026-06-16T04:58:26.996984+00:00"}
+{"type": "text_delta", "content": " their own work, and complete multi-step workflows**.\n\n## 1. What changed:", "_ts": "2026-06-16T04:58:27.116714+00:00"}
+{"type": "text_delta", "content": " from LLMs", "_ts": "2026-06-16T04:58:27.229010+00:00"}
+{"type": "text_delta", "content": " to agents\n\nEarly", "_ts": "2026-06-16T04:58:27.400356+00:00"}
+{"type": "text_delta", "content": " LLMs generated text. Agentic systems", "_ts": "2026-06-16T04:58:27.513528+00:00"}
+{"type": "text_delta", "content": " add a loop:\n\n1. understand", "_ts": "2026-06-16T04:58:27.683833+00:00"}
+{"type": "text_delta", "content": " goal  \n2. plan next step  \n3. call a tool", "_ts": "2026-06-16T04:58:27.857047+00:00"}
+{"type": "text_delta", "content": " / browse /", "_ts": "2026-06-16T04:58:27.968646+00:00"}
+{"type": "text_delta", "content": " run code / edit files /", "_ts": "2026-06-16T04:58:28.086131+00:00"}
+{"type": "text_delta", "content": " click UI  \n4. observe result  \n5. revise plan  \n6. repeat", "_ts": "2026-06-16T04:58:28.200459+00:00"}
+{"type": "text_delta", "content": " until task completion\n\n", "_ts": "2026-06-16T04:58:28.356124+00:00"}
+{"type": "text_delta", "content": "Two foundational research steps were", "_ts": "2026-06-16T04:58:28.534230+00:00"}
+{"type": "text_delta", "content": " **ReAct** and **Toolformer**. ReAct", "_ts": "2026-06-16T04:58:28.636783+00:00"}
+{"type": "text_delta", "content": " showed that interleaving reasoning traces with actions helps", "_ts": "2026-06-16T04:58:28.748614+00:00"}
+{"type": "text_delta", "content": " models update plans, use external information", "_ts": "2026-06-16T04:58:28.871462+00:00"}
+{"type": "text_delta", "content": ", and handle exceptions; Toolformer showed that", "_ts": "2026-06-16T04:58:28.985895+00:00"}
+{"type": "text_delta", "content": " models can learn when and how to call", "_ts": "2026-06-16T04:58:29.142632+00:00"}
+{"type": "text_delta", "content": " external APIs such as search, calculators, QA systems, translation, and calendars.", "_ts": "2026-06-16T04:58:29.252876+00:00"}
+{"type": "text_delta", "content": " ([arxiv.org](https://arxiv.org/abs/2210.03629))\n", "_ts": "2026-06-16T04:58:29.373976+00:00"}
+{"type": "text_delta", "content": "\n## 2. Key breakthrough categories\n\n### A. Tool-", "_ts": "2026-06-16T04:58:29.530305+00:00"}
+{"type": "text_delta", "content": "using reasoning agents\n\nThe first major agentic breakthrough was", "_ts": "2026-06-16T04:58:29.666450+00:00"}
+{"type": "text_delta", "content": " the realization that an LLM", "_ts": "2026-06-16T04:58:29.818766+00:00"}
+{"type": "text_delta", "content": " becomes much more useful when it can **act through tools** instead of only predicting", "_ts": "2026-06-16T04:58:30.032478+00:00"}
+{"type": "text_delta", "content": " text. This includes search, calculators, code execution, file search,", "_ts": "2026-06-16T04:58:30.204766+00:00"}
+{"type": "text_delta", "content": " databases, CRMs, browsers,", "_ts": "2026-06-16T04:58:30.381832+00:00"}
+{"type": "text_delta", "content": " calendars, and business APIs. OpenAI\u2019s March 2025", "_ts": "2026-06-16T04:58:30.536032+00:00"}
+{"type": "text_delta", "content": " Responses API and Agents SDK formalized this into a developer platform with built-in web search, file search,", "_ts": "2026-06-16T04:58:30.700315+00:00"}
+{"type": "text_delta", "content": " computer use, single/m", "_ts": "2026-06-16T04:58:30.865990+00:00"}
+{"type": "text_delta", "content": "ulti-agent orchestration, handoffs, guardrails, and tracing.", "_ts": "2026-06-16T04:58:30.967583+00:00"}
+{"type": "text_delta", "content": " ([openai.com](https://openai.com/index/new-tools-for-building-agents/))\n\n**Why it matters:** tool", "_ts": "2026-06-16T04:58:31.074700+00:00"}
+{"type": "text_delta", "content": " use lets agents ground answers in live data,", "_ts": "2026-06-16T04:58:31.237425+00:00"}
+{"type": "text_delta", "content": " perform actions, verify outputs, and chain operations across systems.\n\n### B. Computer", "_ts": "2026-06-16T04:58:31.402137+00:00"}
+{"type": "text_delta", "content": "-use / GUI agents\n\nA major practical", "_ts": "2026-06-16T04:58:31.567354+00:00"}
+{"type": "text_delta", "content": " leap was letting agents", "_ts": "2026-06-16T04:58:31.675020+00:00"}
+{"type": "text_delta", "content": " use software the way humans do: screenshots, clicks,", "_ts": "2026-06-16T04:58:31.782644+00:00"}
+{"type": "text_delta", "content": " typing, scrolling, and form interaction. Anthropic\u2019s", "_ts": "2026-06-16T04:58:31.943238+00:00"}
+{"type": "text_delta", "content": " October 2024 Claude computer-use", "_ts": "2026-06-16T04:58:32.109609+00:00"}
+{"type": "text_delta", "content": " beta let Claude perceive and interact with computer interfaces;", "_ts": "2026-06-16T04:58:32.223384+00:00"}
+{"type": "text_delta", "content": " Anthropic reported Claude 3.5 Sonnet scoring 14.9% on OSWorld screenshot-only and 22", "_ts": "2026-06-16T04:58:32.382770+00:00"}
+{"type": "text_delta", "content": ".0% with more steps, while warning that", "_ts": "2026-06-16T04:58:32.549727+00:00"}
+{"type": "text_delta", "content": " the capability was still imperfect and should", "_ts": "2026-06-16T04:58:32.661649+00:00"}
+{"type": "text_delta", "content": " begin with low-risk tasks. ([anthropic.com](https://www.anthropic.com/news/3-5-models-and-computer-use))\n\nOpenAI", "_ts": "2026-06-16T04:58:32.833163+00:00"}
+{"type": "text_delta", "content": " followed with **Operator** in January 2025, powered by a Computer-Using Agent model that", "_ts": "2026-06-16T04:58:33.000041+00:00"}
+{"type": "text_delta", "content": " combines GPT-4o vision with reasoning through reinforcement learning;", "_ts": "2026-06-16T04:58:33.162471+00:00"}
+{"type": "text_delta", "content": " Operator could use", "_ts": "2026-06-16T04:58:33.327370+00:00"}
+{"type": "text_delta", "content": " a browser by clicking, typing, scrolling", "_ts": "2026-06-16T04:58:33.429472+00:00"}
+{"type": "text_delta", "content": ", self-correcting, and handing", "_ts": "2026-06-16T04:58:33.591404+00:00"}
+{"type": "text_delta", "content": " control back to the user when needed.", "_ts": "2026-06-16T04:58:33.703251+00:00"}
+{"type": "text_delta", "content": " ([openai.com](https://openai.com/index/introducing-operator/)) Google\u2019s Gemini 2.0 push", "_ts": "2026-06-16T04:58:33.819578+00:00"}
+{"type": "text_delta", "content": " similarly framed Gemini as built", "_ts": "2026-06-16T04:58:33.976723+00:00"}
+{"type": "text_delta", "content": " for the \u201cagentic era,\u201d with Project Mariner using browser pixels", "_ts": "2026-06-16T04:58:34.144088+00:00"}
+{"type": "text_delta", "content": " and web elements to complete tasks, achieving 83.5% on Web", "_ts": "2026-06-16T04:58:34.304333+00:00"}
+{"type": "text_delta", "content": "Voyager in a single-agent setup while Google noted it was still early and sometimes", "_ts": "2026-06-16T04:58:34.465356+00:00"}
+{"type": "text_delta", "content": " slow or inaccurate. ([blog.google](https://blog.google/innovation-and-ai/models-and-research/google-deepmind/google-gemini-ai-update-december-2024/)", "_ts": "2026-06-16T04:58:34.630559+00:00"}
+{"type": "text_delta", "content": ")\n\n**Why", "_ts": "2026-06-16T04:58:34.797593+00:00"}
+{"type": "text_delta", "content": " it matters:** GUI agents can automate software that has no API,", "_ts": "2026-06-16T04:58:34.904505+00:00"}
+{"type": "text_delta", "content": " including legacy enterprise systems", "_ts": "2026-06-16T04:58:35.070440+00:00"}
+{"type": "text_delta", "content": ".\n\n### C. Research agents\n\nOpenAI\u2019s **deep", "_ts": "2026-06-16T04:58:35.180535+00:00"}
+{"type": "text_delta", "content": " research** launched in February 2025 as an agentic capability for multi-step web research.", "_ts": "2026-06-16T04:58:35.345235+00:00"}
+{"type": "text_delta", "content": " It searches, reads, analyzes, and synthesizes many sources into cited reports, using reasoning plus", "_ts": "2026-06-16T04:58:36.525050+00:00"}
+{"type": "text_delta", "content": " browsing/data-analysis tools. OpenAI described it as doing", "_ts": "2026-06-16T04:58:36.674409+00:00"}
+{"type": "text_delta", "content": " in tens of minutes work that might", "_ts": "2026-06-16T04:58:36.834053+00:00"}
+{"type": "text_delta", "content": " take humans many hours.", "_ts": "2026-06-16T04:58:36.940336+00:00"}
+{"type": "text_delta", "content": " ([openai.com](https://openai.com/index/introducing-deep-research/))\n\n**Why it matters:** this is one of the clearest production", "_ts": "2026-06-16T04:58:37.133590+00:00"}
+{"type": "text_delta", "content": " examples of an agent doing a complete knowledge-work", "_ts": "2026-06-16T04:58:37.297931+00:00"}
+{"type": "text_delta", "content": " workflow: sc", "_ts": "2026-06-16T04:58:37.462061+00:00"}
+{"type": "text_delta", "content": "oping, searching, reading, filtering", "_ts": "2026-06-16T04:58:37.564113+00:00"}
+{"type": "text_delta", "content": ", synthesizing, citing, and reporting.\n\n### D. Unified", "_ts": "2026-06-16T04:58:37.732954+00:00"}
+{"type": "text_delta", "content": " \u201cthink", "_ts": "2026-06-16T04:58:37.859171+00:00"}
+{"type": "text_delta", "content": " + act\u201d agents\n\nThe next", "_ts": "2026-06-16T04:58:37.965525+00:00"}
+{"type": "text_delta", "content": " step was combining research,", "_ts": "2026-06-16T04:58:38.084707+00:00"}
+{"type": "text_delta", "content": " browser action, code execution, files, and connectors into one system. Open", "_ts": "2026-06-16T04:58:38.192261+00:00"}
+{"type": "text_delta", "content": "AI\u2019s July 2025 **ChatGPT agent** unified Operator-style", "_ts": "2026-06-16T04:58:38.358432+00:00"}
+{"type": "text_delta", "content": " website interaction, deep research-style synthesis, and ChatGPT conversational", "_ts": "2026-06-16T04:58:38.485663+00:00"}
+{"type": "text_delta", "content": " intelligence. It can use a virtual computer, switch among visual", "_ts": "2026-06-16T04:58:38.674189+00:00"}
+{"type": "text_delta", "content": " browser, text browser, terminal, and APIs, and complete workflows like", "_ts": "2026-06-16T04:58:38.821336+00:00"}
+{"type": "text_delta", "content": " competitor analysis, calendar briefings, spreadsheet updates, and slide generation", "_ts": "2026-06-16T04:58:38.942419+00:00"}
+{"type": "text_delta", "content": ". ", "_ts": "2026-06-16T04:58:39.058818+00:00"}
+{"type": "text_delta", "content": "([openai.com](https://openai.com/index/introducing-chatgpt-agent/)", "_ts": "2026-06-16T04:58:39.176413+00:00"}
+{"type": "text_delta", "content": ")\n\n**Why it matters:** this is the shift from specialized agents to **", "_ts": "2026-06-16T04:58:39.489860+00:00"}
+{"type": "text_delta", "content": "general workflow agents**.\n\n### E. Coding agents", "_ts": "2026-06-16T04:58:39.594217+00:00"}
+{"type": "text_delta", "content": "\n\nSoftware engineering became the clearest benchmark domain", "_ts": "2026-06-16T04:58:39.766121+00:00"}
+{"type": "text_delta", "content": " for agents because", "_ts": "2026-06-16T04:58:39.897248+00:00"}
+{"type": "text_delta", "content": " coding tasks have explicit tools:", "_ts": "2026-06-16T04:58:40.000547+00:00"}
+{"type": "text_delta", "content": " repositories, tests, terminals", "_ts": "2026-06-16T04:58:40.116423+00:00"}
+{"type": "text_delta", "content": ", diffs, and issue", "_ts": "2026-06-16T04:58:40.295733+00:00"}
+{"type": "text_delta", "content": " descriptions. SWE-agent, published at NeurIPS 2024,", "_ts": "2026-06-16T04:58:40.410114+00:00"}
+{"type": "text_delta", "content": " showed that agent-computer interface design significantly improves", "_ts": "2026-06-16T04:58:40.581595+00:00"}
+{"type": "text_delta", "content": " an agent\u2019s ability to edit files", "_ts": "2026-06-16T04:58:40.700434+00:00"}
+{"type": "text_delta", "content": ", navigate repositories, run tests, and", "_ts": "2026-06-16T04:58:40.825405+00:00"}
+{"type": "text_delta", "content": " solve software tasks; it", "_ts": "2026-06-16T04:58:40.932546+00:00"}
+{"type": "text_delta", "content": " achieved 12.5% pass@1", "_ts": "2026-06-16T04:58:41.061679+00:00"}
+{"type": "text_delta", "content": " on SWE-bench and 87.7% on HumanEvalFix at the time.", "_ts": "2026-06-16T04:58:41.164522+00:00"}
+{"type": "text_delta", "content": " ([papers.nips.cc](https://papers.nips.cc/paper_files/paper/2024/hash/5a7c947568c1b1328ccc5230172e1e7c-Abstract-Conference.html))\n\n**Why it matters:** coding agents are", "_ts": "2026-06-16T04:58:41.338280+00:00"}
+{"type": "text_delta", "content": " not just \u201ccode generators\u201d; they are iterative repair", "_ts": "2026-06-16T04:58:41.468673+00:00"}
+{"type": "text_delta", "content": " systems that inspect", "_ts": "2026-06-16T04:58:41.630793+00:00"}
+{"type": "text_delta", "content": " projects, run tests, patch code, and retry.\n\n### F.", "_ts": "2026-06-16T04:58:41.745090+00:00"}
+{"type": "text_delta", "content": " Lifelong-learning / memory agents\n\nVoyager, a 2023 Minecraft", "_ts": "2026-06-16T04:58:41.869552+00:00"}
+{"type": "text_delta", "content": " agent, demonstrated another important pattern: agents can build a", "_ts": "2026-06-16T04:58:42.035272+00:00"}
+{"type": "text_delta", "content": " reusable skill library. It used an automatic curriculum, executable", "_ts": "2026-06-16T04:58:42.157684+00:00"}
+{"type": "text_delta", "content": "-code skill memory, and iterative prompting with environment feedback", "_ts": "2026-06-16T04:58:42.318576+00:00"}
+{"type": "text_delta", "content": " and self-verification. Voyager achieved 3.3\u00d7", "_ts": "2026-06-16T04:58:42.559096+00:00"}
+{"type": "text_delta", "content": " more unique items, 2.3\u00d7 longer travel distance, and", "_ts": "2026-06-16T04:58:42.661218+00:00"}
+{"type": "text_delta", "content": " up to 15.3\u00d7 faster tech", "_ts": "2026-06-16T04:58:42.796362+00:00"}
+{"type": "text_delta", "content": "-tree milestones than prior state of", "_ts": "2026-06-16T04:58:42.899608+00:00"}
+{"type": "text_delta", "content": " the art in that setting.", "_ts": "2026-06-16T04:58:43.073115+00:00"}
+{"type": "text_delta", "content": " ([arxiv.org](https://arxiv.org/abs/2305.16291))\n\n**Why", "_ts": "2026-06-16T04:58:43.193850+00:00"}
+{"type": "text_delta", "content": " it matters:** persistent skill memory", "_ts": "2026-06-16T04:58:43.319522+00:00"}
+{"type": "text_delta", "content": " is a path toward agents that improve over time instead of starting", "_ts": "2026-06-16T04:58:43.423470+00:00"}
+{"type": "text_delta", "content": " from scratch every task.\n\n## 3. The", "_ts": "2026-06-16T04:58:43.606445+00:00"}
+{"type": "text_delta", "content": " real breakthrough: agent scaff", "_ts": "2026-06-16T04:58:43.725094+00:00"}
+{"type": "text_delta", "content": "olding, not just bigger models\n\nThe", "_ts": "2026-06-16T04:58:43.887728+00:00"}
+{"type": "text_delta", "content": " main insight is that agent performance depends on", "_ts": "2026-06-16T04:58:44.015687+00:00"}
+{"type": "text_delta", "content": " the whole", "_ts": "2026-06-16T04:58:44.232311+00:00"}
+{"type": "text_delta", "content": " system:\n\n- model reasoning quality  \n- tool-call", "_ts": "2026-06-16T04:58:44.402623+00:00"}
+{"type": "text_delta", "content": " reliability  \n- context window and memory", "_ts": "2026-06-16T04:58:44.513226+00:00"}
+{"type": "text_delta", "content": "  \n- environment access  \n- planning", "_ts": "2026-06-16T04:58:44.686931+00:00"}
+{"type": "text_delta", "content": " loop  \n- self", "_ts": "2026-06-16T04:58:44.812802+00:00"}
+{"type": "text_delta", "content": "-checking / verification  \n-", "_ts": "2026-06-16T04:58:44.918992+00:00"}
+{"type": "text_delta", "content": " rollback and retry  \n- UI/API permissions  \n- observability and tracing  \n- safety guardrails  \n- benchmark", "_ts": "2026-06-16T04:58:45.118388+00:00"}
+{"type": "text_delta", "content": " design  \n\nThis is why the", "_ts": "2026-06-16T04:58:45.220492+00:00"}
+{"type": "text_delta", "content": " same model can perform very differently depending", "_ts": "2026-06-16T04:58:45.322194+00:00"}
+{"type": "text_delta", "content": " on its agent scaffold.", "_ts": "2026-06-16T04:58:45.447203+00:00"}
+{"type": "text_delta", "content": " OpenAI\u2019s Agents SDK", "_ts": "2026-06-16T04:58:45.551968+00:00"}
+{"type": "text_delta", "content": " reflects this shift by making handoffs, guardrails, tracing", "_ts": "2026-06-16T04:58:45.668338+00:00"}
+{"type": "text_delta", "content": ", and multi-agent orchestration first-class", "_ts": "2026-06-16T04:58:45.840479+00:00"}
+{"type": "text_delta", "content": " parts of agent development. ([openai.com](https://openai.com/index/new-tools-for-building-agents/))\n\n## 4.", "_ts": "2026-06-16T04:58:45.955088+00:00"}
+{"type": "text_delta", "content": " Benchmarks show progress, but also measurement", "_ts": "2026-06-16T04:58:46.125436+00:00"}
+{"type": "text_delta", "content": " problems\n\nMETR proposed measuring agent capability by the length of tasks", "_ts": "2026-06-16T04:58:46.294827+00:00"}
+{"type": "text_delta", "content": " agents can complete autonomously. Its March 2025 work estimated that the", "_ts": "2026-06-16T04:58:46.423189+00:00"}
+{"type": "text_delta", "content": " task length frontier for", "_ts": "2026-06-16T04:58:46.585288+00:00"}
+{"type": "text_delta", "content": " generalist agents", "_ts": "2026-06-16T04:58:46.760644+00:00"}
+{"type": "text_delta", "content": " had been doubling roughly every seven months over", "_ts": "2026-06-16T04:58:46.961310+00:00"}
+{"type": "text_delta", "content": " the prior six years, while also emphasizing", "_ts": "2026-06-16T04:58:47.132635+00:00"}
+{"type": "text_delta", "content": " that current agents still could not reliably substitute for humans on", "_ts": "2026-06-16T04:58:47.269224+00:00"}
+{"type": "text_delta", "content": " many substantive projects. ([metr.org](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/))\n\nSWE-bench and SWE", "_ts": "2026-06-16T04:58:47.576592+00:00"}
+{"type": "text_delta", "content": "-bench Verified became popular coding-agent benchmarks, but by 2026", "_ts": "2026-06-16T04:58:47.703386+00:00"}
+{"type": "text_delta", "content": " OpenAI argued SWE-bench Verified no longer measured frontier coding", "_ts": "2026-06-16T04:58:47.918121+00:00"}
+{"type": "text_delta", "content": " capability well because public benchmark", "_ts": "2026-06-16T04:58:48.091704+00:00"}
+{"type": "text_delta", "content": " exposure can cause contamination and because automated tests", "_ts": "2026-06-16T04:58:48.193213+00:00"}
+{"type": "text_delta", "content": " can be flawed or overly narrow. OpenAI recommended using SWE-b", "_ts": "2026-06-16T04:58:48.320714+00:00"}
+{"type": "text_delta", "content": "ench Pro and more privately authored, expert", "_ts": "2026-06-16T04:58:48.488624+00:00"}
+{"type": "text_delta", "content": "-graded benchmarks instead. ", "_ts": "2026-06-16T04:58:48.605890+00:00"}
+{"type": "text_delta", "content": "([openai.com](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/)", "_ts": "2026-06-16T04:58:48.757659+00:00"}
+{"type": "text_delta", "content": ")\n\n**Takeaway:** agent", "_ts": "2026-06-16T04:58:48.865807+00:00"}
+{"type": "text_delta", "content": " benchmarks are improving, but headline scores can", "_ts": "2026-06-16T04:58:48.983484+00:00"}
+{"type": "text_delta", "content": " overstate real-world reliability.\n\n## 5. Current limitations\n\nAgentic", "_ts": "2026-06-16T04:58:49.175307+00:00"}
+{"type": "text_delta", "content": " AI is impressive but still brittle. The main blockers are:\n\n- **Long-horizon reliability:** agents often fail after many steps due to compounding errors.\n- **Prompt injection:** web pages, emails, documents, or UI text can try to manipulate the agent.\n- **Weak judgment around irreversible", "_ts": "2026-06-16T04:58:50.647855+00:00"}
+{"type": "text_delta", "content": " actions:** purchases, emails, financial moves, and account changes need human confirmation.\n- **Evaluation contamination:** public benchmarks may leak into training data.\n- **Tool frag", "_ts": "2026-06-16T04:58:50.786211+00:00"}
+{"type": "text_delta", "content": "ility:** websites change", "_ts": "2026-06-16T04:58:50.894201+00:00"}
+{"type": "text_delta", "content": ", APIs fail, UI", "_ts": "2026-06-16T04:58:51.009623+00:00"}
+{"type": "text_delta", "content": " elements move, and agents can", "_ts": "2026-06-16T04:58:51.125771+00:00"}
+{"type": "text_delta", "content": " misclick.\n- **Cost and latency:**", "_ts": "2026-06-16T04:58:51.235464+00:00"}
+{"type": "text_delta", "content": " multi-step agent", "_ts": "2026-06-16T04:58:51.407543+00:00"}
+{"type": "text_delta", "content": " runs can be slow and expensive", "_ts": "2026-06-16T04:58:51.527894+00:00"}
+{"type": "text_delta", "content": ".\n- **Verification gaps:** agents may appear", "_ts": "2026-06-16T04:58:51.687580+00:00"}
+{"type": "text_delta", "content": " successful without truly satisfying the task", "_ts": "2026-06-16T04:58:51.813874+00:00"}
+{"type": "text_delta", "content": ".\n\nGoogle,", "_ts": "2026-06-16T04:58:51.937713+00:00"}
+{"type": "text_delta", "content": " Anthropic, and OpenAI all explicitly", "_ts": "2026-06-16T04:58:52.042868+00:00"}
+{"type": "text_delta", "content": " emphasize human supervision, safety mitigations, and staged", "_ts": "2026-06-16T04:58:52.183673+00:00"}
+{"type": "text_delta", "content": " rollout for computer-use and browser-use agents. ", "_ts": "2026-06-16T04:58:52.387438+00:00"}
+{"type": "text_delta", "content": "([anthropic.com](https://www.anthropic.com/news/3-5-models-and-computer-use)", "_ts": "2026-06-16T04:58:52.564442+00:00"}
+{"type": "text_delta", "content": ")\n\n## 6. Bottom line\n\nThe \u201cagentic agent", "_ts": "2026-06-16T04:58:52.696287+00:00"}
+{"type": "text_delta", "content": " breakthrough\u201d is best understood as a **systems breakthrough**: L", "_ts": "2026-06-16T04:58:53.003783+00:00"}
+{"type": "text_delta", "content": "LMs are becoming controllers for tools,", "_ts": "2026-06-16T04:58:53.208419+00:00"}
+{"type": "text_delta", "content": " browsers, code environments, files", "_ts": "2026-06-16T04:58:53.369814+00:00"}
+{"type": "text_delta", "content": ", and workflows. The strongest evidence", "_ts": "2026-06-16T04:58:53.482876+00:00"}
+{"type": "text_delta", "content": " is in:\n\n1. **research agents** that", "_ts": "2026-06-16T04:58:53.616544+00:00"}
+{"type": "text_delta", "content": " browse and synthesize sources,  \n2. **computer-use agents**", "_ts": "2026-06-16T04:58:53.822530+00:00"}
+{"type": "text_delta", "content": " that operate GUIs,  \n3. **coding agents** that edit repositories and run tests,  \n4. **unified agents", "_ts": "2026-06-16T04:58:54.028512+00:00"}
+{"type": "text_delta", "content": "** that combine browsing, code, files, APIs", "_ts": "2026-06-16T04:58:54.161235+00:00"}
+{"type": "text_delta", "content": ", and user collaboration,  \n5. **new", "_ts": "2026-06-16T04:58:54.338903+00:00"}
+{"type": "text_delta", "content": " evaluation methods** focused", "_ts": "2026-06-16T04:58:54.502337+00:00"}
+{"type": "text_delta", "content": " on long-horizon autonomous task completion.\n\nThe field is moving fast, but the frontier", "_ts": "2026-06-16T04:58:54.640263+00:00"}
+{"type": "text_delta", "content": " is still **", "_ts": "2026-06-16T04:58:54.837317+00:00"}
+{"type": "text_delta", "content": "supervised autonomy**, not fully reliable independence.", "_ts": "2026-06-16T04:58:55.051604+00:00"}
+{"type": "status", "content": "Completed!", "_ts": "2026-06-16T04:58:55.764407+00:00"}
+{"type": "checkpoint_saved", "checkpoint_id": "42e0f721-647f-4330-8cb0-44586b5a3497", "label": "turn-4", "turn": 4, "message_count": 7, "metadata": {}, "_ts": "2026-06-16T04:58:55.764672+00:00"}
+{"type": "response", "content": "## Research brief: agentic AI \u201cbreakthroughs\u201d as of June 16, 2026\n\n**Short answer:** the breakthrough is not one single agent. It is the convergence of **reasoning models + tool use + computer/browser control + long-context memory + multi-agent orchestration + better evaluation**. Agents are moving from \u201cchatbots that answer\u201d toward systems that can **plan, use tools, browse, write code, operate GUIs, check their own work, and complete multi-step workflows**.\n\n## 1. What changed: from LLMs to agents\n\nEarly LLMs generated text. Agentic systems add a loop:\n\n1. understand goal  \n2. plan next step  \n3. call a tool / browse / run code / edit files / click UI  \n4. observe result  \n5. revise plan  \n6. repeat until task completion\n\nTwo foundational research steps were **ReAct** and **Toolformer**. ReAct showed that interleaving reasoning traces with actions helps models update plans, use external information, and handle exceptions; Toolformer showed that models can learn when and how to call external APIs such as search, calculators, QA systems, translation, and calendars. ([arxiv.org](https://arxiv.org/abs/2210.03629))\n\n## 2. Key breakthrough categories\n\n### A. Tool-using reasoning agents\n\nThe first major agentic breakthrough was the realization that an LLM becomes much more useful when it can **act through tools** instead of only predicting text. This includes search, calculators, code execution, file search, databases, CRMs, browsers, calendars, and business APIs. OpenAI\u2019s March 2025 Responses API and Agents SDK formalized this into a developer platform with built-in web search, file search, computer use, single/multi-agent orchestration, handoffs, guardrails, and tracing. ([openai.com](https://openai.com/index/new-tools-for-building-agents/))\n\n**Why it matters:** tool use lets agents ground answers in live data, perform actions, verify outputs, and chain operations across systems.\n\n### B. Computer-use / GUI agents\n\nA major practical leap was letting agents use software the way humans do: screenshots, clicks, typing, scrolling, and form interaction. Anthropic\u2019s October 2024 Claude computer-use beta let Claude perceive and interact with computer interfaces; Anthropic reported Claude 3.5 Sonnet scoring 14.9% on OSWorld screenshot-only and 22.0% with more steps, while warning that the capability was still imperfect and should begin with low-risk tasks. ([anthropic.com](https://www.anthropic.com/news/3-5-models-and-computer-use))\n\nOpenAI followed with **Operator** in January 2025, powered by a Computer-Using Agent model that combines GPT-4o vision with reasoning through reinforcement learning; Operator could use a browser by clicking, typing, scrolling, self-correcting, and handing control back to the user when needed. ([openai.com](https://openai.com/index/introducing-operator/)) Google\u2019s Gemini 2.0 push similarly framed Gemini as built for the \u201cagentic era,\u201d with Project Mariner using browser pixels and web elements to complete tasks, achieving 83.5% on WebVoyager in a single-agent setup while Google noted it was still early and sometimes slow or inaccurate. ([blog.google](https://blog.google/innovation-and-ai/models-and-research/google-deepmind/google-gemini-ai-update-december-2024/))\n\n**Why it matters:** GUI agents can automate software that has no API, including legacy enterprise systems.\n\n### C. Research agents\n\nOpenAI\u2019s **deep research** launched in February 2025 as an agentic capability for multi-step web research. It searches, reads, analyzes, and synthesizes many sources into cited reports, using reasoning plus browsing/data-analysis tools. OpenAI described it as doing in tens of minutes work that might take humans many hours. ([openai.com](https://openai.com/index/introducing-deep-research/))\n\n**Why it matters:** this is one of the clearest production examples of an agent doing a complete knowledge-work workflow: scoping, searching, reading, filtering, synthesizing, citing, and reporting.\n\n### D. Unified \u201cthink + act\u201d agents\n\nThe next step was combining research, browser action, code execution, files, and connectors into one system. OpenAI\u2019s July 2025 **ChatGPT agent** unified Operator-style website interaction, deep research-style synthesis, and ChatGPT conversational intelligence. It can use a virtual computer, switch among visual browser, text browser, terminal, and APIs, and complete workflows like competitor analysis, calendar briefings, spreadsheet updates, and slide generation. ([openai.com](https://openai.com/index/introducing-chatgpt-agent/))\n\n**Why it matters:** this is the shift from specialized agents to **general workflow agents**.\n\n### E. Coding agents\n\nSoftware engineering became the clearest benchmark domain for agents because coding tasks have explicit tools: repositories, tests, terminals, diffs, and issue descriptions. SWE-agent, published at NeurIPS 2024, showed that agent-computer interface design significantly improves an agent\u2019s ability to edit files, navigate repositories, run tests, and solve software tasks; it achieved 12.5% pass@1 on SWE-bench and 87.7% on HumanEvalFix at the time. ([papers.nips.cc](https://papers.nips.cc/paper_files/paper/2024/hash/5a7c947568c1b1328ccc5230172e1e7c-Abstract-Conference.html))\n\n**Why it matters:** coding agents are not just \u201ccode generators\u201d; they are iterative repair systems that inspect projects, run tests, patch code, and retry.\n\n### F. Lifelong-learning / memory agents\n\nVoyager, a 2023 Minecraft agent, demonstrated another important pattern: agents can build a reusable skill library. It used an automatic curriculum, executable-code skill memory, and iterative prompting with environment feedback and self-verification. Voyager achieved 3.3\u00d7 more unique items, 2.3\u00d7 longer travel distance, and up to 15.3\u00d7 faster tech-tree milestones than prior state of the art in that setting. ([arxiv.org](https://arxiv.org/abs/2305.16291))\n\n**Why it matters:** persistent skill memory is a path toward agents that improve over time instead of starting from scratch every task.\n\n## 3. The real breakthrough: agent scaffolding, not just bigger models\n\nThe main insight is that agent performance depends on the whole system:\n\n- model reasoning quality  \n- tool-call reliability  \n- context window and memory  \n- environment access  \n- planning loop  \n- self-checking / verification  \n- rollback and retry  \n- UI/API permissions  \n- observability and tracing  \n- safety guardrails  \n- benchmark design  \n\nThis is why the same model can perform very differently depending on its agent scaffold. OpenAI\u2019s Agents SDK reflects this shift by making handoffs, guardrails, tracing, and multi-agent orchestration first-class parts of agent development. ([openai.com](https://openai.com/index/new-tools-for-building-agents/))\n\n## 4. Benchmarks show progress, but also measurement problems\n\nMETR proposed measuring agent capability by the length of tasks agents can complete autonomously. Its March 2025 work estimated that the task length frontier for generalist agents had been doubling roughly every seven months over the prior six years, while also emphasizing that current agents still could not reliably substitute for humans on many substantive projects. ([metr.org](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/))\n\nSWE-bench and SWE-bench Verified became popular coding-agent benchmarks, but by 2026 OpenAI argued SWE-bench Verified no longer measured frontier coding capability well because public benchmark exposure can cause contamination and because automated tests can be flawed or overly narrow. OpenAI recommended using SWE-bench Pro and more privately authored, expert-graded benchmarks instead. ([openai.com](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/))\n\n**Takeaway:** agent benchmarks are improving, but headline scores can overstate real-world reliability.\n\n## 5. Current limitations\n\nAgentic AI is impressive but still brittle. The main blockers are:\n\n- **Long-horizon reliability:** agents often fail after many steps due to compounding errors.\n- **Prompt injection:** web pages, emails, documents, or UI text can try to manipulate the agent.\n- **Weak judgment around irreversible actions:** purchases, emails, financial moves, and account changes need human confirmation.\n- **Evaluation contamination:** public benchmarks may leak into training data.\n- **Tool fragility:** websites change, APIs fail, UI elements move, and agents can misclick.\n- **Cost and latency:** multi-step agent runs can be slow and expensive.\n- **Verification gaps:** agents may appear successful without truly satisfying the task.\n\nGoogle, Anthropic, and OpenAI all explicitly emphasize human supervision, safety mitigations, and staged rollout for computer-use and browser-use agents. ([anthropic.com](https://www.anthropic.com/news/3-5-models-and-computer-use))\n\n## 6. Bottom line\n\nThe \u201cagentic agent breakthrough\u201d is best understood as a **systems breakthrough**: LLMs are becoming controllers for tools, browsers, code environments, files, and workflows. The strongest evidence is in:\n\n1. **research agents** that browse and synthesize sources,  \n2. **computer-use agents** that operate GUIs,  \n3. **coding agents** that edit repositories and run tests,  \n4. **unified agents** that combine browsing, code, files, APIs, and user collaboration,  \n5. **new evaluation methods** focused on long-horizon autonomous task completion.\n\nThe field is moving fast, but the frontier is still **supervised autonomy**, not fully reliable independence.", "_ts": "2026-06-16T04:58:55.787102+00:00"}
+{"type": "done", "_ts": "2026-06-16T04:58:55.787249+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:08:35.216950+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:08:35.585279+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:08:35.945353+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:08:35.945661+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:49:21.837048+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:49:21.870201+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:49:23.828805+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:49:23.829349+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:52:03.455834+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:52:03.497998+00:00"}
+{"type": "session_created", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:52:05.442026+00:00"}
+{"type": "canvas_ready", "session_id": "14ff7a7e-bf25-4823-b036-08833a8052dc", "_ts": "2026-06-16T05:52:05.442604+00:00"}

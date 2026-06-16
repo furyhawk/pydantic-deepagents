@@ -12,18 +12,14 @@ dependencies = [
     "subagents-pydantic-ai",
     "pydantic-ai-todo",
     "python-dotenv>=1.0",
+    "markdown>=3.5",
 ]
 
 [project.optional-dependencies]
 export = ["markdown>=3.5", "weasyprint>=60.0"]
 
 [tool.uv.sources]
-pydantic-deep = { path = "..", editable = true }
-pydantic-ai-backend = { path = "../../pydantic-ai-backend", editable = true }
-pydantic-ai-shields = { path = "../../pydantic-ai-middleware", editable = true }
-summarization-pydantic-ai = { path = "../../pydantic-ai-summarization", editable = true }
-subagents-pydantic-ai = { path = "../../pydantic-ai-subagents", editable = true }
-pydantic-ai-todo = { path = "../../pydantic-ai-todo", editable = true }
+pydantic-deep = { path = "../..", editable = true }
 
 [project.scripts]
 deepresearch = "deepresearch.app:main"
