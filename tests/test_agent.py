@@ -667,12 +667,12 @@ class TestTodoProxyBinder:
 
         ctx = _Ctx()
         ctx.deps = deps  # type: ignore[attr-defined]
-        sentinel = {"todos": []}
+        sentinel: dict[str, Any] = {"todos": []}
         result = await binder.before_tool_execute(
-            ctx,  # type: ignore[arg-type]
-            call=None,  # type: ignore[arg-type]
-            tool_def=None,  # type: ignore[arg-type]
-            args=sentinel,  # type: ignore[arg-type]
+            ctx,
+            call=None,
+            tool_def=None,
+            args=sentinel,
         )
         assert proxy._deps is deps
         assert result is sentinel
@@ -732,3 +732,19 @@ class TestTodoProxyBinder:
         deps = DeepAgentDeps(backend=StateBackend())
         await agent.run("make todos", deps=deps)
         assert [t.content for t in deps.todos] == ["Task A", "Task B"]
+
+    def test_no_capabilities_when_all_disabled(self):
+        """Agent builds with an empty capability list when every feature is off."""
+        agent = create_deep_agent(
+            model=TestModel(),
+            include_todo=False,
+            patch_tool_calls=False,
+            stuck_loop_detection=False,
+            web_search=False,
+            web_fetch=False,
+            thinking=False,
+            cost_tracking=False,
+            context_manager=False,
+            eviction_token_limit=None,
+        )
+        assert agent is not None
