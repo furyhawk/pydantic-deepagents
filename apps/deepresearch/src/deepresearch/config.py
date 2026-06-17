@@ -29,11 +29,11 @@ EXCALIDRAW_CANVAS_URL: str = os.getenv("EXCALIDRAW_CANVAS_URL", "http://localhos
 
 def _docker_available() -> bool:
     """Check if Docker daemon is running."""
-    if not shutil.which("docker"):
+    if not shutil.which("podman"):
         return False
     try:
         result = subprocess.run(
-            ["docker", "info"],
+            ["podman", "info"],
             capture_output=True,
             timeout=5,
         )
@@ -95,7 +95,7 @@ def create_mcp_servers() -> list[AbstractToolset]:
     if os.getenv("EXCALIDRAW_ENABLED", "1") == "1" and _docker_available():
         servers.append(
             MCPServerStdio(
-                "docker",
+                "podman",
                 [
                     "run",
                     "-i",
@@ -110,7 +110,7 @@ def create_mcp_servers() -> list[AbstractToolset]:
             )
         )
     elif os.getenv("EXCALIDRAW_ENABLED", "1") == "1":
-        logger.warning("Excalidraw enabled but Docker is not available — skipping")
+        logger.warning("Excalidraw enabled but Podman is not available — skipping")
 
     # Playwright — browser automation for JS-heavy pages (requires PLAYWRIGHT_MCP=1)
     if os.getenv("PLAYWRIGHT_MCP"):
