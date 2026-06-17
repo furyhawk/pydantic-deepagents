@@ -30,6 +30,7 @@ from pydantic_deep.toolsets.plan import create_plan_toolset
 from pydantic_deep.types import SubAgentConfig
 
 from .config import MODEL_NAME, SKILLS_DIR
+from .middleware import RateLimitRetryCapability
 from .prompts import RESEARCH_PROMPT
 
 
@@ -391,7 +392,7 @@ def create_research_agent(
     agent_registry = DynamicAgentRegistry()
     factory_toolset = create_agent_factory_toolset(
         registry=agent_registry,
-        default_model="openai-responses:gpt-5.5",
+        default_model="openai-responses:o4-mini",
         max_agents=5,
         id="agent-factory",
     )
@@ -418,7 +419,7 @@ def create_research_agent(
         skills=PROGRAMMATIC_SKILLS,
         skill_directories=[{"path": str(SKILLS_DIR), "recursive": True}],
         hooks=HOOKS,
-        middleware=middleware or [],
+        middleware=[RateLimitRetryCapability(), *(middleware or [])],
         context_manager=True,
         context_manager_max_tokens=200_000,
         patch_tool_calls=True,

@@ -1,0 +1,34 @@
+{"type": "session_created", "session_id": "789d749c-9dc0-47e9-bbc8-bcfc134c573b", "_ts": "2026-06-17T02:30:10.474110+00:00"}
+{"type": "canvas_ready", "session_id": "789d749c-9dc0-47e9-bbc8-bcfc134c573b", "_ts": "2026-06-17T02:30:10.503738+00:00"}
+{"type": "user_message", "content": "research on agentic AI news", "_ts": "2026-06-17T02:30:10.503836+00:00"}
+{"type": "start", "_ts": "2026-06-17T02:30:10.504102+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-17T02:30:10.507157+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T02:30:10.507445+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206bb1c848199839af196f0236111", "_ts": "2026-06-17T02:30:19.470297+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": null, "_ts": "2026-06-17T02:30:20.381373+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206bb1c848199839af196f0236111", "_ts": "2026-06-17T02:30:20.381774+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206bd4bb881998edef1d7d1943681", "_ts": "2026-06-17T02:30:21.419964+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["agentic AI news last 12 months"], "query": "agentic AI news last 12 months"}, "_ts": "2026-06-17T02:30:28.976920+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206bd4bb881998edef1d7d1943681", "_ts": "2026-06-17T02:30:28.977475+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206c6009881999dccd3fb980fb908", "_ts": "2026-06-17T02:30:30.103346+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": null, "_ts": "2026-06-17T02:30:30.943788+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206c6009881999dccd3fb980fb908", "_ts": "2026-06-17T02:30:30.944200+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206c83dbc8199b0747d9d87b6e9ca", "_ts": "2026-06-17T02:30:32.332458+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": null, "_ts": "2026-06-17T02:30:35.262500+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206c83dbc8199b0747d9d87b6e9ca", "_ts": "2026-06-17T02:30:35.263017+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206cd6d148199aec7e4d2b248ea86", "_ts": "2026-06-17T02:30:38.111875+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": null, "_ts": "2026-06-17T02:30:38.930544+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206cd6d148199aec7e4d2b248ea86", "_ts": "2026-06-17T02:30:38.930954+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206cfc95881998431e9e2d240233a", "_ts": "2026-06-17T02:30:39.892916+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://agentic.ai/news"}, "_ts": "2026-06-17T02:30:40.816437+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206cfc95881998431e9e2d240233a", "_ts": "2026-06-17T02:30:40.817027+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206d623888199abb988462819545e", "_ts": "2026-06-17T02:30:46.403533+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": null, "_ts": "2026-06-17T02:30:48.147539+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206d623888199abb988462819545e", "_ts": "2026-06-17T02:30:48.147967+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0b3617722f61a16d006a3206d991a08199a4d09749eb02c25c", "_ts": "2026-06-17T02:30:49.683514+00:00"}
+{"type": "error", "content": "Rate limit reached for o4-mini in organization org-SCISrDqeVxlW5NAmWwPsxMVR on tokens per min (TPM): Limit 200000, Used 173434, Requested 51352. Please try again in 7.435s. Visit https://platform.openai.com/account/rate-limits to learn more.", "_ts": "2026-06-17T02:30:54.647884+00:00"}
+{"type": "done", "_ts": "2026-06-17T02:30:54.648045+00:00"}
+{"type": "session_created", "session_id": "789d749c-9dc0-47e9-bbc8-bcfc134c573b", "_ts": "2026-06-17T02:40:50.898385+00:00"}
+{"type": "canvas_ready", "session_id": "789d749c-9dc0-47e9-bbc8-bcfc134c573b", "_ts": "2026-06-17T02:40:51.019672+00:00"}
+{"type": "session_created", "session_id": "789d749c-9dc0-47e9-bbc8-bcfc134c573b", "_ts": "2026-06-17T02:40:51.733602+00:00"}
+{"type": "canvas_ready", "session_id": "789d749c-9dc0-47e9-bbc8-bcfc134c573b", "_ts": "2026-06-17T02:40:51.734003+00:00"}

@@ -22,7 +22,7 @@ WORKSPACES_DIR = APP_DIR / "workspaces"
 STATIC_DIR = APP_DIR / "static"
 
 
-MODEL_NAME: str = os.getenv("MODEL_NAME", "openai-responses:gpt-5.5")
+MODEL_NAME: str = os.getenv("MODEL_NAME", "openai-responses:o4-mini")
 
 
 EXCALIDRAW_CANVAS_URL: str = os.getenv("EXCALIDRAW_CANVAS_URL", "http://localhost:3000")

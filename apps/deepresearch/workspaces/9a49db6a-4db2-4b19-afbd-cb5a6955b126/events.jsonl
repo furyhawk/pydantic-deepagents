@@ -361,3 +361,18 @@
 {"type": "text_delta", "content": " measurable production workflows.", "_ts": "2026-06-17T02:20:37.514140+00:00"}
 {"type": "error", "content": "Rate limit reached for gpt-5.5 in organization org-SCISrDqeVxlW5NAmWwPsxMVR on tokens per min (TPM): Limit 500000, Used 412554, Requested 118786. Please try again in 3.76s. Visit https://platform.openai.com/account/rate-limits to learn more.", "_ts": "2026-06-17T02:20:37.744197+00:00"}
 {"type": "done", "_ts": "2026-06-17T02:20:37.744371+00:00"}
+{"type": "session_created", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:29:17.440835+00:00"}
+{"type": "canvas_ready", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:29:17.454193+00:00"}
+{"type": "session_created", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:29:24.917350+00:00"}
+{"type": "canvas_ready", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:29:24.917864+00:00"}
+{"type": "session_created", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:29:26.919467+00:00"}
+{"type": "canvas_ready", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:29:26.919893+00:00"}
+{"type": "user_message", "content": "resume", "_ts": "2026-06-17T02:29:29.904985+00:00"}
+{"type": "start", "_ts": "2026-06-17T02:29:29.905603+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-17T02:29:29.911407+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T02:29:29.911799+00:00"}
+{"type": "text_delta", "content": "Could you clarify what you\u2019d like me to resume\u2014resuming a previous task or preparing a r\u00e9sum\u00e9 (CV)?", "_ts": "2026-06-17T02:29:36.669165+00:00"}
+{"type": "status", "content": "Completed!", "_ts": "2026-06-17T02:29:36.914077+00:00"}
+{"type": "checkpoint_saved", "checkpoint_id": "670693ad-9e58-432d-aa42-2c82bcdb8475", "label": "turn-1", "turn": 1, "message_count": 1, "metadata": {}, "_ts": "2026-06-17T02:29:36.914290+00:00"}
+{"type": "response", "content": "Could you clarify what you\u2019d like me to resume\u2014resuming a previous task or preparing a r\u00e9sum\u00e9 (CV)?", "_ts": "2026-06-17T02:29:36.929408+00:00"}
+{"type": "done", "_ts": "2026-06-17T02:29:36.929486+00:00"}
