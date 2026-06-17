@@ -1,0 +1,8 @@
+{"type": "session_created", "session_id": "345eb1c8-68a7-4768-905b-e5fc09b3f265", "_ts": "2026-06-17T05:18:45.987871+00:00"}
+{"type": "canvas_ready", "session_id": "345eb1c8-68a7-4768-905b-e5fc09b3f265", "_ts": "2026-06-17T05:18:46.012809+00:00"}
+{"type": "user_message", "content": "research on agentic AI news for the past 3 months for technology and capabilities breakthrough.", "_ts": "2026-06-17T05:18:46.012910+00:00"}
+{"type": "start", "_ts": "2026-06-17T05:18:46.013184+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-17T05:18:46.017644+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T05:18:46.017996+00:00"}
+{"type": "error", "content": "status_code: 404, model_name: openai-responses:o4-mini, body: ", "_ts": "2026-06-17T05:18:47.008282+00:00"}
+{"type": "done", "_ts": "2026-06-17T05:18:47.008402+00:00"}

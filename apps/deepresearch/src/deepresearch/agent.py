@@ -29,9 +29,10 @@ from pydantic_deep import (
 from pydantic_deep.toolsets.plan import create_plan_toolset
 from pydantic_deep.types import SubAgentConfig
 
-from .config import MODEL_NAME, SKILLS_DIR
+from .config import SKILLS_DIR, get_model
 from .middleware import RateLimitRetryCapability
 from .prompts import RESEARCH_PROMPT
+from .todo_toolset import ForgiveWriteTodosCapability
 
 
 async def audit_logger_handler(hook_input: HookInput) -> HookResult:
@@ -392,7 +393,7 @@ def create_research_agent(
     agent_registry = DynamicAgentRegistry()
     factory_toolset = create_agent_factory_toolset(
         registry=agent_registry,
-        default_model="openai-responses:o4-mini",
+        default_model=get_model(),
         max_agents=5,
         id="agent-factory",
     )
@@ -400,7 +401,7 @@ def create_research_agent(
     remember_toolset = _create_remember_toolset()
 
     return create_deep_agent(
-        model=MODEL_NAME,
+        model=get_model(),
         instructions=MAIN_INSTRUCTIONS,
         backend=None,
         toolsets=[*mcp_servers, factory_toolset, remember_toolset],
@@ -419,7 +420,7 @@ def create_research_agent(
         skills=PROGRAMMATIC_SKILLS,
         skill_directories=[{"path": str(SKILLS_DIR), "recursive": True}],
         hooks=HOOKS,
-        middleware=[RateLimitRetryCapability(), *(middleware or [])],
+        middleware=[ForgiveWriteTodosCapability(), RateLimitRetryCapability(), *(middleware or [])],
         context_manager=True,
         context_manager_max_tokens=200_000,
         patch_tool_calls=True,
