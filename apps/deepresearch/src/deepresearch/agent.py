@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import logging
 import re
+from datetime import datetime
 from typing import Any
+
+import pytz
 
 from pydantic_ai import RunContext
 from pydantic_ai.agent import Agent
@@ -400,7 +403,7 @@ def create_research_agent(
 
     remember_toolset = _create_remember_toolset()
 
-    return create_deep_agent(
+    agent = create_deep_agent(
         model=get_model(),
         instructions=MAIN_INSTRUCTIONS,
         backend=None,
@@ -430,3 +433,15 @@ def create_research_agent(
         max_checkpoints=50,
         interrupt_on={"execute": True, "write_file": False},
     )
+
+    @agent.system_prompt
+    def add_current_date_time(ctx: RunContext[DeepAgentDeps]) -> str:
+        """Add current date and time as system context."""
+        sg_tz = pytz.timezone("Asia/Singapore")
+        now = datetime.now(sg_tz)
+        return (
+            f"Today is {now.strftime('%A, %B %d, %Y')}. "
+            f"The current local time is {now.strftime('%I:%M %p %Z')}."
+        )
+
+    return agent
