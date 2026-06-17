@@ -5,7 +5,7 @@ description = "Autonomous research agent powered by pydantic-deep + MCP"
 requires-python = ">=3.12"
 dependencies = [
     "pydantic-deep[web]",
-    "pydantic-ai[mcp]",
+    "pydantic-ai-slim[mcp,duckduckgo,openai]",
     "pydantic-ai-shields",
     "pydantic-ai-backend[docker]",
     "summarization-pydantic-ai",
@@ -13,6 +13,7 @@ dependencies = [
     "pydantic-ai-todo",
     "python-dotenv>=1.0",
     "markdown>=3.5",
+    "uvicorn[standard]"
 ]
 
 [project.optional-dependencies]

@@ -391,7 +391,7 @@ def create_research_agent(
     agent_registry = DynamicAgentRegistry()
     factory_toolset = create_agent_factory_toolset(
         registry=agent_registry,
-        default_model="anthropic:claude-haiku-4-5-20251001",
+        default_model="openai-responses:gpt-5.5",
         max_agents=5,
         id="agent-factory",
     )

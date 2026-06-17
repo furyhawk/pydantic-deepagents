@@ -52,8 +52,9 @@ class AuditCapability(AbstractCapability[DeepAgentDeps]):
         call: Any,
         tool_def: Any,
         args: Any,
-    ) -> None:
+    ) -> Any:
         self._tool_start_times[tool_def.name] = time.monotonic()
+        return args
 
     async def after_tool_execute(
         self,
@@ -106,10 +107,10 @@ class PermissionCapability(AbstractCapability[DeepAgentDeps]):
         call: Any,
         tool_def: Any,
         args: Any,
-    ) -> None:
+    ) -> Any:
         tool_name = tool_def.name
         if tool_name not in FILE_TOOLS:
-            return
+            return args
 
         tool_args = args if isinstance(args, dict) else {}
         path = tool_args.get("path", "") or tool_args.get("pattern", "")
@@ -124,3 +125,4 @@ class PermissionCapability(AbstractCapability[DeepAgentDeps]):
                     f"Access denied: path matches blocked pattern '{pattern}'. "
                     f"Try a different path."
                 )
+        return args

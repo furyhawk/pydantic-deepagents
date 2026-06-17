@@ -1,0 +1,363 @@
+{"type": "session_created", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:16:37.311511+00:00"}
+{"type": "canvas_ready", "session_id": "9a49db6a-4db2-4b19-afbd-cb5a6955b126", "_ts": "2026-06-17T02:16:37.323298+00:00"}
+{"type": "user_message", "content": "research on agentic AI news", "_ts": "2026-06-17T02:16:37.323388+00:00"}
+{"type": "start", "_ts": "2026-06-17T02:16:37.323645+00:00"}
+{"type": "status", "content": "Processing...", "_ts": "2026-06-17T02:16:37.330100+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T02:16:37.330450+00:00"}
+{"type": "tool_call_start", "tool_name": "write_todos", "tool_call_id": "call_I0AlyG1MlVU3ljKGMSwY4tKq", "_ts": "2026-06-17T02:16:51.622495+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "{\"", "_ts": "2026-06-17T02:16:51.623072+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "todos", "_ts": "2026-06-17T02:16:51.632423+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":[", "_ts": "2026-06-17T02:16:51.636588+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "{\"", "_ts": "2026-06-17T02:16:51.637794+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-17T02:16:51.638201+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:51.644311+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-17T02:16:51.645668+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "1", "_ts": "2026-06-17T02:16:51.646032+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:51.696393+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-17T02:16:51.697050+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:51.711191+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Gather", "_ts": "2026-06-17T02:16:51.713101+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " recent", "_ts": "2026-06-17T02:16:51.715210+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " agent", "_ts": "2026-06-17T02:16:51.716341+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ic", "_ts": "2026-06-17T02:16:51.717450+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " AI", "_ts": "2026-06-17T02:16:51.718044+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " news", "_ts": "2026-06-17T02:16:51.758421+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " from", "_ts": "2026-06-17T02:16:51.771576+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " authoritative", "_ts": "2026-06-17T02:16:51.772919+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " sources", "_ts": "2026-06-17T02:16:51.773877+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:51.824061+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-17T02:16:51.828459+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:51.831207+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "in", "_ts": "2026-06-17T02:16:51.831813+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_progress", "_ts": "2026-06-17T02:16:51.835452+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:51.836616+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-17T02:16:51.837029+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-17T02:16:51.837484+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:51.885191+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Gather", "_ts": "2026-06-17T02:16:51.896785+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ing", "_ts": "2026-06-17T02:16:51.899015+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " recent", "_ts": "2026-06-17T02:16:51.901637+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " agent", "_ts": "2026-06-17T02:16:51.907908+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ic", "_ts": "2026-06-17T02:16:51.908473+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " AI", "_ts": "2026-06-17T02:16:51.909019+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " news", "_ts": "2026-06-17T02:16:51.951096+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"},{\"", "_ts": "2026-06-17T02:16:51.952588+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-17T02:16:51.953348+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:51.963629+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-17T02:16:51.965707+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "2", "_ts": "2026-06-17T02:16:51.968197+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:51.969629+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-17T02:16:51.970005+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:52.012215+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Identify", "_ts": "2026-06-17T02:16:52.023842+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " major", "_ts": "2026-06-17T02:16:52.075650+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " themes", "_ts": "2026-06-17T02:16:52.091676+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " and", "_ts": "2026-06-17T02:16:52.096133+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " implications", "_ts": "2026-06-17T02:16:52.099712+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:52.101077+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-17T02:16:52.102438+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:52.103373+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "pending", "_ts": "2026-06-17T02:16:52.103814+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:52.140528+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-17T02:16:52.142486+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-17T02:16:52.144096+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:52.150335+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Ident", "_ts": "2026-06-17T02:16:52.152724+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ifying", "_ts": "2026-06-17T02:16:52.154844+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " major", "_ts": "2026-06-17T02:16:52.156908+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " themes", "_ts": "2026-06-17T02:16:52.157786+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " and", "_ts": "2026-06-17T02:16:52.203163+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " implications", "_ts": "2026-06-17T02:16:52.214629+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"},{\"", "_ts": "2026-06-17T02:16:52.218753+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "id", "_ts": "2026-06-17T02:16:52.220921+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:52.223548+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t", "_ts": "2026-06-17T02:16:52.224770+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "3", "_ts": "2026-06-17T02:16:52.226553+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:52.226871+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "content", "_ts": "2026-06-17T02:16:52.264048+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:52.276539+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "S", "_ts": "2026-06-17T02:16:52.278574+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "ynthesize", "_ts": "2026-06-17T02:16:52.327747+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " findings", "_ts": "2026-06-17T02:16:52.341790+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " into", "_ts": "2026-06-17T02:16:52.343799+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " a", "_ts": "2026-06-17T02:16:52.345274+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " concise", "_ts": "2026-06-17T02:16:52.394834+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " news", "_ts": "2026-06-17T02:16:52.410577+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " briefing", "_ts": "2026-06-17T02:16:52.411208+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:52.411781+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "status", "_ts": "2026-06-17T02:16:52.413261+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:52.414371+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "pending", "_ts": "2026-06-17T02:16:52.415324+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"", "_ts": "2026-06-17T02:16:52.416439+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active", "_ts": "2026-06-17T02:16:52.454477+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "_form", "_ts": "2026-06-17T02:16:52.455286+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\":\"", "_ts": "2026-06-17T02:16:52.467696+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Synth", "_ts": "2026-06-17T02:16:52.470038+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "es", "_ts": "2026-06-17T02:16:52.471946+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "izing", "_ts": "2026-06-17T02:16:52.473888+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " findings", "_ts": "2026-06-17T02:16:52.475143+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " into", "_ts": "2026-06-17T02:16:52.476111+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " a", "_ts": "2026-06-17T02:16:52.518603+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " concise", "_ts": "2026-06-17T02:16:52.525185+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " news", "_ts": "2026-06-17T02:16:52.527177+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " briefing", "_ts": "2026-06-17T02:16:52.529708+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"}", "_ts": "2026-06-17T02:16:52.531103+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "]}", "_ts": "2026-06-17T02:16:52.531567+00:00"}
+{"type": "tool_start", "tool_name": "write_todos", "args": "{\"todos\":[{\"id\":\"t1\",\"content\":\"Gather recent agentic AI news from authoritative sources\",\"status\":\"in_progress\",\"active_form\":\"Gathering recent agentic AI news\"},{\"id\":\"t2\",\"content\":\"Identify major themes and implications\",\"status\":\"pending\",\"active_form\":\"Identifying major themes and implications\"},{\"id\":\"t3\",\"content\":\"Synthesize findings into a concise news briefing\",\"status\":\"pending\",\"active_form\":\"Synthesizing findings into a concise news briefing\"}]}", "_ts": "2026-06-17T02:16:52.968228+00:00"}
+{"type": "todos_update", "todos": [{"id": "t1", "content": "Gather recent agentic AI news from authoritative sources", "status": "in_progress", "active_form": "Gathering recent agentic AI news"}, {"id": "t2", "content": "Identify major themes and implications", "status": "pending", "active_form": "Identifying major themes and implications"}, {"id": "t3", "content": "Synthesize findings into a concise news briefing", "status": "pending", "active_form": "Synthesizing findings into a concise news briefing"}], "_ts": "2026-06-17T02:16:52.968378+00:00"}
+{"type": "tool_output", "tool_name": "write_todos", "output": "Updated 3 todos: 0 completed, 0 in progress, 0 pending", "_ts": "2026-06-17T02:16:52.969240+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "write_todos", "total_calls": 1, "tools_breakdown": {"write_todos": 1}, "_ts": "2026-06-17T02:16:52.969335+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T02:16:52.969618+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a320397483481998194100ec9951d39", "_ts": "2026-06-17T02:16:55.388016+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["agentic AI latest news 2026 enterprise agents OpenAI Google Microsoft Anthropic", "site:openai.com agentic AI agents news 2026", "site:blog.google technology agentic AI agents 2026", "site:anthropic.com news AI agents 2026"], "query": "agentic AI latest news 2026 enterprise agents OpenAI Google Microsoft Anthropic"}, "_ts": "2026-06-17T02:17:03.809174+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a320397483481998194100ec9951d39", "_ts": "2026-06-17T02:17:03.809629+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32039ffbd481998f307f90b6337f0c", "_ts": "2026-06-17T02:17:04.116447+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["OpenAI agents platform Agent Builder Operator Codex official agents 2025 2026 site:openai.com/index", "Google Cloud Next 2026 Gemini Enterprise Agent Platform official blog.google cloud agents", "Anthropic Claude Code enterprise agents official February 2026 Anthropic", "Microsoft Copilot agents agentic AI official 2026"], "query": "OpenAI agents platform Agent Builder Operator Codex official agents 2025 2026 site:openai.com/index"}, "_ts": "2026-06-17T02:17:15.584720+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32039ffbd481998f307f90b6337f0c", "_ts": "2026-06-17T02:17:15.585129+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203ab83a88199935c9586f1b047d0", "_ts": "2026-06-17T02:17:15.807900+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://openai.com/index/introducing-agentkit/"}, "_ts": "2026-06-17T02:17:18.710978+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203ab83a88199935c9586f1b047d0", "_ts": "2026-06-17T02:17:18.711493+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203aea7808199b02aecffac9425d3", "_ts": "2026-06-17T02:17:18.832165+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["Gartner predicts 40% agentic AI projects canceled by end of 2027 source", "agentic AI security risks prompt injection 2026 OWASP agentic AI news", "Linux Foundation Agentic AI Foundation OpenAI Anthropic Google Microsoft AWS Bloomberg December 2025", "Salesforce Agentforce agentic AI 2026 news enterprise agents"], "query": "Gartner predicts 40% agentic AI projects canceled by end of 2027 source"}, "_ts": "2026-06-17T02:17:31.661959+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203aea7808199b02aecffac9425d3", "_ts": "2026-06-17T02:17:31.662371+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203bba70881999fabbc491e42fe55", "_ts": "2026-06-17T02:17:31.969301+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["Agentic AI Foundation Linux Foundation announced December 2025 members MCP A2A official", "Linux Foundation launches Agentic AI Foundation December 2025 official"], "query": "Agentic AI Foundation Linux Foundation announced December 2025 members MCP A2A official"}, "_ts": "2026-06-17T02:17:45.488697+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203bba70881999fabbc491e42fe55", "_ts": "2026-06-17T02:17:45.489081+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203c986ec819983b82937e4170c1a", "_ts": "2026-06-17T02:17:45.678200+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["OWASP Top 10 Agentic AI Applications 2026 official prompt injection", "NIST agentic AI security 2026 prompt injection agents", "OpenAI safety agentic AI news 2026 agents"], "query": "OWASP Top 10 Agentic AI Applications 2026 official prompt injection"}, "_ts": "2026-06-17T02:18:00.846510+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203c986ec819983b82937e4170c1a", "_ts": "2026-06-17T02:18:00.846854+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203d8d8fc8199af5877b451121c54", "_ts": "2026-06-17T02:18:01.065703+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["Visa OpenAI agentic ecommerce payments ChatGPT Atlas browser June 2026 official", "Mastercard Agent Pay agentic commerce 2025 official AI agents payments", "PayPal agentic AI payments OpenAI 2026"], "query": "Visa OpenAI agentic ecommerce payments ChatGPT Atlas browser June 2026 official"}, "_ts": "2026-06-17T02:18:17.332985+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203d8d8fc8199af5877b451121c54", "_ts": "2026-06-17T02:18:17.333404+00:00"}
+{"type": "tool_call_start", "tool_name": "update_todo_statuses", "tool_call_id": "call_u3qtsKcN8xl2s8ABf7T5MhA3", "_ts": "2026-06-17T02:18:17.743308+00:00"}
+{"type": "tool_args_delta", "tool_name": "update_todo_statuses", "args_delta": "{\"updates\":[{\"todo_id\":\"t1\",\"status\":\"completed\"},{\"todo_id\":\"t2\",\"status\":\"in_progress\"}]}", "_ts": "2026-06-17T02:18:18.085340+00:00"}
+{"type": "tool_start", "tool_name": "update_todo_statuses", "args": "{\"updates\":[{\"todo_id\":\"t1\",\"status\":\"completed\"},{\"todo_id\":\"t2\",\"status\":\"in_progress\"}]}", "_ts": "2026-06-17T02:18:18.677777+00:00"}
+{"type": "tool_output", "tool_name": "update_todo_statuses", "output": "No changes applied. Errors:\n- Todo with ID 't1' not found\n- Todo with ID 't2' not found", "_ts": "2026-06-17T02:18:18.678482+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "update_todo_statuses", "total_calls": 2, "tools_breakdown": {"write_todos": 1, "update_todo_statuses": 1}, "_ts": "2026-06-17T02:18:18.678589+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T02:18:18.678881+00:00"}
+{"type": "tool_call_start", "tool_name": "read_todos", "tool_call_id": "call_uIBHmxnocPxx2C8R4lqQdWiQ", "_ts": "2026-06-17T02:18:21.401685+00:00"}
+{"type": "tool_args_delta", "tool_name": "read_todos", "args_delta": "{}", "_ts": "2026-06-17T02:18:21.534197+00:00"}
+{"type": "tool_start", "tool_name": "read_todos", "args": "{}", "_ts": "2026-06-17T02:18:21.949165+00:00"}
+{"type": "tool_output", "tool_name": "read_todos", "output": "No todos in the list. Use write_todos to create tasks.", "_ts": "2026-06-17T02:18:21.949827+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "read_todos", "total_calls": 3, "tools_breakdown": {"write_todos": 1, "update_todo_statuses": 1, "read_todos": 1}, "_ts": "2026-06-17T02:18:21.949929+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T02:18:21.950282+00:00"}
+{"type": "tool_call_start", "tool_name": "write_todos", "tool_call_id": "call_1vSDTXT3kwosnoLMRwt3GNiF", "_ts": "2026-06-17T02:18:25.497466+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "{\"todos\":[{\"id\":\"", "_ts": "2026-06-17T02:18:25.530806+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "t1\",\"content\":\"", "_ts": "2026-06-17T02:18:25.598882+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Gather recent agentic AI news from", "_ts": "2026-06-17T02:18:25.652678+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " authoritative sources\",\"status\":\"completed\",\"", "_ts": "2026-06-17T02:18:25.714210+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "active_form\":\"Gathering recent agentic", "_ts": "2026-06-17T02:18:25.796217+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " AI news", "_ts": "2026-06-17T02:18:25.844497+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\"},{\"id\":\"t2\",\"content\":\"", "_ts": "2026-06-17T02:18:25.909016+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "Identify major themes and implications\",\"status\":\"", "_ts": "2026-06-17T02:18:25.974359+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "in_progress\",\"active_form\":\"Identifying", "_ts": "2026-06-17T02:18:26.039712+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " major themes and implications\"},{\"id\":\"t", "_ts": "2026-06-17T02:18:26.103626+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "3\",\"content\":\"Synthesize findings into", "_ts": "2026-06-17T02:18:26.169642+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " a concise news briefing\",\"status\":\"pending", "_ts": "2026-06-17T02:18:26.234613+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": "\",\"active_form\":\"Synthesizing findings", "_ts": "2026-06-17T02:18:26.304922+00:00"}
+{"type": "tool_args_delta", "tool_name": "write_todos", "args_delta": " into a concise news briefing\"}]}", "_ts": "2026-06-17T02:18:26.520944+00:00"}
+{"type": "tool_start", "tool_name": "write_todos", "args": "{\"todos\":[{\"id\":\"t1\",\"content\":\"Gather recent agentic AI news from authoritative sources\",\"status\":\"completed\",\"active_form\":\"Gathering recent agentic AI news\"},{\"id\":\"t2\",\"content\":\"Identify major themes and implications\",\"status\":\"in_progress\",\"active_form\":\"Identifying major themes and implications\"},{\"id\":\"t3\",\"content\":\"Synthesize findings into a concise news briefing\",\"status\":\"pending\",\"active_form\":\"Synthesizing findings into a concise news briefing\"}]}", "_ts": "2026-06-17T02:18:26.878842+00:00"}
+{"type": "todos_update", "todos": [{"id": "t1", "content": "Gather recent agentic AI news from authoritative sources", "status": "completed", "active_form": "Gathering recent agentic AI news"}, {"id": "t2", "content": "Identify major themes and implications", "status": "in_progress", "active_form": "Identifying major themes and implications"}, {"id": "t3", "content": "Synthesize findings into a concise news briefing", "status": "pending", "active_form": "Synthesizing findings into a concise news briefing"}], "_ts": "2026-06-17T02:18:26.878998+00:00"}
+{"type": "tool_output", "tool_name": "write_todos", "output": "Updated 3 todos: 0 completed, 0 in progress, 0 pending", "_ts": "2026-06-17T02:18:26.879728+00:00"}
+{"type": "middleware_event", "event": "tool_audit", "tool_name": "write_todos", "total_calls": 4, "tools_breakdown": {"write_todos": 2, "update_todo_statuses": 1, "read_todos": 1}, "_ts": "2026-06-17T02:18:26.879817+00:00"}
+{"type": "status", "content": "Researching...", "_ts": "2026-06-17T02:18:26.880099+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203f788888199a4d06c9d48e48595", "_ts": "2026-06-17T02:18:31.642303+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page"}, "_ts": "2026-06-17T02:18:34.435081+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203f788888199a4d06c9d48e48595", "_ts": "2026-06-17T02:18:34.435512+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203fb0430819986da74f135616f1a", "_ts": "2026-06-17T02:18:35.101578+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027"}, "_ts": "2026-06-17T02:18:38.695667+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203fb0430819986da74f135616f1a", "_ts": "2026-06-17T02:18:38.696032+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203ff22b08199a17848a364212619", "_ts": "2026-06-17T02:18:39.249128+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://usa.visa.com/about-visa/newsroom/press-releases.releaseid.22496.html"}, "_ts": "2026-06-17T02:18:43.548858+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3203ff22b08199a17848a364212619", "_ts": "2026-06-17T02:18:43.549285+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32040477048199907dc642ce744851", "_ts": "2026-06-17T02:18:44.573344+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["site:openai.com Workspace Agents ChatGPT June 2026 OpenAI agents", "site:openai.com Frontier AI agent management platform enterprises 2026 OpenAI", "site:openai.com Agents SDK OpenAI April 2026 safer agents"], "query": "site:openai.com Workspace Agents ChatGPT June 2026 OpenAI agents"}, "_ts": "2026-06-17T02:18:50.947191+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32040477048199907dc642ce744851", "_ts": "2026-06-17T02:18:50.947617+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32040b51e08199aa594658b95670de", "_ts": "2026-06-17T02:18:51.536576+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["site:anthropic.com/news Claude Code enterprise agents Cowork plugins February 2026 Anthropic official", "site:anthropic.com/news Claude Code 2026 agentic coding report official", "site:anthropic.com/news Managed Agents API Dreaming memory 2026 Anthropic"], "query": "site:anthropic.com/news Claude Code enterprise agents Cowork plugins February 2026 Anthropic official"}, "_ts": "2026-06-17T02:18:58.328412+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32040b51e08199aa594658b95670de", "_ts": "2026-06-17T02:18:58.328819+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a320412601c8199b43551d059b5999e", "_ts": "2026-06-17T02:18:58.601627+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "search", "queries": ["Google Agent2Agent protocol Linux Foundation 2025 official agentic AI A2A", "site:cloud.google.com Agent2Agent protocol agentic AI 2026 Google"], "query": "Google Agent2Agent protocol Linux Foundation 2025 official agentic AI A2A"}, "_ts": "2026-06-17T02:19:07.028530+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a320412601c8199b43551d059b5999e", "_ts": "2026-06-17T02:19:07.028842+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32041afab081999a1b74d1ceed0442", "_ts": "2026-06-17T02:19:07.215473+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"pattern": "globally peer-reviewed framework", "type": "find_in_page", "url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"}, "_ts": "2026-06-17T02:19:10.993583+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32041afab081999a1b74d1ceed0442", "_ts": "2026-06-17T02:19:10.994015+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3204419d308199965e59b10c87f03f", "_ts": "2026-06-17T02:19:45.708020+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://usa.visa.com/about-visa/newsroom/press-releases.releaseid.22496.html"}, "_ts": "2026-06-17T02:19:49.044631+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a3204419d308199965e59b10c87f03f", "_ts": "2026-06-17T02:19:49.045037+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32044618cc81999d45be733565498d", "_ts": "2026-06-17T02:19:50.178137+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://investor.mastercard.com/investor-news/investor-news-details/2026/Mastercard-Launches-Agent-Pay-for-Machines-to-Unlock-Super-Fast-Always-On-Payments/default.aspx"}, "_ts": "2026-06-17T02:19:54.104801+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32044618cc81999d45be733565498d", "_ts": "2026-06-17T02:19:54.105487+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32044b17388199815a6480fffbd173", "_ts": "2026-06-17T02:19:55.231108+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://www.anthropic.com/events/the-briefing-enterprise-agents-virtual-event"}, "_ts": "2026-06-17T02:19:58.200400+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32044b17388199815a6480fffbd173", "_ts": "2026-06-17T02:19:58.200797+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32044ec62c8199bc200eab6512ed86", "_ts": "2026-06-17T02:19:58.849369+00:00"}
+{"type": "tool_args_delta", "tool_name": "web_search", "args_delta": {"type": "open_page", "url": "https://www.salesforce.com/news/stories/agent-fabric-control-plane-announcement/"}, "_ts": "2026-06-17T02:20:04.819515+00:00"}
+{"type": "tool_call_start", "tool_name": "web_search", "tool_call_id": "ws_0cf74b35340bd671006a32044ec62c8199bc200eab6512ed86", "_ts": "2026-06-17T02:20:04.819732+00:00"}
+{"type": "text_delta", "content": "# Agentic AI news briefing \u2014 June 17, 2026\n\n**", "_ts": "2026-06-17T02:20:15.338496+00:00"}
+{"type": "text_delta", "content": "Bottom line:** Agentic AI is moving from \u201cchatbots", "_ts": "2026-06-17T02:20:15.463422+00:00"}
+{"type": "text_delta", "content": " with tools\u201d into **", "_ts": "2026-06-17T02:20:15.585409+00:00"}
+{"type": "text_delta", "content": "enterprise control planes, coding agents,", "_ts": "2026-06-17T02:20:15.773472+00:00"}
+{"type": "text_delta", "content": " agent marketplaces, and agent", "_ts": "2026-06-17T02:20:15.895729+00:00"}
+{"type": "text_delta", "content": "ic commerce**. The big", "_ts": "2026-06-17T02:20:16.016837+00:00"}
+{"type": "text_delta", "content": " story is no longer just model capability; it is **governance", "_ts": "2026-06-17T02:20:16.148890+00:00"}
+{"type": "text_delta", "content": ", identity, cost control, security, interoperability, and", "_ts": "2026-06-17T02:20:16.329654+00:00"}
+{"type": "text_delta", "content": " payments**.\n\n## 1. Enterprise", "_ts": "2026-06-17T02:20:16.457453+00:00"}
+{"type": "text_delta", "content": " agent platforms are the main batt", "_ts": "2026-06-17T02:20:16.576715+00:00"}
+{"type": "text_delta", "content": "leground\n\n**", "_ts": "2026-06-17T02:20:16.699508+00:00"}
+{"type": "text_delta", "content": "Google** launched the **", "_ts": "2026-06-17T02:20:16.824594+00:00"}
+{"type": "text_delta", "content": "Gemini Enterprise Agent Platform** at Cloud Next \u2019", "_ts": "2026-06-17T02:20:16.964144+00:00"}
+{"type": "text_delta", "content": "26, describing it as the evolution of Vertex AI for building, scaling", "_ts": "2026-06-17T02:20:17.085024+00:00"}
+{"type": "text_delta", "content": ", governing, and optimizing agents.", "_ts": "2026-06-17T02:20:17.209899+00:00"}
+{"type": "text_delta", "content": " Google is positioning", "_ts": "2026-06-17T02:20:17.321561+00:00"}
+{"type": "text_delta", "content": " Gemini Enterprise as an end-to-end", "_ts": "2026-06-17T02:20:17.444523+00:00"}
+{"type": "text_delta", "content": " \u201cagentic enterprise\u201d stack with", "_ts": "2026-06-17T02:20:17.568441+00:00"}
+{"type": "text_delta", "content": " Agent Studio, ADK,", "_ts": "2026-06-17T02:20:17.690859+00:00"}
+{"type": "text_delta", "content": " A2A/MCP support, app", "_ts": "2026-06-17T02:20:17.810740+00:00"}
+{"type": "text_delta", "content": "-level governance, third-party", "_ts": "2026-06-17T02:20:17.941822+00:00"}
+{"type": "text_delta", "content": " agent discovery, and long-running agent monitoring.", "_ts": "2026-06-17T02:20:18.064033+00:00"}
+{"type": "text_delta", "content": " ([cloud.google.com](https://cloud.google.com/blog/products/ai-machine-learning/the-new-gemini-enterprise-one-platform-for-agent-development?hl=en))\n\n**", "_ts": "2026-06-17T02:20:18.183850+00:00"}
+{"type": "text_delta", "content": "Microsoft** is pushing the same", "_ts": "2026-06-17T02:20:18.307724+00:00"}
+{"type": "text_delta", "content": " enterprise-control-plane theme", "_ts": "2026-06-17T02:20:18.429648+00:00"}
+{"type": "text_delta", "content": " with **Agent 365**, generally available May 1, and **", "_ts": "2026-06-17T02:20:18.556744+00:00"}
+{"type": "text_delta", "content": "Microsoft 365 E", "_ts": "2026-06-17T02:20:18.693811+00:00"}
+{"type": "text_delta", "content": "7: The Frontier Suite**. Microsoft says Agent 365 is meant to observe, govern, manage", "_ts": "2026-06-17T02:20:18.861141+00:00"}
+{"type": "text_delta", "content": ", and secure agents across organizations, while Copilot", "_ts": "2026-06-17T02:20:18.986851+00:00"}
+{"type": "text_delta", "content": " Wave 3 brings agentic experiences into Word, Excel", "_ts": "2026-06-17T02:20:19.120733+00:00"}
+{"type": "text_delta", "content": ", PowerPoint, and Outlook", "_ts": "2026-06-17T02:20:19.247159+00:00"}
+{"type": "text_delta", "content": "; Microsoft is also emphasizing a multi-model", "_ts": "2026-06-17T02:20:19.363392+00:00"}
+{"type": "text_delta", "content": " strategy using both OpenAI and Anthropic models.", "_ts": "2026-06-17T02:20:19.494163+00:00"}
+{"type": "text_delta", "content": " ([blogs.microsoft.com](https://blogs.microsoft.com/blog/2026/03/09/introducing-the-first-frontier-suite-built-on-intelligence-trust/))\n\n**", "_ts": "2026-06-17T02:20:19.618999+00:00"}
+{"type": "text_delta", "content": "Salesforce** expanded **Agent Fabric** in April ", "_ts": "2026-06-17T02:20:19.739262+00:00"}
+{"type": "text_delta", "content": "2026 as a multi-vendor agent control plane", "_ts": "2026-06-17T02:20:19.866404+00:00"}
+{"type": "text_delta", "content": " with agent/MCP discovery, deterministic orchestration, visual author", "_ts": "2026-06-17T02:20:20.070167+00:00"}
+{"type": "text_delta", "content": "ing, LLM governance, and trusted agent identity. The important angle", "_ts": "2026-06-17T02:20:20.285359+00:00"}
+{"type": "text_delta", "content": ": Salesforce is arguing that enterprises need oversight across", "_ts": "2026-06-17T02:20:20.496816+00:00"}
+{"type": "text_delta", "content": " fragmented agent ecosystems, not just more standalone agents.", "_ts": "2026-06-17T02:20:20.699233+00:00"}
+{"type": "text_delta", "content": " ([salesforce.com](https://www.salesforce.com/news/stories/agent-fabric-control-plane-announcement/))\n\n##", "_ts": "2026-06-17T02:20:20.859954+00:00"}
+{"type": "text_delta", "content": " 2. OpenAI is reworking its agent", "_ts": "2026-06-17T02:20:20.975817+00:00"}
+{"type": "text_delta", "content": " product strategy\n\nOpenAI\u2019s **", "_ts": "2026-06-17T02:20:21.097233+00:00"}
+{"type": "text_delta", "content": "Workspace Agents in ChatGPT**, announced April 22, 202", "_ts": "2026-06-17T02:20:21.218598+00:00"}
+{"type": "text_delta", "content": "6, are shared,", "_ts": "2026-06-17T02:20:21.344803+00:00"}
+{"type": "text_delta", "content": " Codex-powered agents for Business, Enterprise, Edu, and", "_ts": "2026-06-17T02:20:21.462490+00:00"}
+{"type": "text_delta", "content": " Teachers plans; they can run long workflows", "_ts": "2026-06-17T02:20:21.591099+00:00"}
+{"type": "text_delta", "content": " in the cloud, connect to", "_ts": "2026-06-17T02:20:21.728798+00:00"}
+{"type": "text_delta", "content": " workplace tools, and be shared across teams or used in Slack.", "_ts": "2026-06-17T02:20:21.837860+00:00"}
+{"type": "text_delta", "content": " ([openai.com](https://openai.com/index/introducing-workspace-agents-in-chatgpt//))\n\nOpenAI", "_ts": "2026-06-17T02:20:21.969903+00:00"}
+{"type": "text_delta", "content": " also updated the **Agents SDK** on April 15, 2026 with", "_ts": "2026-06-17T02:20:22.141491+00:00"}
+{"type": "text_delta", "content": " controlled sandbox execution, file inspection, command execution, code", "_ts": "2026-06-17T02:20:22.281682+00:00"}
+{"type": "text_delta", "content": " editing, and long-horizon task support. My read: OpenAI is", "_ts": "2026-06-17T02:20:22.405995+00:00"}
+{"type": "text_delta", "content": " steering serious agent building", "_ts": "2026-06-17T02:20:22.529516+00:00"}
+{"type": "text_delta", "content": " toward SDK-based, auditable, sandboxed infrastructure", "_ts": "2026-06-17T02:20:22.651753+00:00"}
+{"type": "text_delta", "content": " rather than purely visual workflow builders. ", "_ts": "2026-06-17T02:20:22.825990+00:00"}
+{"type": "text_delta", "content": "([openai.com](https://openai.com/index/the-next-evolution-of-the-agents-sdk))\n\nThat shift is", "_ts": "2026-06-17T02:20:22.951020+00:00"}
+{"type": "text_delta", "content": " reinforced by OpenAI\u2019s June 3, 2026 update", "_ts": "2026-06-17T02:20:23.072987+00:00"}
+{"type": "text_delta", "content": " saying it will wind down **Agent Builder** and **", "_ts": "2026-06-17T02:20:23.205812+00:00"}
+{"type": "text_delta", "content": "Evals** on November 30, 2026, recommending", "_ts": "2026-06-17T02:20:23.327429+00:00"}
+{"type": "text_delta", "content": " **Agents SDK** for code-based workflows", "_ts": "2026-06-17T02:20:23.446260+00:00"}
+{"type": "text_delta", "content": " and **Workspace Agents in ChatGPT** for natural-language use cases. ", "_ts": "2026-06-17T02:20:23.559226+00:00"}
+{"type": "text_delta", "content": "([openai.com](https://openai.com/index/introducing-agentkit/))\n\n##", "_ts": "2026-06-17T02:20:23.683537+00:00"}
+{"type": "text_delta", "content": " 3. Anthropic is turning Claude into an enterprise", "_ts": "2026-06-17T02:20:23.798508+00:00"}
+{"type": "text_delta", "content": "-work agent layer\n\nAnthropic\u2019s February 24", "_ts": "2026-06-17T02:20:23.921163+00:00"}
+{"type": "text_delta", "content": ", 2026 **Enterprise Agents** event focused on", "_ts": "2026-06-17T02:20:24.043724+00:00"}
+{"type": "text_delta", "content": " Claude Cowork, plugins, and enterprise knowledge work,", "_ts": "2026-06-17T02:20:24.175590+00:00"}
+{"type": "text_delta", "content": " with demos for legal, sales, finance, and", "_ts": "2026-06-17T02:20:24.298280+00:00"}
+{"type": "text_delta", "content": " data teams. The pitch: Claude becomes more useful", "_ts": "2026-06-17T02:20:24.414271+00:00"}
+{"type": "text_delta", "content": " when connected to an", "_ts": "2026-06-17T02:20:24.540891+00:00"}
+{"type": "text_delta", "content": " organization\u2019s tools, context, and knowledge. ([anthropic.com](https://www.anthropic.com/events/the-briefing-enterprise-agents-virtual-event))\n", "_ts": "2026-06-17T02:20:24.654327+00:00"}
+{"type": "text_delta", "content": "\nAnthropic also released", "_ts": "2026-06-17T02:20:24.837168+00:00"}
+{"type": "text_delta", "content": " **financial-services agent templates** in May 2026", "_ts": "2026-06-17T02:20:25.129439+00:00"}
+{"type": "text_delta", "content": " for pitchbooks, KYC screening, month-end", "_ts": "2026-06-17T02:20:25.274906+00:00"}
+{"type": "text_delta", "content": " close, valuation review, market research, and related workflows. These ship", "_ts": "2026-06-17T02:20:25.399984+00:00"}
+{"type": "text_delta", "content": " as Claude Cowork/Claude Code plugins and as cookbooks for Claude Managed Agents,", "_ts": "2026-06-17T02:20:25.572845+00:00"}
+{"type": "text_delta", "content": " showing a", "_ts": "2026-06-17T02:20:25.691596+00:00"}
+{"type": "text_delta", "content": " move from generic assistants to vertical", "_ts": "2026-06-17T02:20:25.818613+00:00"}
+{"type": "text_delta", "content": "ized agent packages.", "_ts": "2026-06-17T02:20:25.939376+00:00"}
+{"type": "text_delta", "content": " ([anthropic.com](https://www.anthropic.com/news/finance-agents?refid=56d70cf4-611f-45de-b883-867323432546))\n\nAnth", "_ts": "2026-06-17T02:20:26.063069+00:00"}
+{"type": "text_delta", "content": "ropic\u2019s engineering work on **Managed Agents** points to a", "_ts": "2026-06-17T02:20:26.186190+00:00"}
+{"type": "text_delta", "content": " key infrastructure trend: long-running agents need stable abstra", "_ts": "2026-06-17T02:20:26.308805+00:00"}
+{"type": "text_delta", "content": "ctions for session logs, harnesses, sandboxes, tools", "_ts": "2026-06-17T02:20:26.485594+00:00"}
+{"type": "text_delta", "content": ", retries, and failure isolation\u2014not", "_ts": "2026-06-17T02:20:26.621064+00:00"}
+{"type": "text_delta", "content": " just smarter models.", "_ts": "2026-06-17T02:20:26.794093+00:00"}
+{"type": "text_delta", "content": " ([anthropic.com](https://www.anthropic.com/engineering/managed-agents))\n\n##", "_ts": "2026-06-17T02:20:26.915452+00:00"}
+{"type": "text_delta", "content": " 4. Agentic commerce is becoming", "_ts": "2026-06-17T02:20:27.039123+00:00"}
+{"type": "text_delta", "content": " real\n\nVisa and OpenAI announced a June 10, ", "_ts": "2026-06-17T02:20:27.160311+00:00"}
+{"type": "text_delta", "content": "2026 collaboration to integrate Visa payments", "_ts": "2026-06-17T02:20:27.296342+00:00"}
+{"type": "text_delta", "content": " into OpenAI experiences for **agentic commerce**, with tokenization,", "_ts": "2026-06-17T02:20:27.414993+00:00"}
+{"type": "text_delta", "content": " real-time authorization/fraud monitoring, spending", "_ts": "2026-06-17T02:20:27.535917+00:00"}
+{"type": "text_delta", "content": " limits, merchant-category controls, and", "_ts": "2026-06-17T02:20:27.655629+00:00"}
+{"type": "text_delta", "content": " approval requirements. ([usa.visa.com](https://usa.visa.com/about-visa/newsroom/press-releases.releaseid.22496.html))\n\nMastercard", "_ts": "2026-06-17T02:20:27.783542+00:00"}
+{"type": "text_delta", "content": " launched **Agent Pay for Machines** the same day, aimed", "_ts": "2026-06-17T02:20:27.911975+00:00"}
+{"type": "text_delta", "content": " at machine-speed, high-volume, low-value,", "_ts": "2026-06-17T02:20:28.030550+00:00"}
+{"type": "text_delta", "content": " permissioned transactions between agents,", "_ts": "2026-06-17T02:20:28.153608+00:00"}
+{"type": "text_delta", "content": " systems, and services, with credentialing,", "_ts": "2026-06-17T02:20:28.266976+00:00"}
+{"type": "text_delta", "content": " authorization rules, and multi-rail settlement across cards, accounts, and stablecoins", "_ts": "2026-06-17T02:20:28.388568+00:00"}
+{"type": "text_delta", "content": ". ([investor.mastercard.com](https://investor.mastercard.com/investor-news/investor-news-details/2026/Mastercard-Launches-Agent-Pay-for-Machines-to-Unlock-Super-Fast-Always-On-Payments/default.aspx))\n", "_ts": "2026-06-17T02:20:28.575758+00:00"}
+{"type": "text_delta", "content": "\n**Why this matters:** agents are starting", "_ts": "2026-06-17T02:20:28.704029+00:00"}
+{"type": "text_delta", "content": " to cross the line from \u201crecommend", "_ts": "2026-06-17T02:20:28.919434+00:00"}
+{"type": "text_delta", "content": " and draft\u201d into \u201ctrans", "_ts": "2026-06-17T02:20:29.083347+00:00"}
+{"type": "text_delta", "content": "act and commit", "_ts": "2026-06-17T02:20:29.190863+00:00"}
+{"type": "text_delta", "content": " resources.\u201d That creates a new market for", "_ts": "2026-06-17T02:20:29.317459+00:00"}
+{"type": "text_delta", "content": " agent identity, permissions, liability, fraud detection, chargeback", "_ts": "2026-06-17T02:20:29.443185+00:00"}
+{"type": "text_delta", "content": " rules, and user-consent", "_ts": "2026-06-17T02:20:29.625347+00:00"}
+{"type": "text_delta", "content": " UX.\n\n## 5. Costs and ROI are becoming", "_ts": "2026-06-17T02:20:29.750704+00:00"}
+{"type": "text_delta", "content": " a major constraint\n\nGartner predicts", "_ts": "2026-06-17T02:20:29.874368+00:00"}
+{"type": "text_delta", "content": " **over 40% of agentic AI projects will be canceled by the end of ", "_ts": "2026-06-17T02:20:30.000993+00:00"}
+{"type": "text_delta", "content": "2027** due to escalating costs, unclear business value, or", "_ts": "2026-06-17T02:20:30.132427+00:00"}
+{"type": "text_delta", "content": " inadequate risk controls. Gartner also warns", "_ts": "2026-06-17T02:20:30.306305+00:00"}
+{"type": "text_delta", "content": " about \u201cagent washing,\u201d where vendors rebrand assistants, bots", "_ts": "2026-06-17T02:20:30.411753+00:00"}
+{"type": "text_delta", "content": ", or RPA as agents without real autonomous capability. ", "_ts": "2026-06-17T02:20:30.617051+00:00"}
+{"type": "text_delta", "content": "([gartner.com](https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027))\n\nMicrosoft\u2019s", "_ts": "2026-06-17T02:20:30.827719+00:00"}
+{"type": "text_delta", "content": " Copilot Cowork pricing news reflects the same pressure", "_ts": "2026-06-17T02:20:30.943119+00:00"}
+{"type": "text_delta", "content": ": Axios reported that Microsoft is moving Cop", "_ts": "2026-06-17T02:20:31.062274+00:00"}
+{"type": "text_delta", "content": "ilot Cowork toward usage-based pricing because long-running agentic tools can", "_ts": "2026-06-17T02:20:31.171844+00:00"}
+{"type": "text_delta", "content": " keep calling models as they work, creating very high compute", "_ts": "2026-06-17T02:20:31.295336+00:00"}
+{"type": "text_delta", "content": " bills. \n\n## 6. Security and", "_ts": "2026-06-17T02:20:31.506770+00:00"}
+{"type": "text_delta", "content": " standards are now", "_ts": "2026-06-17T02:20:31.662576+00:00"}
+{"type": "text_delta", "content": " central\n\nThe Linux", "_ts": "2026-06-17T02:20:31.805921+00:00"}
+{"type": "text_delta", "content": " Foundation formed the", "_ts": "2026-06-17T02:20:31.921472+00:00"}
+{"type": "text_delta", "content": " **Agentic AI Foundation** in December 2025, with founding contributions", "_ts": "2026-06-17T02:20:32.032670+00:00"}
+{"type": "text_delta", "content": " including Anthropic\u2019s **MCP**, Block\u2019s **goose", "_ts": "2026-06-17T02:20:32.164959+00:00"}
+{"type": "text_delta", "content": "**, and OpenAI\u2019s **AGENTS.md**. Platinum", "_ts": "2026-06-17T02:20:32.286569+00:00"}
+{"type": "text_delta", "content": " members include AWS, Anthropic, Block,", "_ts": "2026-06-17T02:20:32.408509+00:00"}
+{"type": "text_delta", "content": " Bloomberg, Cloudflare, Google, Microsoft, and OpenAI. ", "_ts": "2026-06-17T02:20:32.519694+00:00"}
+{"type": "text_delta", "content": "([linuxfoundation.org](https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation?hs_amp=true))\n\nOWASP published the **", "_ts": "2026-06-17T02:20:32.650016+00:00"}
+{"type": "text_delta", "content": "Top 10 for Agentic Applications 2026**, a peer-reviewed framework", "_ts": "2026-06-17T02:20:32.837547+00:00"}
+{"type": "text_delta", "content": " for risks in autonomous systems that plan, act, and make", "_ts": "2026-06-17T02:20:32.967523+00:00"}
+{"type": "text_delta", "content": " decisions across workflows. ", "_ts": "2026-06-17T02:20:33.153020+00:00"}
+{"type": "text_delta", "content": "([genai.owasp.org](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/))\n\nNIST", "_ts": "2026-06-17T02:20:33.283536+00:00"}
+{"type": "text_delta", "content": "/CAISI is also focused on agent security: its", "_ts": "2026-06-17T02:20:33.401797+00:00"}
+{"type": "text_delta", "content": " January 2026 RFI", "_ts": "2026-06-17T02:20:33.520627+00:00"}
+{"type": "text_delta", "content": " highlights risks including indirect prompt injection, poisoned models,", "_ts": "2026-06-17T02:20:33.631325+00:00"}
+{"type": "text_delta", "content": " specification gaming, and the need to constrain and monitor agent access", "_ts": "2026-06-17T02:20:33.773805+00:00"}
+{"type": "text_delta", "content": " in deployment environments.", "_ts": "2026-06-17T02:20:33.900236+00:00"}
+{"type": "text_delta", "content": " ([nist.gov](https://www.nist.gov/news-events/news/2026/01/caisi-issues-request-information-about-securing-ai-agent-systems))\n\n## Key", "_ts": "2026-06-17T02:20:34.008833+00:00"}
+{"type": "text_delta", "content": " takeaways\n\n1. **The", "_ts": "2026-06-17T02:20:34.146771+00:00"}
+{"type": "text_delta", "content": " center of gravity is enterprise deployment**, not", "_ts": "2026-06-17T02:20:34.270056+00:00"}
+{"type": "text_delta", "content": " demos. Vendors are building", "_ts": "2026-06-17T02:20:34.401684+00:00"}
+{"type": "text_delta", "content": " agent registries,", "_ts": "2026-06-17T02:20:34.520963+00:00"}
+{"type": "text_delta", "content": " governance layers, sand", "_ts": "2026-06-17T02:20:34.657200+00:00"}
+{"type": "text_delta", "content": "boxes, audit logs, and identity systems.\n2. **", "_ts": "2026-06-17T02:20:34.770857+00:00"}
+{"type": "text_delta", "content": "Coding remains", "_ts": "2026-06-17T02:20:34.904368+00:00"}
+{"type": "text_delta", "content": " the leading agent", "_ts": "2026-06-17T02:20:35.019252+00:00"}
+{"type": "text_delta", "content": " use case**, but the frontier is expanding into finance, sales,", "_ts": "2026-06-17T02:20:35.161041+00:00"}
+{"type": "text_delta", "content": " legal, support, procurement, and commerce.\n3. **Agentic", "_ts": "2026-06-17T02:20:35.284129+00:00"}
+{"type": "text_delta", "content": " commerce is the", "_ts": "2026-06-17T02:20:35.408884+00:00"}
+{"type": "text_delta", "content": " newest breakout area** because payments", "_ts": "2026-06-17T02:20:35.532675+00:00"}
+{"type": "text_delta", "content": " turn agents into economic actors.\n4. **Security is", "_ts": "2026-06-17T02:20:35.659718+00:00"}
+{"type": "text_delta", "content": " the gating factor**: prompt injection, tool abuse,", "_ts": "2026-06-17T02:20:35.782348+00:00"}
+{"type": "text_delta", "content": " over-permissioned agents, memory poisoning, and inter", "_ts": "2026-06-17T02:20:35.916320+00:00"}
+{"type": "text_delta", "content": "-agent trust", "_ts": "2026-06-17T02:20:36.039867+00:00"}
+{"type": "text_delta", "content": " are now board-level issues", "_ts": "2026-06-17T02:20:36.155036+00:00"}
+{"type": "text_delta", "content": ".\n5. **ROI discipline is intens", "_ts": "2026-06-17T02:20:36.286623+00:00"}
+{"type": "text_delta", "content": "ifying**: agents are powerful", "_ts": "2026-06-17T02:20:36.411401+00:00"}
+{"type": "text_delta", "content": " but can be expensive, hard to govern, and easy", "_ts": "2026-06-17T02:20:36.536287+00:00"}
+{"type": "text_delta", "content": " to misapply.\n\n**", "_ts": "2026-06-17T02:20:36.660643+00:00"}
+{"type": "text_delta", "content": "Watch next:** agent identity standards", "_ts": "2026-06-17T02:20:36.838608+00:00"}
+{"type": "text_delta", "content": ", MCP/A2A adoption,", "_ts": "2026-06-17T02:20:37.022927+00:00"}
+{"type": "text_delta", "content": " enterprise agent marketplaces, payment", "_ts": "2026-06-17T02:20:37.153095+00:00"}
+{"type": "text_delta", "content": " authorization rules for agents, and whether companies can", "_ts": "2026-06-17T02:20:37.279346+00:00"}
+{"type": "text_delta", "content": " move agents from pilots into", "_ts": "2026-06-17T02:20:37.410265+00:00"}
+{"type": "text_delta", "content": " measurable production workflows.", "_ts": "2026-06-17T02:20:37.514140+00:00"}
+{"type": "error", "content": "Rate limit reached for gpt-5.5 in organization org-SCISrDqeVxlW5NAmWwPsxMVR on tokens per min (TPM): Limit 500000, Used 412554, Requested 118786. Please try again in 3.76s. Visit https://platform.openai.com/account/rate-limits to learn more.", "_ts": "2026-06-17T02:20:37.744197+00:00"}
+{"type": "done", "_ts": "2026-06-17T02:20:37.744371+00:00"}

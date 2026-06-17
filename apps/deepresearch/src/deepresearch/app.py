@@ -590,24 +590,50 @@ def _get_failed_server_names(
 ) -> set[str]:
     """Extract MCP server prefixes that likely caused a startup failure.
 
+    Unwraps ExceptionGroup to get at the actual error message, then tries to
+    match against server prefix names and their known URLs.
+
     When we can't pinpoint the exact server, return all prefixes so the
     retry removes every MCP server (the app still works without them).
     """
-    all_names = {getattr(s, "tool_prefix", "") for s in servers} - {""}
+    all_names = {getattr(s, "prefix", "") for s in servers} - {""}
     # If only one MCP server, it's obviously the culprit
     if len(all_names) == 1:
         return all_names
-    # For ExceptionGroup, check if error mentions docker/excalidraw
-    msg = str(exc).lower()
+
+    # Unwrap ExceptionGroup to get at the real error message
+    def _collect_messages(exc: BaseException) -> list[str]:
+        msgs: list[str] = []
+        if isinstance(exc, BaseExceptionGroup):
+            for sub in exc.exceptions:
+                msgs.extend(_collect_messages(sub))
+        else:
+            msgs.append(str(exc).lower())
+        return msgs
+
+    messages = _collect_messages(exc)
+    if not messages:
+        messages = [str(exc).lower()]
+
+    # Known URL patterns for HTTP-based MCP servers — maps URL substring -> prefix
+    URL_PATTERNS: dict[str, str] = {
+        "r.jina.ai": "jina",
+    }
+
     matched: set[str] = set()
-    for name in all_names:
-        if name.lower() in msg:
-            matched.add(name)
-    if "docker" in msg or "stdio" in msg or "broken" in msg:
-        # Likely the Docker-based Excalidraw server
-        for s in servers:
-            if getattr(s, "tool_prefix", "") == "excalidraw":
-                matched.add("excalidraw")
+    for msg in messages:
+        for name in all_names:
+            if name.lower() in msg:
+                matched.add(name)
+        # Check URL patterns
+        for url_substring, prefix in URL_PATTERNS.items():
+            if url_substring in msg and prefix in all_names:
+                matched.add(prefix)
+        # Check docker/stdio heuristics
+        if "docker" in msg or "stdio" in msg or "broken" in msg:
+            for s in servers:
+                if getattr(s, "prefix", "") == "excalidraw":
+                    matched.add("excalidraw")
     return matched or all_names
 
 
@@ -627,7 +653,7 @@ async def lifespan(app: FastAPI):
     session_manager.start_cleanup_loop(interval=300)
 
     def _print_banner(servers: list) -> None:
-        names = [getattr(s, "tool_prefix", "unknown") for s in servers]
+        names = [getattr(s, "prefix", "unknown") for s in servers]
         print("=" * 60)
         print("DeepResearch — Full-Featured Research Agent")
         print("=" * 60)
@@ -645,22 +671,26 @@ async def lifespan(app: FastAPI):
 
     _print_banner(mcp_servers)
 
-    # Start MCP server connections — retry without failing servers
-    try:
-        async with agent:
-            yield
-    except Exception as exc:
-        failed = _get_failed_server_names(exc, mcp_servers)
-        logger.warning(
-            "MCP server startup failed (%s) — retrying without them",
-            ", ".join(failed) or "unknown",
-        )
-        # Rebuild agent without problematic MCP servers
-        remaining = [s for s in mcp_servers if getattr(s, "tool_prefix", "") not in failed]
-        agent = create_research_agent(mcp_servers=remaining, middleware=[audit_cap, permission_cap])
-        _print_banner(remaining)
-        async with agent:
-            yield
+    # Start MCP server connections — retry loop that drops failing servers
+    remaining = list(mcp_servers)
+    while True:
+        try:
+            async with agent:
+                yield
+        except Exception as exc:
+            failed = _get_failed_server_names(exc, remaining)
+            if not failed:
+                logger.warning("MCP server startup failed — no servers left to drop, raising error")
+                raise
+            logger.warning(
+                "MCP server startup failed (%s) — retrying without them",
+                ", ".join(failed),
+            )
+            remaining = [s for s in remaining if getattr(s, "prefix", "") not in failed]
+            agent = create_research_agent(mcp_servers=remaining, middleware=[audit_cap, permission_cap])
+            _print_banner(remaining)
+        else:
+            break
 
     # Shutdown
     count = await session_manager.shutdown()
@@ -1584,7 +1614,7 @@ async def get_config():
     mcp_names = []
     if agent:
         for ts in agent.toolsets:
-            prefix = getattr(ts, "tool_prefix", None)
+            prefix = getattr(ts, "prefix", None)
             if prefix:
                 mcp_names.append(prefix)
 

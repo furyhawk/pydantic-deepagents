@@ -1278,12 +1278,12 @@ def create_deep_agent(  # noqa: C901
     if web_search:  # pragma: no cover
         from pydantic_ai.capabilities import WebSearch
 
-        all_capabilities.append(WebSearch())
+        all_capabilities.append(WebSearch(local=True))
 
     if web_fetch:  # pragma: no cover
         from pydantic_ai.capabilities import WebFetch
 
-        all_capabilities.append(WebFetch())
+        all_capabilities.append(WebFetch(local=True))
 
     if thinking is not False:  # pragma: no cover
         from pydantic_ai.capabilities import Thinking
