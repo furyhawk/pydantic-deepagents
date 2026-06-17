@@ -1,13 +1,14 @@
 """Example demonstrating MCP server integration.
 
 Shows how to connect to MCP servers using pydantic-ai's MCP support:
-- `MCPServerStdio` for local subprocess MCP servers (stdio transport)
+- `MCPToolset(StdioTransport(...))` for local subprocess MCP servers (stdio transport)
 - `MCPServerSSE` for remote SSE-based MCP servers
 - `MCPToolset` for FastMCP-based connections (recommended)
 - `MCP` capability for model-native MCP support
 
 MCP tools appear as native tools alongside deep agent's built-in tools.
 """
+
 import os
 import asyncio
 from pathlib import Path
@@ -15,7 +16,9 @@ from pathlib import Path
 from pydantic_ai.models.openai import OpenAIResponsesModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.capabilities import MCP, PrefixTools
-from pydantic_ai.mcp import MCPServerStdio, MCPServerSSE, MCPToolset
+from pydantic_ai.mcp import MCPServerSSE, MCPToolset
+from pydantic_ai.toolsets import PrefixedToolset
+from fastmcp.client.transports import StdioTransport
 
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
@@ -93,14 +96,18 @@ async def multiple_mcp_via_capabilities():
 
 
 async def local_mcp_via_stdio():
-    """Connect to a local MCP server via stdio using MCPServerStdio."""
+    """Connect to a local MCP server via stdio using MCPToolset with StdioTransport."""
     agent = create_deep_agent(
         model=model,
         toolsets=[
-            MCPServerStdio(
-                command="npx",
-                args=["-y", "@modelcontextprotocol/server-filesystem", str(Path.cwd())],
-                tool_prefix="mcp_fs",
+            PrefixedToolset(
+                MCPToolset(
+                    StdioTransport(
+                        command="npx",
+                        args=["-y", "@modelcontextprotocol/server-filesystem", str(Path.cwd())],
+                    ),
+                ),
+                prefix="mcp_fs",
             ),
         ],
     )
@@ -124,5 +131,29 @@ async def remote_mcp_via_sse():
     print(result.output)
 
 
+async def tavily_mcp_via_toolset():
+    """Connect to a remote MCP server via HTTP transport."""
+    agent = create_deep_agent(
+        model=model,
+        toolsets=[
+            PrefixedToolset(
+                MCPToolset(
+                    StdioTransport(
+                        command="npx",
+                        args=["-y", "tavily-mcp@latest"],
+                        env={"TAVILY_API_KEY": os.getenv("TAVILY_API_KEY")},
+                    ),
+                    max_retries=3,
+                ),
+                prefix="tavily",
+            ),
+        ],
+    )
+
+    deps = DeepAgentDeps(backend=StateBackend())
+    result = await agent.run("Search for the latest news on AI", deps=deps)
+    print(result.output)
+
+
 if __name__ == "__main__":
-    asyncio.run(local_mcp_via_stdio())
+    asyncio.run(tavily_mcp_via_toolset())

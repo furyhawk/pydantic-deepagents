@@ -8,8 +8,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from pydantic_ai.mcp import MCPServerStdio, MCPServerStreamableHTTP
-from pydantic_ai.toolsets import AbstractToolset
+from pydantic_ai.mcp import MCPToolset
+from pydantic_ai.toolsets import AbstractToolset, PrefixedToolset
+from fastmcp.client.transports import StdioTransport
 
 logger = logging.getLogger(__name__)
 
@@ -55,12 +56,16 @@ def create_mcp_servers() -> list[AbstractToolset]:
     tavily_key = os.getenv("TAVILY_API_KEY")
     if tavily_key:
         servers.append(
-            MCPServerStdio(
-                "npx",
-                ["-y", "tavily-mcp@latest"],
-                env={"TAVILY_API_KEY": tavily_key},
-                tool_prefix="tavily",
-                max_retries=3,
+            PrefixedToolset(
+                MCPToolset(
+                    StdioTransport(
+                        command="npx",
+                        args=["-y", "tavily-mcp@latest"],
+                        env={"TAVILY_API_KEY": tavily_key},
+                    ),
+                    max_retries=3,
+                ),
+                prefix="tavily",
             )
         )
 
@@ -68,12 +73,16 @@ def create_mcp_servers() -> list[AbstractToolset]:
     brave_key = os.getenv("BRAVE_API_KEY")
     if brave_key:
         servers.append(
-            MCPServerStdio(
-                "npx",
-                ["-y", "@anthropic-ai/brave-search-mcp@latest"],
-                env={"BRAVE_API_KEY": brave_key},
-                tool_prefix="brave",
-                max_retries=3,
+            PrefixedToolset(
+                MCPToolset(
+                    StdioTransport(
+                        command="npx",
+                        args=["-y", "@anthropic-ai/brave-search-mcp@latest"],
+                        env={"BRAVE_API_KEY": brave_key},
+                    ),
+                    max_retries=3,
+                ),
+                prefix="brave",
             )
         )
 
@@ -82,11 +91,13 @@ def create_mcp_servers() -> list[AbstractToolset]:
     jina_key = os.getenv("JINA_API_KEY")
     if jina_key:
         servers.append(
-            MCPServerStreamableHTTP(
-                url="https://r.jina.ai/mcp",
-                headers={"Authorization": f"Bearer {jina_key}"},
-                tool_prefix="jina",
-                max_retries=3,
+            PrefixedToolset(
+                MCPToolset(
+                    "https://r.jina.ai/mcp",
+                    headers={"Authorization": f"Bearer {jina_key}"},
+                    max_retries=3,
+                ),
+                prefix="jina",
             )
         )
 
@@ -94,19 +105,23 @@ def create_mcp_servers() -> list[AbstractToolset]:
     excalidraw_server_url = os.getenv("EXCALIDRAW_SERVER_URL", "http://host.docker.internal:3000")
     if os.getenv("EXCALIDRAW_ENABLED", "1") == "1" and _docker_available():
         servers.append(
-            MCPServerStdio(
-                "podman",
-                [
-                    "run",
-                    "-i",
-                    "--rm",
-                    "-e",
-                    f"EXPRESS_SERVER_URL={excalidraw_server_url}",
-                    "-e",
-                    "ENABLE_CANVAS_SYNC=true",
-                    "ghcr.io/yctimlin/mcp_excalidraw:latest",
-                ],
-                tool_prefix="excalidraw",
+            PrefixedToolset(
+                MCPToolset(
+                    StdioTransport(
+                        command="podman",
+                        args=[
+                            "run",
+                            "-i",
+                            "--rm",
+                            "-e",
+                            f"EXPRESS_SERVER_URL={excalidraw_server_url}",
+                            "-e",
+                            "ENABLE_CANVAS_SYNC=true",
+                            "ghcr.io/yctimlin/mcp_excalidraw:latest",
+                        ],
+                    ),
+                ),
+                prefix="excalidraw",
             )
         )
     elif os.getenv("EXCALIDRAW_ENABLED", "1") == "1":
@@ -115,10 +130,14 @@ def create_mcp_servers() -> list[AbstractToolset]:
     # Playwright — browser automation for JS-heavy pages (requires PLAYWRIGHT_MCP=1)
     if os.getenv("PLAYWRIGHT_MCP"):
         servers.append(
-            MCPServerStdio(
-                "npx",
-                ["-y", "@playwright/mcp@latest", "--headless"],
-                tool_prefix="playwright",
+            PrefixedToolset(
+                MCPToolset(
+                    StdioTransport(
+                        command="npx",
+                        args=["-y", "@playwright/mcp@latest", "--headless"],
+                    ),
+                ),
+                prefix="playwright",
             )
         )
 
@@ -126,12 +145,16 @@ def create_mcp_servers() -> list[AbstractToolset]:
     firecrawl_key = os.getenv("FIRECRAWL_API_KEY")
     if firecrawl_key:
         servers.append(
-            MCPServerStdio(
-                "npx",
-                ["-y", "firecrawl-mcp@latest"],
-                env={"FIRECRAWL_API_KEY": firecrawl_key},
-                tool_prefix="firecrawl",
-                max_retries=3,
+            PrefixedToolset(
+                MCPToolset(
+                    StdioTransport(
+                        command="npx",
+                        args=["-y", "firecrawl-mcp@latest"],
+                        env={"FIRECRAWL_API_KEY": firecrawl_key},
+                    ),
+                    max_retries=3,
+                ),
+                prefix="firecrawl",
             )
         )
 
