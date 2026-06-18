@@ -227,7 +227,6 @@ def _make_default_deep_agent_factory(
     *,
     model: str | Model | None,
     edit_format: Any,
-    subagent_extra_toolsets: Any,
     context_files: Any,
     context_discovery: Any,
     include_memory: bool,
@@ -939,7 +938,6 @@ def create_deep_agent(  # noqa: C901
         _default_deep_agent_factory = _make_default_deep_agent_factory(
             model=subagent_model,
             edit_format=edit_format,
-            subagent_extra_toolsets=_sub_extra or None,
             context_files=context_files,
             context_discovery=context_discovery,
             include_memory=include_memory,
