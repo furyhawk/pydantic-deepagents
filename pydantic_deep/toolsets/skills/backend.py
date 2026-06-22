@@ -16,7 +16,7 @@ import json
 import shlex
 import warnings
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, cast
 
 from pydantic_ai_backends import (
     AsyncBackendProtocol,
@@ -552,7 +552,7 @@ class BackendSkillsDirectory:
         scripts: list[BackendSkillScript] = []
         if isinstance(self._backend, SandboxProtocol):
             executor = BackendSkillScriptExecutor(
-                backend=async_backend,  # type: ignore[arg-type]
+                backend=cast("AsyncSandboxProtocol", async_backend),
                 timeout=self._script_timeout,
             )
             scripts = _discover_backend_scripts(self._backend, skill_dir, name, executor)

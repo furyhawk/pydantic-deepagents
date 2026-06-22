@@ -477,7 +477,7 @@ class BranchOverlay:
         """
         if self._is_deleted(path):
             return False
-        return bool(self._overlay.exists(path) or self._parent.exists(path))  # type: ignore[union-attr]
+        return bool(self._overlay.exists(path) or self._parent.exists(path))
 
     def read(self, path: str, offset: int = 0, limit: int = 2000) -> str:
         if self._is_deleted(path):
