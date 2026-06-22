@@ -709,7 +709,7 @@ class TestFallbackModel:
         from pydantic_deep.agent import _wrap_with_fallback_and_hooks
         from pydantic_deep.capabilities.hooks import Hook, HookEvent
 
-        class _CommandBackend(StateBackend):
+        class _CommandBackend(StateBackend):  # type: ignore[misc]
             id = "command-backend"
 
             def __init__(self) -> None:
