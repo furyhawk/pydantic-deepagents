@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.32] - 2026-06-25
+
+### Fixed
+
+- **`PatchToolCallsCapability` no longer drops a trailing `ModelRequest` left empty after stripping orphaned tool results** (`pydantic_deep/processors/patch.py`). Phase 2 removes `ToolReturnPart`s that have no matching `ToolCallPart`, then discarded any `ModelRequest` left with no parts. When that request was the **last** message — a resumed or interrupted history whose tail holds only orphaned results — dropping it left the history ending on a `ModelResponse`, which trips pydantic-ai's `Processed history must end with a `ModelRequest`` validation (`UserError`). This is the same class of bug as the upstream `LimitWarnerProcessor` fix. The stripped request is now kept as an empty `ModelRequest` structural placeholder (the shape pydantic-ai uses when resuming without a prompt) when it is the final message; interior empty requests are still dropped.
+
+### Dependencies
+
+- **Bumped `summarization-pydantic-ai` to `>=0.1.10`** (`pyproject.toml`). Picks up two history-rewriting fixes of the same trailing-`ModelRequest` class: `LimitWarnerProcessor` no longer drops the already-empty trailing `ModelRequest` that pydantic-ai appends when resuming without a prompt, and `SlidingWindowProcessor` no longer trims history down to empty on a zero `keep`.
+
 ## [0.3.31] - 2026-06-22
 
 ### Changed
