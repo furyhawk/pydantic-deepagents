@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
+import re
+
+from rich.cells import cell_len
 from textual.app import ComposeResult
+from textual.events import Resize
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Static
+
+_MARKUP_RE = re.compile(r"\[/?[^\]]*\]")
+
+
+def _visible_len(markup: str) -> int:
+    """Visible cell width of `markup` with all `[...]` tags removed."""
+    return cell_len(_MARKUP_RE.sub("", markup))
 
 
 def _context_bar(pct: float, width: int = 10) -> str:
@@ -59,10 +70,16 @@ class StatusBar(Widget):
     model_name: reactive[str] = reactive("")
     goal_active: reactive[bool] = reactive(False)
 
+    _width: int = 200
+
     def compose(self) -> ComposeResult:
         yield Static(id="status-content")
 
     def on_mount(self) -> None:
+        self._refresh_content()
+
+    def on_resize(self, event: Resize) -> None:
+        self._width = event.size.width
         self._refresh_content()
 
     def watch_approve_mode(self) -> None:
@@ -105,9 +122,9 @@ class StatusBar(Widget):
 
         # Approve mode — always show
         if self.approve_mode == "manual":
-            parts.append("[$text-muted]● manual[/]")
+            parts.append("[$text-muted]manual[/]")
         else:
-            parts.append("[$warning]● auto[/]")
+            parts.append("[$warning]auto[/]")
 
         # Goal loop — show while an active goal is driving turns
         if self.goal_active:
@@ -147,4 +164,15 @@ class StatusBar(Widget):
             short = self.model_name.split(":")[-1] if ":" in self.model_name else self.model_name
             parts.append(f"[$text-muted]{short}[/]")
 
-        content.update("  [$text-muted]·[/]  ".join(parts))
+        # Drop trailing segments until the line fits the bar width — a single
+        # docked row must never overflow its region (overflow ghosts to the
+        # right of the input on terminals that under-clip wide rows).
+        sep = " [$text-muted]·[/] "
+        sep_w = _visible_len(sep)
+        budget = max(0, self._width - 1)  # leave a 1-cell safety margin
+        while len(parts) > 1:
+            total = sum(_visible_len(p) for p in parts) + sep_w * (len(parts) - 1)
+            if total <= budget:
+                break
+            parts.pop()
+        content.update(sep.join(parts))

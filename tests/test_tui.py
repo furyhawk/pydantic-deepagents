@@ -51,6 +51,32 @@ class TestTUIWidgets:
             await pilot.pause()
             assert app.theme == "deep-default"
 
+    async def test_status_bar_never_overflows_width(self, app):
+        """A fully-populated status bar must fit the terminal width — overflow on
+        a single docked row ghosts text beside the input on some terminals."""
+        import re
+
+        from rich.cells import cell_len
+        from textual.widgets import Static
+
+        from apps.cli.widgets.status_bar import StatusBar
+
+        markup = re.compile(r"\[/?[^\]]*\]")
+        async with app.run_test(size=(72, 30)) as pilot:
+            await pilot.pause()
+            sb = app.screen.query_one(StatusBar)
+            sb.approve_mode = "auto"
+            sb.active_todos, sb.total_todos = 2, 5
+            sb.total_cost = 0.0184
+            sb.total_input_tokens, sb.total_output_tokens = 8200, 1400
+            sb.context_pct = 0.42
+            sb.message_count = 6
+            sb.model_name = "anthropic:claude-sonnet-4-6"
+            await pilot.pause()
+            content = sb.query_one("#status-content", Static)
+            visible = cell_len(markup.sub("", str(content.render())))
+            assert visible <= 72
+
     async def test_user_message(self, app):
         async with app.run_test(size=(120, 35)) as pilot:
             await pilot.pause()
