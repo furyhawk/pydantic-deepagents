@@ -33,9 +33,9 @@ from pydantic_deep import (
 )
 from pydantic_deep.toolsets.checkpointing import InMemoryCheckpointStore
 from pydantic_deep.toolsets.forking import NOT_ENABLED_MESSAGE, create_fork_toolset
+from pydantic_deep.toolsets.forking.budget import BudgetWatcher
 from pydantic_deep.toolsets.forking.coordinator import (
     _agent_model_name,
-    _BudgetWatcher,
     _build_branch_cost_tracking,
     _find_parent_cost_tracking,
     _PerBranchCostTracking,
@@ -117,7 +117,7 @@ async def test_per_branch_budget_exhausts_only_target_branch():
 
     a_watcher = coord.branches[a_id].cost_tracker
     assert isinstance(a_watcher, _PerBranchCostTracking)
-    assert isinstance(a_watcher.on_cost_update, _BudgetWatcher)
+    assert isinstance(a_watcher.on_cost_update, BudgetWatcher)
 
     await a_watcher.on_cost_update(_cost_info(total=0.10))
 
@@ -565,7 +565,7 @@ def test_build_branch_cost_tracking_warns_when_no_parent_and_no_model():
     class FakeAgent:
         model = object()  # unrecognised shape
 
-    watcher = _BudgetWatcher(
+    watcher = BudgetWatcher(
         coordinator=cast(Any, None),
         branch_id="bx",
         budget_usd=0.05,
@@ -670,7 +670,7 @@ def test_build_branch_cost_tracking_from_model_name_when_no_parent():
     class FakeAgent:
         model = "anthropic:claude-sonnet-4-6"
 
-    watcher = _BudgetWatcher(
+    watcher = BudgetWatcher(
         coordinator=cast(Any, None),
         branch_id="bx",
         budget_usd=0.05,

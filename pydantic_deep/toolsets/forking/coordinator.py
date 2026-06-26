@@ -7,8 +7,8 @@ merges by awaiting the picked winner's task.
 
 Supports up to `max_branches=10` parallel branches and `max_depth=2`
 nested forks. Per-branch :class:`CostTracking`-driven budget caps are
-managed by :class:`_BudgetWatcher`; a fork-wide aggregate cap by
-:class:`_AggregateBudgetWatcher`. Partial-history capture ensures
+managed by :class:`BudgetWatcher`; a fork-wide aggregate cap by
+:class:`AggregateBudgetWatcher`. Partial-history capture ensures
 budget-exhausted branches can still be picked as merge winners.
 """
 
@@ -32,6 +32,7 @@ from pydantic_ai_shields import CostInfo, CostTracking
 
 from pydantic_deep.deps import DeepAgentDeps, unwrap_backend
 from pydantic_deep.toolsets.checkpointing import Checkpoint, CheckpointStore
+from pydantic_deep.toolsets.forking.budget import AggregateBudgetWatcher, BudgetWatcher
 from pydantic_deep.toolsets.forking.diff import build_diff_report
 from pydantic_deep.toolsets.forking.isolation import BranchOverlay, clone_for_branch
 from pydantic_deep.toolsets.forking.judge import (
@@ -272,65 +273,6 @@ class _PerBranchCostTracking(CostTracking):  # type: ignore[misc]
 
 
 @dataclass
-class _BudgetWatcher:
-    """Per-branch `on_cost_update` callback that enforces `budget_usd`.
-
-    The cost callback is awaited by `CostTracking.after_run` when it
-    returns a coroutine, so this watcher uses direct `await` rather than
-    spawning a background task.
-    """
-
-    coordinator: ForkCoordinator
-    branch_id: str
-    budget_usd: float | None
-
-    async def __call__(self, info: CostInfo) -> None:
-        await self.coordinator._on_branch_cost_update(self.branch_id, info)
-        if (
-            self.budget_usd is not None
-            and info.total_cost_usd is not None
-            and info.total_cost_usd >= self.budget_usd
-        ):
-            await self.coordinator.terminate_branch(self.branch_id, reason="budget_exhausted")
-
-
-@dataclass
-class _AggregateBudgetWatcher:
-    """Coordinator-level aggregate cap.
-
-    Tracks the latest `total_cost_usd` per branch. When the sum exceeds
-    :attr:`aggregate_budget_usd`, terminates every still-running branch
-    with reason `"aggregate_budget_exhausted"`.
-
-    Best-effort - concurrent callbacks may briefly overrun before
-    terminations propagate. See the "Aggregate budget enforcement is
-    best-effort" callout in `docs/capabilities/live-fork.md`.
-    """
-
-    coordinator: ForkCoordinator
-    aggregate_budget_usd: float | None
-    _per_branch: dict[str, float] = field(default_factory=dict, init=False, repr=False)
-
-    async def update(self, branch_id: str, info: CostInfo) -> None:
-        if info.total_cost_usd is None:
-            return
-        self._per_branch[branch_id] = info.total_cost_usd
-        if self.aggregate_budget_usd is None:
-            return
-        total = sum(self._per_branch.values())
-        if total < self.aggregate_budget_usd:
-            return
-        for bid, rt in list(self.coordinator.branches.items()):
-            if rt.status.state == "running":
-                await self.coordinator.terminate_branch(bid, reason="aggregate_budget_exhausted")
-
-    def aggregate(self) -> float | None:
-        if not self._per_branch:
-            return None
-        return sum(self._per_branch.values())
-
-
-@dataclass
 class BranchRuntime:
     """Runtime state of a single branch task."""
 
@@ -416,7 +358,7 @@ class ForkCoordinator:
         self._handle: ForkHandle | None = None
         self._lock = asyncio.Lock()
         self.capability: LiveForkCapability | None = None
-        self._aggregate_watcher: _AggregateBudgetWatcher | None = None
+        self._aggregate_watcher: AggregateBudgetWatcher | None = None
         self.materializer: ForkMaterializer | None = None
         self._cached_outcome: ResolveOutcome | None = None
         self._cached_outcome_key: tuple[Any, ...] | None = None
@@ -569,7 +511,7 @@ class ForkCoordinator:
                 if aggregate_budget_usd is not None
                 else self.aggregate_budget_usd
             )
-            self._aggregate_watcher = _AggregateBudgetWatcher(
+            self._aggregate_watcher = AggregateBudgetWatcher(
                 coordinator=self, aggregate_budget_usd=effective_aggregate
             )
 
@@ -585,7 +527,7 @@ class ForkCoordinator:
                 if overlay is not None and self.materializer is not None:
                     overlay.attach_materializer(self.materializer, spec.label)
 
-                watcher = _BudgetWatcher(
+                watcher = BudgetWatcher(
                     coordinator=self, branch_id=branch_id, budget_usd=spec.budget_usd
                 )
                 branch_cost_cap = _build_branch_cost_tracking(
@@ -869,7 +811,7 @@ class ForkCoordinator:
     async def _on_branch_cost_update(self, branch_id: str, info: CostInfo) -> None:
         """Relay a per-branch cost update to the aggregate watcher.
 
-        Called by :class:`_BudgetWatcher` before it checks the per-branch
+        Called by :class:`BudgetWatcher` before it checks the per-branch
         cap; lets the coordinator track the fork-wide sum without giving
         the per-branch watcher a reference to its sibling watchers.
         """
@@ -1538,7 +1480,7 @@ def _build_branch_cost_tracking(
     agent: Any,
     branch_label: str,
     budget_usd: float | None,
-    watcher: _BudgetWatcher,
+    watcher: BudgetWatcher,
 ) -> _PerBranchCostTracking | None:
     """Build the per-branch :class:`_PerBranchCostTracking` clone.
 

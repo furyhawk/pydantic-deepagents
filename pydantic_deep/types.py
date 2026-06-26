@@ -95,7 +95,7 @@ class BranchSpec:
         model: Optional model override for the branch. `None` inherits
             the parent's model.
         budget_usd: Optional per-branch USD budget. Enforced by
-            :class:`_BudgetWatcher`: when the branch's `CostTracking`
+            :class:`BudgetWatcher`: when the branch's `CostTracking`
             cumulative cost crosses this cap the branch is cancelled and
             transitions to :data:`BranchState` `"budget_exhausted"`.
     """
