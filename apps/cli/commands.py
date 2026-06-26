@@ -513,8 +513,9 @@ async def _cmd_improve(app: DeepApp, arg: str) -> None:  # noqa: C901
             model = app.model_name
             if not model or model in ("test", "preview"):
                 from apps.cli.config import load_config
+                from pydantic_deep.models import DEFAULT_IMPROVE_MODEL
 
-                model = load_config().model or "openrouter:anthropic/claude-sonnet-4"
+                model = load_config().model or DEFAULT_IMPROVE_MODEL
 
             def _on_progress(stage: str, current: int, total: int) -> None:
                 if stage == "discovering":
