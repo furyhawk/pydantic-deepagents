@@ -14,9 +14,7 @@ from __future__ import annotations
 
 import math
 
-from textual.app import ComposeResult
 from textual.color import Color
-from textual.widget import Widget
 from textual.widgets import Static
 
 #: ~20 fps — smooth without being busy. One shared cadence for all ambients.
@@ -32,8 +30,12 @@ def _smoothstep(t: float) -> float:
     return t * t * (3.0 - 2.0 * t)
 
 
-class AmbientBand(Widget):
-    """A one-line band of squares that pulse in a slow travelling wave."""
+class AmbientBand(Static):
+    """A one-line band of squares that pulse in a slow travelling wave.
+
+    A self-updating ``Static`` (not a container) so it sizes to its content
+    and never collapses to zero width inside narrow modals.
+    """
 
     DEFAULT_CSS = """
     AmbientBand {
@@ -72,19 +74,16 @@ class AmbientBand(Widget):
         self._floor = floor
         self._phase = 0.0
 
-    def compose(self) -> ComposeResult:
-        yield Static(id="ambient-content")
-
     def on_mount(self) -> None:
         self.set_interval(_TICK_S, self._advance)
-        self._render()
+        self._repaint()
 
     def _advance(self) -> None:
         # Pause the wave whenever the band isn't actually visible — cheap idle.
         if not self.display:
             return
         self._phase += self._speed
-        self._render()
+        self._repaint()
 
     def _palette(self) -> tuple[Color, Color]:
         """Return (dim, bright) colours, following the active theme when possible."""
@@ -100,11 +99,7 @@ class AmbientBand(Widget):
                 pass
         return dim, bright
 
-    def _render(self) -> None:
-        try:
-            content = self.query_one("#ambient-content", Static)
-        except Exception:
-            return  # not composed yet
+    def _repaint(self) -> None:
         dim, bright = self._palette()
         cells: list[str] = []
         for i in range(self._count):
@@ -112,7 +107,7 @@ class AmbientBand(Widget):
             t = self._floor + (1.0 - self._floor) * _smoothstep(wave)
             color = dim.blend(bright, t)
             cells.append(f"[{color.hex}]{self._glyph}[/]")
-        content.update(" ".join(cells))
+        self.update(" ".join(cells))
 
 
 __all__ = ["AmbientBand"]

@@ -20,6 +20,38 @@ def _plain_len(markup: str) -> int:
     return len(_MARKUP_RE.sub("", markup))
 
 
+def _shimmer_rule(width: int, pos: int, *, band: int = 7) -> str:
+    """A faint horizontal rule with a bright accent band travelling along it.
+
+    Rendered while streaming to signal "alive" activity — the band sweeps left
+    to right at `pos` (advanced once per spinner tick) over a dim base rule.
+    """
+    if width <= 0:
+        return ""
+    cycle = width + band
+    center = pos % cycle
+    out: list[str] = []
+    run: list[str] = []
+    run_bright = False
+
+    def _flush() -> None:
+        if not run:
+            return
+        color = "$accent" if run_bright else "$text-muted"
+        out.append(f"[{color}]{''.join(run)}[/]")
+
+    for i in range(width):
+        dist = abs(i - center)
+        bright = dist <= band // 2
+        if bright != run_bright and run:
+            _flush()
+            run.clear()
+        run_bright = bright
+        run.append("─")
+    _flush()
+    return "".join(out)
+
+
 def _fmt(count: int) -> str:
     """Format token count compactly."""
     if count < 1000:
@@ -58,6 +90,7 @@ class DeepHeader(Widget):
 
     _timer_handle: object | None = None
     _width: int = 80
+    _shimmer_pos: int = 0
 
     def __init__(self) -> None:
         super().__init__()
@@ -121,7 +154,14 @@ class DeepHeader(Widget):
                 )
             else:
                 parts.append(f"[$accent]{frame}[/] [$text-muted]{elapsed:.0f}s[/]")
-            content.update(sep.join(parts))
+            info_text = sep.join(parts)
+            # Animated shimmer rule fills the rest, sweeping with each tick.
+            self._shimmer_pos += 1
+            available = self._width - _plain_len(info_text) - 3
+            if available > 4:
+                content.update(f"{info_text}  {_shimmer_rule(available - 2, self._shimmer_pos)}")
+            else:
+                content.update(info_text)
         else:
             if self.model_name:
                 parts.append(f"[$text-muted]{self.model_name}[/]")
