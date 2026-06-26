@@ -23,17 +23,16 @@ from pydantic_ai_backends import (
     StateBackend,
     create_console_toolset,
     ensure_async,
-    get_console_system_prompt,
 )
-from pydantic_ai_todo import create_todo_toolset, get_todo_system_prompt
+from pydantic_ai_todo import create_todo_toolset
 from subagents_pydantic_ai import (
     UsageLimitsFactory,
     create_subagent_toolset,
-    get_subagent_system_prompt,
 )
 
 from pydantic_deep.capabilities.hooks import HookEvent
 from pydantic_deep.deps import DeepAgentDeps
+from pydantic_deep.instructions import build_instruction_providers, render_instructions
 from pydantic_deep.models import (
     DEFAULT_IMPROVE_MODEL,
     DEFAULT_MODEL,
@@ -1370,54 +1369,23 @@ def create_deep_agent(  # noqa: C901
         **agent_create_kwargs,
     )
 
-    # Add dynamic system prompts
+    # Runtime system-prompt sections. Provider selection happens once here;
+    # toolset-owned prompts are emitted automatically by CombinedToolset.
+    instruction_providers = build_instruction_providers(
+        include_todo=include_todo,
+        todo_proxy=_todo_proxy,
+        include_filesystem=include_filesystem,
+        edit_format=edit_format,
+        include_subagents=include_subagents,
+        subagents=effective_subagents,
+        web_search=web_search,
+        web_fetch=web_fetch,
+    )
+
     @agent.instructions
-    def dynamic_instructions(ctx: Any) -> str:  # pragma: no cover
-        """Generate dynamic instructions based on current state."""
-        parts = []
-
-        # Show uploaded files first (most relevant for user's current task)
-        uploads_prompt = ctx.deps.get_uploads_summary()
-        if uploads_prompt:
-            parts.append(uploads_prompt)
-
-        if include_todo and _todo_proxy is not None:
-            _todo_proxy._deps = ctx.deps
-            todo_prompt = get_todo_system_prompt(_todo_proxy)
-            if todo_prompt:
-                parts.append(todo_prompt)
-
-        if include_filesystem:
-            console_prompt = get_console_system_prompt(edit_format=edit_format)  # type: ignore[arg-type,unused-ignore]
-            if console_prompt:
-                parts.append(console_prompt)
-
-        # NOTE: Toolset get_instructions() are called automatically by
-        # pydantic-ai's CombinedToolset since v1.74.0.
-
-        if include_subagents:
-            # Build configs list for prompt generation
-            prompt_configs: list[SubAgentConfig] = list(effective_subagents or [])
-            if prompt_configs:
-                subagent_prompt = get_subagent_system_prompt(prompt_configs)
-                if subagent_prompt:
-                    parts.append(subagent_prompt)
-
-        if web_search or web_fetch:
-            web_lines = ["## Web Tools\n\nYou have access to the web:"]
-            if web_search:
-                web_lines.append(
-                    "- **web search** - search the internet for current information, news, docs"
-                )
-            if web_fetch:
-                web_lines.append("- **web fetch** - fetch and read any URL as Markdown")
-            web_lines.append(
-                "\nWhen the user asks you to look something up online, visit a website, "
-                "or check current information - use these tools. Do NOT refuse."
-            )
-            parts.append("\n".join(web_lines))
-
-        return "\n\n".join(parts) if parts else ""
+    def dynamic_instructions(ctx: RunContext[DeepAgentDeps]) -> str:  # pragma: no cover
+        """Join every active instruction provider into the dynamic prompt."""
+        return render_instructions(ctx, instruction_providers)
 
     # Expose context middleware for CLI /compact and /context commands
     agent._context_middleware = context_mw  # type: ignore[attr-defined]
