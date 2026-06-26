@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import mimetypes
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -273,20 +273,24 @@ class DeepAgentDeps:
           `ForkCoordinator.fork` and only meaningful to an agent wired
           with the fork capability; inert on a separately-compiled subagent.
 
+        Every other field (backend, files, uploads, ask_user, share_todos,
+        checkpoint_store, message_queue) is shared with the parent via
+        `replace`, so new shared fields propagate automatically.
+
         Args:
             max_depth: Maximum nesting depth for subagent. If > 0, subagents
                 dict is copied to allow nested delegation.
         """
-        return DeepAgentDeps(
-            backend=self.backend,
-            files=self.files,  # Shared reference
-            todos=self.todos if self.share_todos else [],  # Shared or fresh
+        return replace(
+            self,
+            todos=self.todos if self.share_todos else [],
             subagents=self.subagents.copy() if max_depth > 0 else {},
-            uploads=self.uploads,  # Shared reference
-            ask_user=self.ask_user,  # Propagate to subagents
-            share_todos=self.share_todos,  # Propagate to subagents
-            checkpoint_store=self.checkpoint_store,  # Shared reference
-            message_queue=self.message_queue,  # Shared - subagents can steer parent
+            context_middleware=None,
+            fork_coordinator=None,
+            _fork_depth=0,
+            _branch_cost_tracking=None,
+            _branch_id=None,
+            _parent_fork_coordinator=None,
         )
 
 
