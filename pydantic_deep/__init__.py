@@ -103,20 +103,6 @@ from pydantic_deep.capabilities import (
     make_config_for_mode,
 )
 from pydantic_deep.capabilities.forking import LiveForkCapability
-from pydantic_deep.capabilities.hooks import (
-    DEFAULT_BLOCKED_COMMANDS,
-    DEFAULT_BLOCKED_READ_PATHS,
-    DEFAULT_BLOCKED_WRITE_PATHS,
-    DEFAULT_SECRET_PATTERNS,
-    EXIT_ALLOW,
-    EXIT_DENY,
-    Hook,
-    HookEvent,
-    HookInput,
-    HookResult,
-    HooksCapability,
-    default_security_hook,
-)
 from pydantic_deep.deps import DEFAULT_USAGE_LIMITS as DEFAULT_USAGE_LIMITS
 from pydantic_deep.deps import DeepAgentDeps, unwrap_backend
 from pydantic_deep.features.browser import BrowserToolset
@@ -137,6 +123,20 @@ from pydantic_deep.features.eviction import (
     DEFAULT_TOKEN_LIMIT,
     EVICTION_MESSAGE_TEMPLATE,
     EvictionCapability,
+)
+from pydantic_deep.features.hooks import (
+    DEFAULT_BLOCKED_COMMANDS,
+    DEFAULT_BLOCKED_READ_PATHS,
+    DEFAULT_BLOCKED_WRITE_PATHS,
+    DEFAULT_SECRET_PATTERNS,
+    EXIT_ALLOW,
+    EXIT_DENY,
+    Hook,
+    HookEvent,
+    HookInput,
+    HookResult,
+    HooksCapability,
+    default_security_hook,
 )
 from pydantic_deep.features.memory import (
     DEFAULT_MAX_MEMORY_LINES,

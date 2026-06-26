@@ -74,7 +74,7 @@ Hook(
 Handler hooks call async Python functions directly:
 
 ```python
-from pydantic_deep.capabilities.hooks import HookInput, HookResult
+from pydantic_deep.features.hooks import HookInput, HookResult
 
 async def audit_logger(hook_input: HookInput) -> HookResult:
     print(f"[AUDIT] {hook_input.tool_name}({hook_input.tool_input})")
@@ -195,7 +195,7 @@ When you pass `hooks=[...]` to `create_deep_agent()`, a `HooksCapability` is aut
 
 ```python
 from pydantic_ai import Agent
-from pydantic_deep.capabilities.hooks import HooksCapability, Hook, HookEvent
+from pydantic_deep.features.hooks import HooksCapability, Hook, HookEvent
 
 hooks_cap = HooksCapability(hooks=[
     Hook(event=HookEvent.PRE_TOOL_USE, handler=my_handler),
@@ -258,7 +258,7 @@ Hook(
 
 ## Built-in Security Preset
 
-[`default_security_hook()`][pydantic_deep.capabilities.hooks.default_security_hook] is a batteries-included bundle that blocks common tool-misuse patterns and redacts obvious secrets from tool output — so you don't have to hand-roll a safety gate for every deployment.
+[`default_security_hook()`][pydantic_deep.features.hooks.default_security_hook] is a batteries-included bundle that blocks common tool-misuse patterns and redacts obvious secrets from tool output — so you don't have to hand-roll a safety gate for every deployment.
 
 ```python
 from pydantic_deep import create_deep_agent, default_security_hook
@@ -292,7 +292,7 @@ hooks = default_security_hook(allowed_write_roots=["/workspace", "/tmp/agent"])
 **Extend the command blocklist.** Lists you pass *replace* the defaults — concatenate with the constants to keep them:
 
 ```python
-from pydantic_deep.capabilities.hooks import DEFAULT_BLOCKED_COMMANDS
+from pydantic_deep.features.hooks import DEFAULT_BLOCKED_COMMANDS
 
 hooks = default_security_hook(
     blocked_commands=[*DEFAULT_BLOCKED_COMMANDS, r"\bsudo\b", r"\bdocker\s+rm\b"],
@@ -316,7 +316,7 @@ hooks = default_security_hook(
 hooks = default_security_hook(mode="warn")
 ```
 
-Every match is allowed through but logged at `WARNING` level on the `pydantic_deep.capabilities.hooks` logger. Once the noise looks acceptable, flip back to the default `mode="deny"`.
+Every match is allowed through but logged at `WARNING` level on the `pydantic_deep.features.hooks` logger. Once the noise looks acceptable, flip back to the default `mode="deny"`.
 
 **Combine with custom hooks.** Spread the list and append your own:
 
@@ -346,16 +346,16 @@ For hard isolation, run the agent against a `DockerSandbox` backend. Use this pr
 
 | Component | Description |
 |-----------|-------------|
-| [`Hook`][pydantic_deep.capabilities.hooks.Hook] | Hook definition (event, command/handler, matcher) |
-| [`HookEvent`][pydantic_deep.capabilities.hooks.HookEvent] | Enum: 8 events (tool, run, model request) |
-| [`HookInput`][pydantic_deep.capabilities.hooks.HookInput] | Data passed to hooks |
-| [`HookResult`][pydantic_deep.capabilities.hooks.HookResult] | Result from hook execution |
-| [`HooksCapability`][pydantic_deep.capabilities.hooks.HooksCapability] | Capability that dispatches hooks on tool events |
-| [`default_security_hook`][pydantic_deep.capabilities.hooks.default_security_hook] | Built-in safety preset (returns `list[Hook]`) |
-| [`DEFAULT_BLOCKED_COMMANDS`][pydantic_deep.capabilities.hooks.DEFAULT_BLOCKED_COMMANDS] | Default destructive-command regex tuple |
-| [`DEFAULT_BLOCKED_READ_PATHS`][pydantic_deep.capabilities.hooks.DEFAULT_BLOCKED_READ_PATHS] | Default sensitive read-path regex tuple |
-| [`DEFAULT_BLOCKED_WRITE_PATHS`][pydantic_deep.capabilities.hooks.DEFAULT_BLOCKED_WRITE_PATHS] | Default sensitive write-path regex tuple |
-| [`DEFAULT_SECRET_PATTERNS`][pydantic_deep.capabilities.hooks.DEFAULT_SECRET_PATTERNS] | Default secret-token regex tuple |
+| [`Hook`][pydantic_deep.features.hooks.Hook] | Hook definition (event, command/handler, matcher) |
+| [`HookEvent`][pydantic_deep.features.hooks.HookEvent] | Enum: 8 events (tool, run, model request) |
+| [`HookInput`][pydantic_deep.features.hooks.HookInput] | Data passed to hooks |
+| [`HookResult`][pydantic_deep.features.hooks.HookResult] | Result from hook execution |
+| [`HooksCapability`][pydantic_deep.features.hooks.HooksCapability] | Capability that dispatches hooks on tool events |
+| [`default_security_hook`][pydantic_deep.features.hooks.default_security_hook] | Built-in safety preset (returns `list[Hook]`) |
+| [`DEFAULT_BLOCKED_COMMANDS`][pydantic_deep.features.hooks.DEFAULT_BLOCKED_COMMANDS] | Default destructive-command regex tuple |
+| [`DEFAULT_BLOCKED_READ_PATHS`][pydantic_deep.features.hooks.DEFAULT_BLOCKED_READ_PATHS] | Default sensitive read-path regex tuple |
+| [`DEFAULT_BLOCKED_WRITE_PATHS`][pydantic_deep.features.hooks.DEFAULT_BLOCKED_WRITE_PATHS] | Default sensitive write-path regex tuple |
+| [`DEFAULT_SECRET_PATTERNS`][pydantic_deep.features.hooks.DEFAULT_SECRET_PATTERNS] | Default secret-token regex tuple |
 | `EXIT_ALLOW` | Exit code `0` -- allow |
 | `EXIT_DENY` | Exit code `2` -- deny |
 

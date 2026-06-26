@@ -194,7 +194,7 @@ Pass capabilities to `create_deep_agent()`:
 
 ```python
 from pydantic_ai_shields import CostTracking
-from pydantic_deep.capabilities.hooks import HooksCapability, Hook, HookEvent
+from pydantic_deep.features.hooks import HooksCapability, Hook, HookEvent
 
 agent = create_deep_agent(
     capabilities=[
@@ -243,7 +243,7 @@ If you previously used `pydantic-ai-middleware`:
 | `permission_handler` | Use `before_tool_execute` + `ModelRetry` or pydantic-ai approval toolsets |
 | `MiddlewareContext` | Use capability instance fields or `ctx.deps` |
 | `CostTrackingMiddleware` | `CostTracking` from `pydantic_ai_shields` |
-| `HooksMiddleware` | `HooksCapability` from `pydantic_deep.capabilities.hooks` |
+| `HooksMiddleware` | `HooksCapability` from `pydantic_deep.features.hooks` |
 | `CheckpointMiddleware` | `CheckpointMiddleware` (now subclasses `AbstractCapability`) |
 | `ContextManagerMiddleware` | `ContextManagerCapability` from `pydantic_ai_summarization` |
 

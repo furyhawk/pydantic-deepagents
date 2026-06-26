@@ -42,12 +42,12 @@ from subagents_pydantic_ai import (
 )
 
 from pydantic_deep.capabilities.forking import LiveForkCapability
-from pydantic_deep.capabilities.hooks import HookEvent, HooksCapability
 from pydantic_deep.capabilities.message_queue import MessageQueueCapability
 from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.features.context import ContextToolset
 from pydantic_deep.features.eviction import EvictionCapability
 from pydantic_deep.features.history_archive import create_history_search_toolset
+from pydantic_deep.features.hooks import HookEvent, HooksCapability
 from pydantic_deep.features.memory import (
     DEFAULT_MAX_MEMORY_LINES,
     DEFAULT_MEMORY_DIR,

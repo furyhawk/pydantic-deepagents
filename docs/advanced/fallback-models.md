@@ -55,7 +55,7 @@ Use the `MODEL_FALLBACK_TRIGGERED` hook event to log or alert when a fallback oc
 
 ```python
 from pydantic_deep import create_deep_agent
-from pydantic_deep.capabilities.hooks import Hook, HookEvent, HookInput, HookResult
+from pydantic_deep.features.hooks import Hook, HookEvent, HookInput, HookResult
 
 async def on_fallback(inp: HookInput) -> HookResult:
     primary = inp.tool_input["primary"]

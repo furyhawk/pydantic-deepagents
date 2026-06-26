@@ -16,6 +16,7 @@ from pydantic_deep.features import browser as browser_feature
 from pydantic_deep.features import context as context_feature
 from pydantic_deep.features import eviction as eviction_feature
 from pydantic_deep.features import history_archive as history_archive_feature
+from pydantic_deep.features import hooks as hooks_feature
 from pydantic_deep.features import memory as memory_feature
 from pydantic_deep.features import patch as patch_feature
 from pydantic_deep.features import periodic_reminder as periodic_reminder_feature
@@ -154,6 +155,25 @@ class TestHistoryArchiveShim:
         assert shim.SEARCH_HISTORY_DESCRIPTION == history_archive_feature.SEARCH_HISTORY_DESCRIPTION
         assert callable(shim._bm25_rank)
         assert callable(shim._load_messages)
+
+
+class TestHooksShim:
+    def test_capabilities_hooks_reexports_and_warns(self) -> None:
+        import pydantic_deep.capabilities.hooks as shim
+
+        with pytest.warns(DeprecationWarning, match="features.hooks"):
+            importlib.reload(shim)
+
+        assert shim.HooksCapability is hooks_feature.HooksCapability
+        assert shim.Hook is hooks_feature.Hook
+        assert shim.HookEvent is hooks_feature.HookEvent
+        assert shim.default_security_hook is hooks_feature.default_security_hook
+        assert callable(shim._match_hooks)
+        assert callable(shim._run_hook)
+
+    def test_top_level_exports_stable(self) -> None:
+        assert pydantic_deep.HooksCapability is hooks_feature.HooksCapability
+        assert pydantic_deep.Hook is hooks_feature.Hook
 
 
 class TestStuckLoopShim:

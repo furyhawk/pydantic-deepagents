@@ -417,7 +417,7 @@ Wraps `ContextToolset` as a capability with automatic instruction injection.
 
 ### 2. HooksCapability
 
-**Source:** `pydantic_deep/capabilities/hooks.py`
+**Source:** `pydantic_deep/features/hooks/capability.py`
 
 Claude Code-style lifecycle hooks with 8 events:
 

@@ -14,7 +14,7 @@ from apps.cli.agent import (
     create_cli_agent,
 )
 from apps.cli.prompts import CLI_SYSTEM_PROMPT, build_cli_instructions
-from pydantic_deep.capabilities.hooks import HookEvent, HookInput, HookResult
+from pydantic_deep.features.hooks import HookEvent, HookInput, HookResult
 
 TEST_MODEL = TestModel()
 
