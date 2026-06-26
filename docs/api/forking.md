@@ -97,90 +97,90 @@ merge the best result. Enable it via `forking=True` on
 
 ## Forking Types
 
-::: pydantic_deep.types.BranchSpec
+::: pydantic_deep.toolsets.forking.types.BranchSpec
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchState
+::: pydantic_deep.toolsets.forking.types.BranchState
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchStatus
+::: pydantic_deep.toolsets.forking.types.BranchStatus
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchOutcome
+::: pydantic_deep.toolsets.forking.types.BranchOutcome
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchIsolation
+::: pydantic_deep.toolsets.forking.types.BranchIsolation
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchChange
+::: pydantic_deep.toolsets.forking.types.BranchChange
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchCost
+::: pydantic_deep.toolsets.forking.types.BranchCost
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchDiffAgreement
+::: pydantic_deep.toolsets.forking.types.BranchDiffAgreement
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchDiffOperation
+::: pydantic_deep.toolsets.forking.types.BranchDiffOperation
     options:
       show_source: false
 
-::: pydantic_deep.types.BranchDiffReport
+::: pydantic_deep.toolsets.forking.types.BranchDiffReport
     options:
       show_source: false
 
-::: pydantic_deep.types.ConfidenceSignals
+::: pydantic_deep.toolsets.forking.types.ConfidenceSignals
     options:
       show_source: false
 
-::: pydantic_deep.types.DiffSummary
+::: pydantic_deep.toolsets.forking.types.DiffSummary
     options:
       show_source: false
 
-::: pydantic_deep.types.FileChange
+::: pydantic_deep.toolsets.forking.types.FileChange
     options:
       show_source: false
 
-::: pydantic_deep.types.FlushError
+::: pydantic_deep.toolsets.forking.types.FlushError
     options:
       show_source: false
 
-::: pydantic_deep.types.FlushReport
+::: pydantic_deep.toolsets.forking.types.FlushReport
     options:
       show_source: false
 
-::: pydantic_deep.types.ForkCostSummary
+::: pydantic_deep.toolsets.forking.types.ForkCostSummary
     options:
       show_source: false
 
-::: pydantic_deep.types.ForkHandle
+::: pydantic_deep.toolsets.forking.types.ForkHandle
     options:
       show_source: false
 
-::: pydantic_deep.types.JudgeVerdict
+::: pydantic_deep.toolsets.forking.types.JudgeVerdict
     options:
       show_source: false
 
-::: pydantic_deep.types.MergeResult
+::: pydantic_deep.toolsets.forking.types.MergeResult
     options:
       show_source: false
 
-::: pydantic_deep.types.MergeStrategy
+::: pydantic_deep.toolsets.forking.types.MergeStrategy
     options:
       show_source: false
 
-::: pydantic_deep.types.PathDiff
+::: pydantic_deep.toolsets.forking.types.PathDiff
     options:
       show_source: false
 
-::: pydantic_deep.types.ResolveOutcome
+::: pydantic_deep.toolsets.forking.types.ResolveOutcome
     options:
       show_source: false

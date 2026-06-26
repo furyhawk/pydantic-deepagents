@@ -227,40 +227,12 @@ Function type for custom token counting.
 
 ---
 
-## EvictionProcessor
+## Eviction
 
-History processor that evicts large tool outputs to files. See [Eviction](../advanced/eviction.md).
-
-### Definition
-
-```python
-@dataclass
-class EvictionProcessor:
-    backend: BackendProtocol
-    token_limit: int = 20_000
-    eviction_path: str = "/large_tool_results"
-    head_lines: int = 5
-    tail_lines: int = 5
-```
-
-### Factory
-
-```python
-from pydantic_deep import create_eviction_processor
-
-processor = create_eviction_processor(
-    backend=StateBackend(),
-    token_limit=20000,
-)
-```
-
-::: pydantic_deep.processors.eviction.EvictionProcessor
-    options:
-      show_source: false
-
-::: pydantic_deep.processors.eviction.create_eviction_processor
-    options:
-      show_source: false
+Large tool outputs are evicted to the backend *before* they enter history by
+[`EvictionCapability`][pydantic_deep.processors.eviction.EvictionCapability]
+(documented under [Capabilities](capabilities.md)), enabled by default via
+`create_deep_agent(eviction_token_limit=...)`. See [Eviction](../advanced/eviction.md).
 
 ::: pydantic_deep.processors.eviction.create_content_preview
     options:

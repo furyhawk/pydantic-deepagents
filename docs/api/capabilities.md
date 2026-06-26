@@ -25,18 +25,6 @@ conceptual overview.
     options:
       show_source: false
 
-## TeamCapability
-
-::: pydantic_deep.capabilities.TeamCapability
-    options:
-      show_source: false
-
-## PlanCapability
-
-::: pydantic_deep.capabilities.PlanCapability
-    options:
-      show_source: false
-
 ## BrowserCapability
 
 ::: pydantic_deep.capabilities.BrowserCapability

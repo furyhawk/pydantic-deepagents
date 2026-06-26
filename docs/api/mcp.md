@@ -29,6 +29,12 @@ them to an agent via the `mcp_servers` parameter of
     options:
       show_source: false
 
+## parse_mcp_servers
+
+::: pydantic_deep.mcp.parse_mcp_servers
+    options:
+      show_source: false
+
 ## MCPServerConfig
 
 ::: pydantic_deep.mcp.MCPServerConfig

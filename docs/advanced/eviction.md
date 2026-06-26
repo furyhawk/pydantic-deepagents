@@ -28,8 +28,8 @@ The [`EvictionCapability`][pydantic_deep.processors.eviction.EvictionCapability]
    - Returns a preview showing head/tail lines + file path instead
 3. The agent can then use `read_file` with `offset`/`limit` to access the full output
 
-!!! tip "Why a capability hook instead of a history processor?"
-    The legacy [`EvictionProcessor`][pydantic_deep.processors.eviction.EvictionProcessor] (history processor) ran **after** the large output was already stored in the message list — the full content sat in memory until the next model call. The [`EvictionCapability`][pydantic_deep.processors.eviction.EvictionCapability] intercepts via `after_tool_execute`, so the large output never enters the history, and it is the default used by `create_deep_agent`.
+!!! tip "Why a capability hook?"
+    [`EvictionCapability`][pydantic_deep.processors.eviction.EvictionCapability] intercepts via `after_tool_execute`, so a large output is written to the backend and replaced with a preview **before** it ever enters the message history — the full content never sits in memory waiting for the next model call. It is the default used by `create_deep_agent`.
 
 ### Before Eviction
 
@@ -62,36 +62,22 @@ Preview (head/tail):
 
 ### Standalone Usage
 
-For custom agent setups that rely on history processors, the legacy [`EvictionProcessor`][pydantic_deep.processors.eviction.EvictionProcessor] can be used directly:
+To attach eviction to a plain `Agent` (outside `create_deep_agent`), add the
+capability directly:
 
 ```python
 from pydantic_ai import Agent
-from pydantic_ai_backends import StateBackend
-from pydantic_deep.processors.eviction import EvictionProcessor
+from pydantic_ai_backends import StateBackend, ensure_async
+from pydantic_deep.processors.eviction import EvictionCapability
 
-processor = EvictionProcessor(
-    backend=StateBackend(),
-    token_limit=20000,
-    eviction_path="/large_tool_results",
-    head_lines=5,
-    tail_lines=5,
-)
-
-agent = Agent("anthropic:claude-sonnet-4-6", history_processors=[processor])
-```
-
-### Factory Function
-
-```python
-from pydantic_ai_backends import StateBackend
-from pydantic_deep import create_eviction_processor
-
-processor = create_eviction_processor(
-    backend=StateBackend(),
-    token_limit=20000,
-    eviction_path="/large_tool_results",
-    head_lines=10,
-    tail_lines=10,
+agent = Agent(
+    "anthropic:claude-sonnet-4-6",
+    capabilities=[
+        EvictionCapability(
+            backend=ensure_async(StateBackend()),
+            token_limit=20_000,
+        )
+    ],
 )
 ```
 
@@ -108,8 +94,6 @@ When used via `create_deep_agent()`, the processor resolves the backend from `ct
 | Component | Description |
 |-----------|-------------|
 | [`EvictionCapability`][pydantic_deep.processors.eviction.EvictionCapability] | Capability that intercepts large outputs via `after_tool_execute` (default) |
-| [`EvictionProcessor`][pydantic_deep.processors.eviction.EvictionProcessor] | Legacy history processor (for standalone/backward-compatible use) |
-| [`create_eviction_processor`][pydantic_deep.processors.eviction.create_eviction_processor] | Factory function for the legacy processor |
 | [`create_content_preview`][pydantic_deep.processors.eviction.create_content_preview] | Create head/tail preview |
 | `DEFAULT_TOKEN_LIMIT` | Default threshold: 20,000 tokens |
 | `DEFAULT_EVICTION_PATH` | Default path: `/large_tool_results` |

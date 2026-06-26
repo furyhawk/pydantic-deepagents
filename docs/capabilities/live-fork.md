@@ -86,7 +86,7 @@ Branches survive the parent turn ending only because step 1 preserves the coordi
 
 ### Per-branch budgets
 
-[`BranchSpec.budget_usd`][pydantic_deep.types.BranchSpec] is enforced. When a branch's `CostTracking` cumulative cost crosses its cap, the branch is cancelled and its state transitions to [`"budget_exhausted"`][pydantic_deep.types.BranchState]; siblings keep running.
+[`BranchSpec.budget_usd`][pydantic_deep.toolsets.forking.types.BranchSpec] is enforced. When a branch's `CostTracking` cumulative cost crosses its cap, the branch is cancelled and its state transitions to [`"budget_exhausted"`][pydantic_deep.toolsets.forking.types.BranchState]; siblings keep running.
 
 Pass a fork-wide cap at the `fork_run` call:
 
@@ -106,11 +106,11 @@ await agent.run(
 # )
 ```
 
-When the sum of branch costs crosses `aggregate_budget_usd`, every still-running branch is terminated with state [`"aggregate_budget_exhausted"`][pydantic_deep.types.BranchState]. See [Limitations](#limitations-non-goals) below for the best-effort caveat.
+When the sum of branch costs crosses `aggregate_budget_usd`, every still-running branch is terminated with state [`"aggregate_budget_exhausted"`][pydantic_deep.toolsets.forking.types.BranchState]. See [Limitations](#limitations-non-goals) below for the best-effort caveat.
 
 ### Per-branch isolation
 
-[`BranchIsolation`][pydantic_deep.types.BranchIsolation] controls what each branch shares with the parent. Defaults are deliberately conservative — branches see the parent's history but mutate their own backends, todos, and message queues.
+[`BranchIsolation`][pydantic_deep.toolsets.forking.types.BranchIsolation] controls what each branch shares with the parent. Defaults are deliberately conservative — branches see the parent's history but mutate their own backends, todos, and message queues.
 
 | Flag | Default | Effect |
 |---|---|---|
@@ -132,8 +132,8 @@ When `forking` is enabled, the agent gains seven tools:
 | `merge_or_select(action)` | Resolve the fork. `action="pick:<branch_id>"` picks a winner manually; `action="auto"` lets the judge decide; `action="abort"` discards all branches. |
 | `terminate_branch(branch_id)` | Cancel one branch's task; the branch transitions to `terminated`. |
 | `delete_file(path)` | Delete a file inside the current branch overlay. Records the deletion so it propagates on merge. |
-| `diff_branches(fork_id, paths=None)` | Build a typed [`BranchDiffReport`][pydantic_deep.types.BranchDiffReport] covering every path any branch touched. See [Diff explorer](#diff-explorer). |
-| `fork_cost(fork_id)` | Return a typed [`ForkCostSummary`][pydantic_deep.types.ForkCostSummary] with per-branch [`BranchCost`][pydantic_deep.types.BranchCost] entries and an aggregate. |
+| `diff_branches(fork_id, paths=None)` | Build a typed [`BranchDiffReport`][pydantic_deep.toolsets.forking.types.BranchDiffReport] covering every path any branch touched. See [Diff explorer](#diff-explorer). |
+| `fork_cost(fork_id)` | Return a typed [`ForkCostSummary`][pydantic_deep.toolsets.forking.types.ForkCostSummary] with per-branch [`BranchCost`][pydantic_deep.toolsets.forking.types.BranchCost] entries and an aggregate. |
 
 ## How it works
 
@@ -186,13 +186,13 @@ If `include_checkpoints` is `False`, `fork_run` still works but emits a `UserWar
 
 When a branch is terminated mid-run — manually via `terminate_branch`, by a per-branch budget watcher (`budget_exhausted`), or by the fork-wide aggregate watcher (`aggregate_budget_exhausted`) — the coordinator keeps a snapshot of the branch's history in `BranchRuntime.partial_history`. That snapshot is captured on every `before_model_request`, so it reflects the state of play just before the most recent model call.
 
-`merge_or_select("pick:<exhausted_id>")` recognises the cancellation, picks up the snapshot, and returns a [`MergeResult`][pydantic_deep.types.MergeResult] with the partial history as `history_after_merge` — rather than raising. This makes a budget-killed branch a usable merge candidate: you keep the work it did before the cap fired.
+`merge_or_select("pick:<exhausted_id>")` recognises the cancellation, picks up the snapshot, and returns a [`MergeResult`][pydantic_deep.toolsets.forking.types.MergeResult] with the partial history as `history_after_merge` — rather than raising. This makes a budget-killed branch a usable merge candidate: you keep the work it did before the cap fired.
 
 Caveat: any tool call that was in-flight at termination time is **not** reflected in the snapshot — only completed turns are. When `partial_history` is empty (true cancellation with no model request yet), `merge_or_select` raises `RuntimeError` as before.
 
 ## Diff explorer
 
-Once branches are running (or have completed), the agent compares what each branch did to shared files with a single tool call: `diff_branches(fork_id, paths=None)`. The tool returns a typed [`BranchDiffReport`][pydantic_deep.types.BranchDiffReport]; on error (`fork_id` mismatch, forking disabled, no active fork) it returns a short string instead so the agent can self-correct.
+Once branches are running (or have completed), the agent compares what each branch did to shared files with a single tool call: `diff_branches(fork_id, paths=None)`. The tool returns a typed [`BranchDiffReport`][pydantic_deep.toolsets.forking.types.BranchDiffReport]; on error (`fork_id` mismatch, forking disabled, no active fork) it returns a short string instead so the agent can self-correct.
 
 Programmatic Python callers (CLI, judge, custom tooling) use the same builder directly via [`build_diff_report`][pydantic_deep.toolsets.forking.diff.build_diff_report]:
 
@@ -264,7 +264,7 @@ Every branch's working tree is mirrored to disk in real time so external diff to
         └── ...
 ```
 
-Per-branch directories use the human-readable [`BranchSpec.label`][pydantic_deep.types.BranchSpec] (e.g. `approach_a`), not the internal UUID. The parent snapshot under `parent/` is captured lazily — the first time a branch writes a path, the materializer freezes the parent's pre-fork bytes for that path; subsequent parent writes do not update the snapshot.
+Per-branch directories use the human-readable [`BranchSpec.label`][pydantic_deep.toolsets.forking.types.BranchSpec] (e.g. `approach_a`), not the internal UUID. The parent snapshot under `parent/` is captured lazily — the first time a branch writes a path, the materializer freezes the parent's pre-fork bytes for that path; subsequent parent writes do not update the snapshot.
 
 ### Editor detection
 
@@ -301,13 +301,13 @@ print(result.errors)            # [] on success
 
 ### Conflict policy: last-write-wins
 
-If a third actor modifies (or deletes) a path on the parent backend between fork time and merge time, the overlay's writes still land on the parent (last-write-wins). The divergence surfaces in [`MergeResult.conflicts`][pydantic_deep.types.MergeResult] so the CLI can warn the user. The merge notification renders as:
+If a third actor modifies (or deletes) a path on the parent backend between fork time and merge time, the overlay's writes still land on the parent (last-write-wins). The divergence surfaces in [`MergeResult.conflicts`][pydantic_deep.toolsets.forking.types.MergeResult] so the CLI can warn the user. The merge notification renders as:
 
 ```
 Merged: kept branch alpha · 2 files applied · conflicts: cat.md
 ```
 
-Per-write failures (parent `WriteResult.error` non-empty or the backend raises) do not abort `flush_to` — the failing path is excluded from `applied_paths`, recorded in `MergeResult.errors` as a [`FlushError`][pydantic_deep.types.FlushError], and the remaining writes continue.
+Per-write failures (parent `WriteResult.error` non-empty or the backend raises) do not abort `flush_to` — the failing path is excluded from `applied_paths`, recorded in `MergeResult.errors` as a [`FlushError`][pydantic_deep.toolsets.forking.types.FlushError], and the remaining writes continue.
 
 ### Nested forks
 
@@ -375,7 +375,7 @@ When the cumulative cost across all branches reaches `$2.00`, every still-runnin
 
 ### Branch tabs
 
-The tab strip shows one chip per branch plus a `+` overview pseudo-tab. Status badges mirror [`BranchStatus.state`][pydantic_deep.types.BranchStatus]: `●` running, `✓` done, `✗` failed, `⊘` terminated. `Tab` cycles focus through `overview → branch 0 → branch 1 → overview`.
+The tab strip shows one chip per branch plus a `+` overview pseudo-tab. Status badges mirror [`BranchStatus.state`][pydantic_deep.toolsets.forking.types.BranchStatus]: `●` running, `✓` done, `✗` failed, `⊘` terminated. `Tab` cycles focus through `overview → branch 0 → branch 1 → overview`.
 
 ### Steering a branch
 
@@ -444,7 +444,7 @@ Once the merge resolves, `app.message_history` is the winner's `history_after_me
 
 ## Autonomous merge
 
-The default [`MergeStrategy.kind`][pydantic_deep.types.MergeStrategy] is `"auto_with_fallback"`: a cheap judge model inspects the structured diff + per-branch outcomes, picks a winner with confidence, and either auto-merges or hands off to the manual picker with the judge's pick preselected.
+The default [`MergeStrategy.kind`][pydantic_deep.toolsets.forking.types.MergeStrategy] is `"auto_with_fallback"`: a cheap judge model inspects the structured diff + per-branch outcomes, picks a winner with confidence, and either auto-merges or hands off to the manual picker with the judge's pick preselected.
 
 ```python
 from pydantic_deep.types import MergeStrategy
@@ -489,7 +489,7 @@ Three signals weighted into a single heuristic, then multiplied by the judge's o
 
 | Signal | Source | Weight |
 |---|---|---|
-| `quality_spread` | `1 - agreement_score` from [`BranchDiffReport`][pydantic_deep.types.BranchDiffReport] | 0.4 |
+| `quality_spread` | `1 - agreement_score` from [`BranchDiffReport`][pydantic_deep.toolsets.forking.types.BranchDiffReport] | 0.4 |
 | `test_pass_ratio` | passed / total tests across the winner branch — `None` when no `test_command` is configured | 0.4 |
 | `internal_consistency` | `1 - (retry_count + stuck_loop_hits) / max(turns, 1)` for the winner | 0.2 |
 
@@ -540,11 +540,11 @@ The deferred-commit ordering on `auto_with_fallback` is load-bearing: the accept
 
 ### Judge prompt boundedness
 
-The judge sees three sections only: the original goal, the structured `BranchDiffReport`, and one [`BranchOutcome`][pydantic_deep.types.BranchOutcome] bullet per branch (final message + cost + turns + error/retry counts). **Full per-branch message history is never included.** The prompt builder caps each section and the total length at `_MAX_JUDGE_PROMPT_CHARS = 32_000` chars (truncated tail with marker). This keeps the prompt's cost predictable and prevents the judge from reasoning over noise.
+The judge sees three sections only: the original goal, the structured `BranchDiffReport`, and one [`BranchOutcome`][pydantic_deep.toolsets.forking.types.BranchOutcome] bullet per branch (final message + cost + turns + error/retry counts). **Full per-branch message history is never included.** The prompt builder caps each section and the total length at `_MAX_JUDGE_PROMPT_CHARS = 32_000` chars (truncated tail with marker). This keeps the prompt's cost predictable and prevents the judge from reasoning over noise.
 
 ### Cost attribution
 
-The judge runs via a freshly-constructed [`pydantic_ai.Agent`][pydantic_ai.Agent] inside [`JudgeAgent`][pydantic_deep.toolsets.forking.judge.JudgeAgent] — its calls are **not** counted against `parent_deps._branch_cost_tracking`. The judge's `result.usage` is surfaced on [`ResolveOutcome.judge_usage`][pydantic_deep.types.ResolveOutcome] (a list of usage objects for `kind="vote"`) so the caller can attribute the cost.
+The judge runs via a freshly-constructed [`pydantic_ai.Agent`][pydantic_ai.Agent] inside [`JudgeAgent`][pydantic_deep.toolsets.forking.judge.JudgeAgent] — its calls are **not** counted against `parent_deps._branch_cost_tracking`. The judge's `result.usage` is surfaced on [`ResolveOutcome.judge_usage`][pydantic_deep.toolsets.forking.types.ResolveOutcome] (a list of usage objects for `kind="vote"`) so the caller can attribute the cost.
 
 ### Override in vote mode
 
@@ -562,10 +562,10 @@ The judge runs via a freshly-constructed [`pydantic_ai.Agent`][pydantic_ai.Agent
 - [`EditorDetector`][pydantic_deep.toolsets.forking.editor.EditorDetector] — diff tool detection and invocation (PyCharm, VS Code, custom, TUI fallback).
 - [`JudgeAgent`][pydantic_deep.toolsets.forking.judge.JudgeAgent] — autonomous merge judge with structured verdict output.
 - [`compute_confidence`][pydantic_deep.toolsets.forking.judge.compute_confidence], [`count_retry_parts`][pydantic_deep.toolsets.forking.judge.count_retry_parts], [`count_stuck_loop_hits`][pydantic_deep.toolsets.forking.judge.count_stuck_loop_hits] — confidence signal helpers.
-- Types: [`BranchSpec`][pydantic_deep.types.BranchSpec], [`BranchIsolation`][pydantic_deep.types.BranchIsolation], [`BranchStatus`][pydantic_deep.types.BranchStatus], [`ForkHandle`][pydantic_deep.types.ForkHandle], [`MergeStrategy`][pydantic_deep.types.MergeStrategy], [`MergeResult`][pydantic_deep.types.MergeResult], [`FileChange`][pydantic_deep.types.FileChange].
-- Diff types: [`BranchDiffReport`][pydantic_deep.types.BranchDiffReport], [`PathDiff`][pydantic_deep.types.PathDiff], [`BranchChange`][pydantic_deep.types.BranchChange], [`DiffSummary`][pydantic_deep.types.DiffSummary], [`BranchDiffAgreement`][pydantic_deep.types.BranchDiffAgreement], [`BranchDiffOperation`][pydantic_deep.types.BranchDiffOperation].
-- Judge types: [`JudgeVerdict`][pydantic_deep.types.JudgeVerdict], [`ConfidenceSignals`][pydantic_deep.types.ConfidenceSignals], [`BranchOutcome`][pydantic_deep.types.BranchOutcome], [`ResolveOutcome`][pydantic_deep.types.ResolveOutcome].
-- Cost types: [`BranchCost`][pydantic_deep.types.BranchCost], [`ForkCostSummary`][pydantic_deep.types.ForkCostSummary], [`FlushError`][pydantic_deep.types.FlushError], [`FlushReport`][pydantic_deep.types.FlushReport].
+- Types: [`BranchSpec`][pydantic_deep.toolsets.forking.types.BranchSpec], [`BranchIsolation`][pydantic_deep.toolsets.forking.types.BranchIsolation], [`BranchStatus`][pydantic_deep.toolsets.forking.types.BranchStatus], [`ForkHandle`][pydantic_deep.toolsets.forking.types.ForkHandle], [`MergeStrategy`][pydantic_deep.toolsets.forking.types.MergeStrategy], [`MergeResult`][pydantic_deep.toolsets.forking.types.MergeResult], [`FileChange`][pydantic_deep.toolsets.forking.types.FileChange].
+- Diff types: [`BranchDiffReport`][pydantic_deep.toolsets.forking.types.BranchDiffReport], [`PathDiff`][pydantic_deep.toolsets.forking.types.PathDiff], [`BranchChange`][pydantic_deep.toolsets.forking.types.BranchChange], [`DiffSummary`][pydantic_deep.toolsets.forking.types.DiffSummary], [`BranchDiffAgreement`][pydantic_deep.toolsets.forking.types.BranchDiffAgreement], [`BranchDiffOperation`][pydantic_deep.toolsets.forking.types.BranchDiffOperation].
+- Judge types: [`JudgeVerdict`][pydantic_deep.toolsets.forking.types.JudgeVerdict], [`ConfidenceSignals`][pydantic_deep.toolsets.forking.types.ConfidenceSignals], [`BranchOutcome`][pydantic_deep.toolsets.forking.types.BranchOutcome], [`ResolveOutcome`][pydantic_deep.toolsets.forking.types.ResolveOutcome].
+- Cost types: [`BranchCost`][pydantic_deep.toolsets.forking.types.BranchCost], [`ForkCostSummary`][pydantic_deep.toolsets.forking.types.ForkCostSummary], [`FlushError`][pydantic_deep.toolsets.forking.types.FlushError], [`FlushReport`][pydantic_deep.toolsets.forking.types.FlushReport].
 - Errors: [`ForkBranchLimitError`][pydantic_deep.toolsets.forking.coordinator.ForkBranchLimitError], [`ForkDepthLimitError`][pydantic_deep.toolsets.forking.coordinator.ForkDepthLimitError].
 
 ## Examples
@@ -658,5 +658,5 @@ Judge limitations:
 - **Streaming the judge's evaluation** — we wait for the full `JudgeVerdict`; no partial results.
 - **Test-count parsing (passed / total)** — `test_pass_ratio` is computed from the process exit code only; a pytest/jest-plugin counter is a follow-up.
 - **Auto-detection of `test_command`** (`pytest.ini`, `package.json`, `Makefile`) — `test_command` must be set explicitly on [`LiveForkCapability`][pydantic_deep.capabilities.forking.LiveForkCapability].
-- **`cost_category="judge"` attribution in `CostTracking`** — `pydantic-ai-shields` has no such field; the judge's usage rides on [`ResolveOutcome.judge_usage`][pydantic_deep.types.ResolveOutcome] instead.
+- **`cost_category="judge"` attribution in `CostTracking`** — `pydantic-ai-shields` has no such field; the judge's usage rides on [`ResolveOutcome.judge_usage`][pydantic_deep.toolsets.forking.types.ResolveOutcome] instead.
 - **Override after `auto` / `vote` commit** — both modes commit immediately inside `resolve()`; switching winners after the fact requires rewinding via the `post-fork:<fork_id>` checkpoint anchor.
