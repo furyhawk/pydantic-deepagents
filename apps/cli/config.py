@@ -21,6 +21,8 @@ else:  # pragma: no cover
     except ImportError:
         import tomli as tomllib  # type: ignore[import-not-found,no-redefine]
 
+from pydantic_deep.models import DEFAULT_JUDGE_MODEL, DEFAULT_MODEL
+
 
 def get_project_dir() -> Path:
     """Return `.pydantic-deep/` in CWD."""
@@ -100,7 +102,7 @@ _FORK_MERGE_STRATEGY_VALUES = frozenset({"manual", "auto", "auto_with_fallback",
 class CliConfig:
     """CLI configuration loaded from config.toml."""
 
-    model: str = "anthropic:claude-opus-4-6"
+    model: str = DEFAULT_MODEL
     working_dir: str | None = None
     shell_allow_list: list[str] = field(default_factory=list)
     theme: str = "default"
@@ -179,7 +181,7 @@ class CliConfig:
       majority wins, commits immediately.
 
     Set via `/fork-config`."""
-    fork_judge_model: str = "anthropic:claude-haiku-4-5"
+    fork_judge_model: str = DEFAULT_JUDGE_MODEL
     """Model used as the judge in `auto` / `auto_with_fallback` modes.
 
     Any pydantic-ai model string is valid, e.g.

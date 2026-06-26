@@ -26,6 +26,7 @@ from apps.cli.widgets.header import DeepHeader
 from apps.cli.widgets.message_list import MessageList
 from apps.cli.widgets.status_bar import StatusBar
 from pydantic_deep.goal import GoalEvaluator, GoalState
+from pydantic_deep.models import DEFAULT_JUDGE_MODEL
 
 
 def _detect_git_branch(working_dir: str) -> str:
@@ -76,7 +77,7 @@ class DeepApp(App):
     fork_branch_models: reactive[list[str | None]] = reactive(list, always_update=True)
     fork_branch_budgets: reactive[list[float | None]] = reactive(list, always_update=True)
     fork_merge_strategy: reactive[str] = reactive("auto_with_fallback")
-    fork_judge_model: reactive[str] = reactive("anthropic:claude-haiku-4-5")
+    fork_judge_model: reactive[str] = reactive(DEFAULT_JUDGE_MODEL)
     fork_confidence_threshold: reactive[float] = reactive(0.80)
 
     agent_task: asyncio.Task[None] | None = None
