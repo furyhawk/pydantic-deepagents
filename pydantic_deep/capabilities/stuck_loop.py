@@ -27,7 +27,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field, replace
-from typing import Any
+from typing import Any, Literal
 
 from pydantic_ai import RunContext
 from pydantic_ai.capabilities import AbstractCapability
@@ -94,7 +94,7 @@ class StuckLoopDetection(AbstractCapability[Any]):
     """
 
     max_repeated: int = 3
-    action: str = "warn"
+    action: Literal["warn", "error"] = "warn"
     detect_repeated: bool = True
     detect_alternating: bool = True
     detect_noop: bool = True

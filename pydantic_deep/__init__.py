@@ -96,12 +96,10 @@ from pydantic_deep.capabilities import (
     MemoryCapability,
     PeriodicReminderCapability,
     PeriodicReminderConfig,
-    PlanCapability,
     ReminderGenerator,
     SkillsCapability,
     StuckLoopDetection,
     StuckLoopError,
-    TeamCapability,
     make_config_for_mode,
 )
 from pydantic_deep.capabilities.forking import LiveForkCapability
@@ -343,8 +341,6 @@ __all__ = [
     "SkillsCapability",
     "ContextFilesCapability",
     "MemoryCapability",
-    "TeamCapability",
-    "PlanCapability",
     "StuckLoopDetection",
     "StuckLoopError",
     "PeriodicReminderCapability",

@@ -23,10 +23,8 @@ from pydantic_deep.capabilities.periodic_reminder import (
     ReminderGenerator,
     make_config_for_mode,
 )
-from pydantic_deep.capabilities.plan import PlanCapability
 from pydantic_deep.capabilities.skills import SkillsCapability
 from pydantic_deep.capabilities.stuck_loop import StuckLoopDetection, StuckLoopError
-from pydantic_deep.capabilities.teams import TeamCapability
 
 __all__ = [
     "BrowserCapability",
@@ -38,13 +36,11 @@ __all__ = [
     "MessageQueueCapability",
     "PeriodicReminderCapability",
     "PeriodicReminderConfig",
-    "PlanCapability",
     "QueuedMessage",
     "ReminderGenerator",
     "SkillsCapability",
     "StuckLoopDetection",
     "StuckLoopError",
-    "TeamCapability",
     "format_follow_up",
     "format_steering",
     "make_config_for_mode",

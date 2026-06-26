@@ -13,7 +13,7 @@ import contextlib
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 from uuid import uuid4
 
 from pydantic import BaseModel
@@ -45,7 +45,7 @@ class SharedTodoItem:
 
     id: str = field(default_factory=lambda: uuid4().hex[:8])
     content: str = ""
-    status: str = "pending"  # pending | in_progress | completed
+    status: Literal["pending", "in_progress", "completed"] = "pending"
     assigned_to: str | None = None
     blocked_by: list[str] = field(default_factory=list)
     created_by: str | None = None
@@ -245,7 +245,7 @@ class TeamMemberHandle:
     name: str
     task_id: str | None = None
     task: asyncio.Task[Any] | None = None
-    status: str = "idle"  # idle | running | completed | failed
+    status: Literal["idle", "running", "completed", "failed"] = "idle"
     result: str | None = None
     error: str | None = None
 
