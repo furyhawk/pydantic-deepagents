@@ -25,6 +25,7 @@ Example:
 from __future__ import annotations
 
 import json
+import logging
 import math
 import re
 from pathlib import Path
@@ -169,8 +170,13 @@ def _bm25_rank(
 # Message formatting (for search results)
 
 
-def _format_message(msg: ModelMessage) -> str:
-    """Format a single ModelMessage into readable text."""
+def _format_message(msg: ModelMessage, *, truncate: bool = True) -> str:
+    """Format a single ModelMessage into readable text.
+
+    `truncate=False` keeps tool/system content full-length so the BM25 index can
+    match terms past the display cutoff; `truncate=True` is for display (B14).
+    """
+
     lines: list[str] = []
 
     if isinstance(msg, ModelRequest):
@@ -182,10 +188,12 @@ def _format_message(msg: ModelMessage) -> str:
                 if content.startswith("Summary of previous conversation"):
                     lines.append("[Compression summary]")
                 else:
-                    lines.append(f"System: {content[:200]}")
+                    if truncate:
+                        content = content[:200]
+                    lines.append(f"System: {content}")
             elif isinstance(part, ToolReturnPart):
                 content = str(part.content)
-                if len(content) > 500:
+                if truncate and len(content) > 500:
                     content = content[:500] + "..."
                 lines.append(f"Tool [{part.tool_name}]: {content}")
     elif isinstance(msg, ModelResponse):  # pragma: no branch
@@ -194,35 +202,51 @@ def _format_message(msg: ModelMessage) -> str:
                 lines.append(f"Assistant: {part.content}")
             elif isinstance(part, ToolCallPart):
                 args = json.dumps(part.args_as_dict(), ensure_ascii=False)
-                if len(args) > 200:
+                if truncate and len(args) > 200:
                     args = args[:200] + "..."
                 lines.append(f"Tool Call [{part.tool_name}]: {args}")
 
     return "\n".join(lines)
 
 
-def _format_messages(messages: list[ModelMessage]) -> list[str]:
+def _format_messages(messages: list[ModelMessage], *, truncate: bool = True) -> list[str]:
     """Format a list of messages into numbered readable lines."""
     lines: list[str] = []
     for i, msg in enumerate(messages):
-        formatted = _format_message(msg)
+        formatted = _format_message(msg, truncate=truncate)
         if formatted:
             lines.append(f"[{i}] {formatted}")
     return lines
 
 
 def _load_messages(messages_path: str) -> list[ModelMessage]:
-    """Load messages from a JSON file."""
+    """Load messages from a JSON file.
+
+    Distinguishes "no archive yet" (silent, normal) from "archive exists but
+    failed to read/parse" (logged) so a corrupt or schema-drifted file isn't
+    misreported to the agent as an empty history (B6).
+    """
     path = Path(messages_path)
     if not path.exists():
         return []
     try:
         raw = path.read_bytes()
-        if raw:
-            return list(ModelMessagesTypeAdapter.validate_json(raw))
-    except Exception:  # pragma: no cover
-        pass
-    return []
+    except OSError:
+        logging.getLogger(__name__).warning(
+            "Could not read history archive %s", messages_path, exc_info=True
+        )
+        return []
+    if not raw:
+        return []
+    try:
+        return list(ModelMessagesTypeAdapter.validate_json(raw))
+    except Exception:
+        logging.getLogger(__name__).warning(
+            "History archive %s exists but failed to parse; treating as empty",
+            messages_path,
+            exc_info=True,
+        )
+        return []
 
 
 def create_history_search_toolset(
@@ -258,11 +282,12 @@ def create_history_search_toolset(
                 "History is saved automatically as the conversation progresses."
             )
 
-        # Format all messages into searchable text
-        formatted_lines = _format_messages(messages)
+        # Rank on full text so terms past the display cutoff are findable (B14);
+        # show the truncated version. Both lists are index-aligned per message.
+        index_lines = _format_messages(messages, truncate=False)
+        display_lines = _format_messages(messages, truncate=True)
 
-        # Rank lines by BM25 relevance
-        ranked = _bm25_rank(query, formatted_lines)
+        ranked = _bm25_rank(query, index_lines)
 
         if not ranked:
             return f"No matches for '{query}' in {len(messages)} archived messages."
@@ -276,12 +301,12 @@ def create_history_search_toolset(
                 continue
 
             start = max(0, doc_idx - _CONTEXT_LINES)
-            end = min(len(formatted_lines), doc_idx + _CONTEXT_LINES + 1)
+            end = min(len(display_lines), doc_idx + _CONTEXT_LINES + 1)
 
             # Record the full emitted window so neighboring matches whose
             # context overlaps this one are skipped instead of repeating lines.
             shown_indices.update(range(start, end))
-            excerpt = "\n".join(formatted_lines[start:end])
+            excerpt = "\n".join(display_lines[start:end])
             results.append(f"[score: {score:.1f}]\n{excerpt}")
 
         if not results:  # pragma: no cover

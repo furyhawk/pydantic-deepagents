@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import mimetypes
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
@@ -217,9 +218,12 @@ class DeepAgentDeps:
                 path = await self.upload_file(name, content, upload_dir=upload_dir)
                 paths.append(path)
             except Exception:
-                # Skip failed uploads so one bad file doesn't abort the batch.
-                # This covers backend write errors (RuntimeError) as well as
-                # any failure during encoding detection or metadata inference.
+                # Skip failed uploads so one bad file doesn't abort the batch
+                # (backend write errors, encoding/metadata failures) — but log
+                # which file was dropped so it isn't silently lost (B9).
+                logging.getLogger(__name__).warning(
+                    "Skipping upload of %r", name, exc_info=True
+                )
                 continue
         return paths
 
