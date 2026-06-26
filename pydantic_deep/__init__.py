@@ -118,7 +118,7 @@ from pydantic_deep.capabilities.hooks import (
     default_security_hook,
 )
 from pydantic_deep.deps import DEFAULT_USAGE_LIMITS as DEFAULT_USAGE_LIMITS
-from pydantic_deep.deps import DeepAgentDeps
+from pydantic_deep.deps import DeepAgentDeps, unwrap_backend
 from pydantic_deep.goal import (
     DEFAULT_GOAL_MODEL,
     GoalEvaluation,
@@ -218,6 +218,8 @@ from pydantic_deep.toolsets.forking.types import (
     ConfidenceSignals,
     DiffSummary,
     FileChange,
+    FlushError,
+    FlushReport,
     ForkCostSummary,
     ForkHandle,
     JudgeVerdict,
@@ -300,6 +302,8 @@ __all__ = [
     "create_default_deps",
     "run_with_files",
     "DeepAgentDeps",
+    "DEFAULT_USAGE_LIMITS",
+    "unwrap_backend",
     "DeepAgent",
     "DeepAgentSpec",
     # Goal-completion loop engine
@@ -507,6 +511,8 @@ __all__ = [
     "ForkHandle",
     "MergeStrategy",
     "MergeResult",
+    "FlushError",
+    "FlushReport",
     "PendingApprovalRequest",
     "FileChange",
     "BranchDiffReport",

@@ -60,10 +60,11 @@ from pydantic_deep.processors.eviction import EvictionCapability
 from pydantic_deep.processors.history_archive import create_history_search_toolset
 from pydantic_deep.processors.patch import PatchToolCallsCapability
 from pydantic_deep.prompts import BASE_PROMPT
-from pydantic_deep.styles import format_style_prompt, resolve_style
+from pydantic_deep.styles import OutputStyle, format_style_prompt, resolve_style
 from pydantic_deep.subagents import RESEARCH_SUBAGENT
 from pydantic_deep.toolsets.checkpointing import (
     CheckpointMiddleware,
+    CheckpointStore,
     CheckpointToolset,
     InMemoryCheckpointStore,
 )
@@ -448,7 +449,7 @@ def create_deep_agent(
     model_settings: dict[str, Any] | None = None,
     summarization_model: str | None = None,
     instructions: str | None = None,
-    output_style: str | Any | None = None,
+    output_style: str | OutputStyle | None = None,
     styles_dir: str | list[str] | None = None,
     tools: Sequence[Tool[DeepAgentDeps] | Any] | None = None,
     toolsets: Sequence[AbstractToolset[DeepAgentDeps]] | None = None,
@@ -469,7 +470,7 @@ def create_deep_agent(
     include_builtin_subagents: bool = True,
     include_plan: bool = True,
     max_nesting_depth: int = 1,
-    subagent_registry: Any | None = None,
+    subagent_registry: DynamicAgentRegistry | None = None,
     subagent_extra_toolsets: Sequence[AbstractToolset[Any]] | None = None,
     subagent_usage_limits: UsageLimits | UsageLimitsFactory | None = None,
     include_execute: bool | None = None,
@@ -495,7 +496,7 @@ def create_deep_agent(
     include_checkpoints: bool = False,
     checkpoint_frequency: CheckpointFrequency = "every_tool",
     max_checkpoints: int = 20,
-    checkpoint_store: Any | None = None,
+    checkpoint_store: CheckpointStore | None = None,
     include_teams: bool = False,
     include_improve: bool = False,
     include_liteparse: bool = False,
@@ -525,7 +526,7 @@ def create_deep_agent(
     model_settings: dict[str, Any] | None = None,
     summarization_model: str | None = None,
     instructions: str | None = None,
-    output_style: str | Any | None = None,
+    output_style: str | OutputStyle | None = None,
     styles_dir: str | list[str] | None = None,
     tools: Sequence[Tool[DeepAgentDeps] | Any] | None = None,
     toolsets: Sequence[AbstractToolset[DeepAgentDeps]] | None = None,
@@ -546,7 +547,7 @@ def create_deep_agent(
     include_builtin_subagents: bool = True,
     include_plan: bool = True,
     max_nesting_depth: int = 1,
-    subagent_registry: Any | None = None,
+    subagent_registry: DynamicAgentRegistry | None = None,
     subagent_extra_toolsets: Sequence[AbstractToolset[Any]] | None = None,
     subagent_usage_limits: UsageLimits | UsageLimitsFactory | None = None,
     include_execute: bool | None = None,
@@ -573,7 +574,7 @@ def create_deep_agent(
     include_checkpoints: bool = False,
     checkpoint_frequency: CheckpointFrequency = "every_tool",
     max_checkpoints: int = 20,
-    checkpoint_store: Any | None = None,
+    checkpoint_store: CheckpointStore | None = None,
     include_teams: bool = False,
     include_improve: bool = False,
     include_liteparse: bool = False,
@@ -602,7 +603,7 @@ def create_deep_agent(  # noqa: C901
     model_settings: dict[str, Any] | None = None,
     summarization_model: str | None = None,
     instructions: str | None = None,
-    output_style: str | Any | None = None,
+    output_style: str | OutputStyle | None = None,
     styles_dir: str | list[str] | None = None,
     tools: Sequence[Tool[DeepAgentDeps] | Any] | None = None,
     toolsets: Sequence[AbstractToolset[DeepAgentDeps]] | None = None,
@@ -623,7 +624,7 @@ def create_deep_agent(  # noqa: C901
     include_builtin_subagents: bool = True,
     include_plan: bool = True,
     max_nesting_depth: int = 1,
-    subagent_registry: Any | None = None,
+    subagent_registry: DynamicAgentRegistry | None = None,
     subagent_extra_toolsets: Sequence[AbstractToolset[Any]] | None = None,
     subagent_usage_limits: UsageLimits | UsageLimitsFactory | None = None,
     include_execute: bool | None = None,
@@ -649,7 +650,7 @@ def create_deep_agent(  # noqa: C901
     include_checkpoints: bool = False,
     checkpoint_frequency: CheckpointFrequency = "every_tool",
     max_checkpoints: int = 20,
-    checkpoint_store: Any | None = None,
+    checkpoint_store: CheckpointStore | None = None,
     include_teams: bool = False,
     include_improve: bool = False,
     include_liteparse: bool = False,
@@ -701,6 +702,11 @@ def create_deep_agent(  # noqa: C901
             YAML frontmatter (name, description) in the directory root.
         tools: Additional tools to register.
         toolsets: Additional toolsets to register.
+        extra_toolsets: Extra toolsets appended after the built-in set on the
+            main agent only (not propagated to subagents).
+        subagent_extra_toolsets: Extra toolsets made available to spawned
+            subagents (not the main agent).
+        edit_format: Edit strategy for the file-edit tool (default "hashline").
         mcp_servers: MCP server toolsets to attach (e.g. built via
             [`build_mcp_server`][pydantic_deep.mcp.build_mcp_server] or
             [`MCPRegistry.build_active`][pydantic_deep.mcp.MCPRegistry]).
@@ -770,6 +776,14 @@ def create_deep_agent(  # noqa: C901
         on_context_update: Callback for context usage updates. Called with
             `(percentage, current_tokens, max_tokens)` before each model call.
             Supports both sync and async callables. Useful for UI display.
+        on_before_compress: Optional callback invoked just before an automatic
+            context compression runs.
+        on_after_compress: Optional callback invoked just after a context
+            compression completes.
+        on_eviction: Optional callback invoked when a large tool output is
+            evicted from history by `EvictionCapability`.
+        stuck_loop_detection: Whether to enable `StuckLoopDetection`, which
+            warns/errors on repetitive tool-call loops (default True).
         summarization_model: Model to use for LLM-based context compression
             summaries. Defaults to `anthropic:claude-haiku-4-5-20251001`. When set,
             the middleware uses its own default. Passed through to

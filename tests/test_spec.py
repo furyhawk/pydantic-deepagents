@@ -63,6 +63,79 @@ class TestDeepAgentSpec:
                 f"match create_deep_agent default {factory_default!r}"
             )
 
+    def test_overloads_match_impl_signature(self) -> None:
+        """Each @overload of create_deep_agent keeps param names, annotations, and
+        defaults in sync with the implementation (modulo `output_type`, the
+        overload discriminator). Nothing else enforces the hand-maintained
+        copies stay aligned (D5)."""
+        from typing_extensions import get_overloads
+
+        overloads = get_overloads(create_deep_agent)
+        assert overloads, "expected @overload definitions for create_deep_agent"
+        impl_params = inspect.signature(create_deep_agent).parameters
+        impl_names = [n for n in impl_params if n != "output_type"]
+        for ov in overloads:
+            ov_params = inspect.signature(ov).parameters
+            ov_names = [n for n in ov_params if n != "output_type"]
+            assert ov_names == impl_names, (
+                "overload parameter names/order drifted from the create_deep_agent impl"
+            )
+            for name in ov_names:
+                assert ov_params[name].annotation == impl_params[name].annotation, (
+                    f"overload param {name!r} annotation drifted from the impl"
+                )
+                assert ov_params[name].default == impl_params[name].default, (
+                    f"overload param {name!r} default drifted from the impl"
+                )
+
+    def test_serializable_factory_params_are_modeled(self) -> None:
+        """The reverse of test_spec_defaults_match_factory: every *serializable*
+        create_deep_agent param must be a DeepAgentSpec field. A new serializable
+        param must be modelled in the spec or consciously added to the
+        runtime-only allow-list below (D5)."""
+        # Params that are runtime objects/callbacks/backends, never serialized.
+        runtime_only = frozenset(
+            {
+                "tools",
+                "toolsets",
+                "extra_toolsets",
+                "mcp_servers",
+                "capabilities",
+                "skills",
+                "backend",
+                "subagent_registry",
+                "subagent_extra_toolsets",
+                "subagent_usage_limits",
+                "history_processors",
+                "on_context_update",
+                "on_before_compress",
+                "on_after_compress",
+                "on_eviction",
+                "hooks",
+                "checkpoint_store",
+                "on_cost_update",
+                "middleware",
+                "message_queue",
+            }
+        )
+        spec_fields = set(DeepAgentSpec.model_fields)
+        for name, param in inspect.signature(create_deep_agent).parameters.items():
+            if name == "output_type" or param.kind in (
+                inspect.Parameter.VAR_KEYWORD,
+                inspect.Parameter.VAR_POSITIONAL,
+            ):
+                continue
+            if name in runtime_only:
+                assert name not in spec_fields, (
+                    f"{name!r} is in the runtime-only allow-list but also modelled in the "
+                    f"spec - remove it from the allow-list"
+                )
+                continue
+            assert name in spec_fields, (
+                f"create_deep_agent param {name!r} is serializable but missing from "
+                f"DeepAgentSpec - model it or add it to the runtime-only allow-list"
+            )
+
     def test_custom_values(self) -> None:
         """Custom values are stored correctly."""
         spec = DeepAgentSpec(

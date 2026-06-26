@@ -8,11 +8,18 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
+    from pydantic_ai_shields import CostTracking
     from pydantic_ai_summarization import ContextManagerCapability
 
     from pydantic_deep.capabilities.message_queue import MessageQueue
     from pydantic_deep.toolsets.checkpointing import CheckpointStore
     from pydantic_deep.toolsets.forking.coordinator import ForkCoordinator
+    from pydantic_deep.toolsets.plan.toolset import PlanOption
+
+    #: Interactive-question callback used by the plan `ask_user` tool.
+    AskUserCallback = Callable[[str, list[PlanOption]], "str | Awaitable[str]"]
 
 import chardet
 from pydantic_ai.usage import UsageLimits
@@ -54,14 +61,14 @@ class DeepAgentDeps:
     todos: list[Todo] = field(default_factory=list)
     subagents: dict[str, Any] = field(default_factory=dict)  # Agent instances
     uploads: dict[str, UploadedFile] = field(default_factory=dict)  # Uploaded files metadata
-    ask_user: Any = field(default=None, repr=False)  # Callback for interactive questions
+    ask_user: AskUserCallback | None = field(default=None, repr=False)
     context_middleware: ContextManagerCapability | None = field(default=None, repr=False)
     share_todos: bool = False  # When True, subagents share parent's todo list
     checkpoint_store: CheckpointStore | None = field(default=None, repr=False)
     message_queue: MessageQueue | None = field(default=None, repr=False)
     fork_coordinator: ForkCoordinator | None = field(default=None, repr=False)
     _fork_depth: int = field(default=0, repr=False)
-    _branch_cost_tracking: Any = field(default=None, repr=False)
+    _branch_cost_tracking: CostTracking | None = field(default=None, repr=False)
     _branch_id: str | None = field(default=None, repr=False)
     _parent_fork_coordinator: ForkCoordinator | None = field(default=None, repr=False)
 

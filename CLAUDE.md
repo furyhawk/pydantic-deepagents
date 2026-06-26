@@ -136,8 +136,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Eviction (`pydantic_deep/processors/eviction.py`)**
 - `EvictionCapability`: Capability — intercepts large tool outputs via `after_tool_execute` before they enter history
-- `EvictionProcessor`: Legacy history processor (backward compatibility)
-- `create_eviction_processor()`: Factory function for the legacy processor
 - `create_content_preview()`: Head/tail preview with truncation marker
 - Default threshold: 20,000 tokens (80,000 chars)
 - Uses runtime `ctx.deps.backend` for writing
