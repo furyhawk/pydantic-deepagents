@@ -10,6 +10,7 @@ from pydantic_ai import RunContext
 from pydantic_ai.capabilities import AbstractCapability
 from pydantic_ai.toolsets import AbstractToolset
 
+from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.toolsets.skills import (
     BackendSkillsDirectory,
     Skill,
@@ -19,7 +20,7 @@ from pydantic_deep.toolsets.skills import (
 
 
 @dataclass
-class SkillsCapability(AbstractCapability[Any]):
+class SkillsCapability(AbstractCapability[DeepAgentDeps]):
     """Capability providing skill discovery, loading, and execution.
 
     Wraps `SkillsToolset` as a pydantic-ai capability with automatic
@@ -60,7 +61,7 @@ class SkillsCapability(AbstractCapability[Any]):
     def get_instructions(self) -> Any:
         toolset = self._toolset
 
-        async def _instructions(ctx: RunContext[Any]) -> str | None:  # pragma: no cover
+        async def _instructions(ctx: RunContext[DeepAgentDeps]) -> str | None:  # pragma: no cover
             if toolset is None:
                 return None
             parts = await toolset.get_instructions(ctx)  # pragma: no cover

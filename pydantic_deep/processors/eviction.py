@@ -30,6 +30,7 @@ from pydantic_ai.tools import RunContext, ToolDefinition
 from pydantic_ai_backends import AsyncBackendProtocol
 
 from pydantic_deep._text import NUM_CHARS_PER_TOKEN, create_content_preview
+from pydantic_deep.deps import DeepAgentDeps
 
 DEFAULT_TOKEN_LIMIT = 20_000
 """Default token limit before eviction (20K tokens)."""
@@ -150,7 +151,7 @@ def _sanitize_id(tool_call_id: str) -> str:
 
 
 @dataclass
-class EvictionCapability(AbstractCapability[Any]):
+class EvictionCapability(AbstractCapability[DeepAgentDeps]):
     """Capability that intercepts large tool outputs via `after_tool_execute`.
 
     The oversized result is saved to a file via the backend and replaced with a
@@ -181,7 +182,7 @@ class EvictionCapability(AbstractCapability[Any]):
     max_binary_content: int | None = DEFAULT_MAX_BINARY_CONTENT
     on_eviction: Callable[[str, str, int, int], Any] | None = None
 
-    def _resolve_backend(self, ctx: RunContext[Any]) -> AsyncBackendProtocol | None:
+    def _resolve_backend(self, ctx: RunContext[DeepAgentDeps]) -> AsyncBackendProtocol | None:
         """Prefer the runtime backend from deps; fall back to `self.backend`."""
         deps_backend = getattr(ctx.deps, "backend", None)
         if deps_backend is not None and isinstance(deps_backend, AsyncBackendProtocol):
@@ -190,7 +191,7 @@ class EvictionCapability(AbstractCapability[Any]):
 
     async def after_tool_execute(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         *,
         call: ToolCallPart,
         tool_def: ToolDefinition,
@@ -215,7 +216,7 @@ class EvictionCapability(AbstractCapability[Any]):
 
     async def _maybe_evict_text(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         *,
         call: ToolCallPart,
         value: Any,
@@ -262,7 +263,7 @@ class EvictionCapability(AbstractCapability[Any]):
 
     async def before_model_request(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         request_context: Any,
     ) -> Any:
         """Bound the number of multimodal binary parts in message history.

@@ -8,11 +8,12 @@ from typing import Any
 from pydantic_ai import RunContext
 from pydantic_ai.capabilities import AbstractCapability
 
+from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.toolsets.context import ContextToolset
 
 
 @dataclass
-class ContextFilesCapability(AbstractCapability[Any]):
+class ContextFilesCapability(AbstractCapability[DeepAgentDeps]):
     """Capability that injects project context files into the agent's system prompt.
 
     Loads files like AGENTS.md, SOUL.md and injects their content
@@ -47,7 +48,7 @@ class ContextFilesCapability(AbstractCapability[Any]):
     def get_instructions(self) -> Any:
         toolset = self._toolset
 
-        async def _instructions(ctx: RunContext[Any]) -> str | None:
+        async def _instructions(ctx: RunContext[DeepAgentDeps]) -> str | None:
             if toolset is None or not hasattr(ctx.deps, "backend"):
                 return None
             parts = await toolset.get_instructions(ctx)  # pragma: no cover

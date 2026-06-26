@@ -29,6 +29,7 @@ from pydantic_ai.capabilities import AbstractCapability, WrapRunHandler
 from pydantic_ai.tools import ToolDefinition
 from pydantic_ai.toolsets import AbstractToolset
 
+from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.toolsets.browser import (
     DEFAULT_MAX_CONTENT_TOKENS,
     DEFAULT_TIMEOUT_MS,
@@ -110,7 +111,7 @@ Allowed domains: {allowed_domains}
 
 
 @dataclass
-class BrowserCapability(AbstractCapability[Any]):
+class BrowserCapability(AbstractCapability[DeepAgentDeps]):
     """Provides a real async Playwright browser to the agent.
 
     Manages the full browser lifecycle: Playwright and Chromium are started
@@ -192,7 +193,7 @@ class BrowserCapability(AbstractCapability[Any]):
         return self._toolset
 
     def get_instructions(self) -> Any:
-        def _instructions(ctx: RunContext[Any]) -> str | None:
+        def _instructions(ctx: RunContext[DeepAgentDeps]) -> str | None:
             if self._state.launch_error:
                 return None
             return BROWSER_INSTRUCTIONS.format(
@@ -204,7 +205,7 @@ class BrowserCapability(AbstractCapability[Any]):
 
     async def prepare_tools(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         tool_defs: list[ToolDefinition],
     ) -> list[ToolDefinition]:
         """Filter browser tools based on availability and approval state.
@@ -231,7 +232,7 @@ class BrowserCapability(AbstractCapability[Any]):
 
     async def wrap_run(  # noqa: C901
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         *,
         handler: WrapRunHandler,
     ) -> AgentRunResult[Any]:

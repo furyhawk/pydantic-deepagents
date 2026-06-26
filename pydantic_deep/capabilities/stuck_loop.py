@@ -35,6 +35,8 @@ from pydantic_ai.exceptions import ModelRetry
 from pydantic_ai.messages import ToolCallPart
 from pydantic_ai.tools import ToolDefinition
 
+from pydantic_deep.deps import DeepAgentDeps
+
 
 class StuckLoopError(Exception):
     """Raised when the agent is stuck in a loop and action is `"error"`.
@@ -72,7 +74,7 @@ def _hash_result(result: Any) -> str:
 
 
 @dataclass
-class StuckLoopDetection(AbstractCapability[Any]):
+class StuckLoopDetection(AbstractCapability[DeepAgentDeps]):
     """Capability that detects and breaks repetitive agent loops.
 
     Tracks tool calls via `after_tool_execute` and detects three
@@ -112,7 +114,7 @@ class StuckLoopDetection(AbstractCapability[Any]):
         if self.action not in ("warn", "error"):
             raise ValueError(f"action must be 'warn' or 'error', got {self.action!r}.")
 
-    async def for_run(self, ctx: RunContext[Any]) -> StuckLoopDetection:
+    async def for_run(self, ctx: RunContext[DeepAgentDeps]) -> StuckLoopDetection:
         """Return a fresh instance with isolated per-run state."""
         return replace(self)
 
@@ -172,7 +174,7 @@ class StuckLoopDetection(AbstractCapability[Any]):
 
     async def after_tool_execute(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         *,
         call: ToolCallPart,
         tool_def: ToolDefinition,

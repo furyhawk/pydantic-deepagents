@@ -38,10 +38,10 @@ from pydantic_ai.messages import ToolCallPart
 from pydantic_ai.tools import ToolDefinition
 from pydantic_ai_backends import AsyncSandboxProtocol, SandboxProtocol
 
+from pydantic_deep.deps import DeepAgentDeps
+
 if TYPE_CHECKING:
     from pydantic_ai_backends import ExecuteResponse
-
-    from pydantic_deep.deps import DeepAgentDeps
 
 logger = logging.getLogger(__name__)
 
@@ -261,7 +261,7 @@ def _get_sandbox_backend(deps: DeepAgentDeps | None) -> AsyncSandboxProtocol | N
 
 
 @dataclass
-class HooksCapability(AbstractCapability[Any]):
+class HooksCapability(AbstractCapability[DeepAgentDeps]):
     """Capability that executes hooks on tool lifecycle events.
 
     Maps tool events to shell commands (via execute()) or Python handlers,
@@ -293,7 +293,7 @@ class HooksCapability(AbstractCapability[Any]):
 
     async def before_tool_execute(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         *,
         call: ToolCallPart,
         tool_def: ToolDefinition,
@@ -329,7 +329,7 @@ class HooksCapability(AbstractCapability[Any]):
 
     async def after_tool_execute(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         *,
         call: ToolCallPart,
         tool_def: ToolDefinition,
@@ -379,7 +379,7 @@ class HooksCapability(AbstractCapability[Any]):
 
     async def on_tool_execute_error(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         *,
         call: ToolCallPart,
         tool_def: ToolDefinition,
@@ -409,7 +409,7 @@ class HooksCapability(AbstractCapability[Any]):
 
         raise error
 
-    async def before_run(self, ctx: RunContext[Any]) -> None:
+    async def before_run(self, ctx: RunContext[DeepAgentDeps]) -> None:
         """Run BEFORE_RUN hooks at the start of agent.run()."""
         matched = [h for h in self.hooks if h.event == HookEvent.BEFORE_RUN]
         if not matched:
@@ -422,7 +422,7 @@ class HooksCapability(AbstractCapability[Any]):
             else:
                 await _run_hook(hook, hook_input, backend)
 
-    async def after_run(self, ctx: RunContext[Any], *, result: Any) -> Any:
+    async def after_run(self, ctx: RunContext[DeepAgentDeps], *, result: Any) -> Any:
         """Run AFTER_RUN hooks at the end of agent.run()."""
         matched = [h for h in self.hooks if h.event == HookEvent.AFTER_RUN]
         if not matched:
@@ -436,7 +436,7 @@ class HooksCapability(AbstractCapability[Any]):
                 await _run_hook(hook, hook_input, backend)
         return result
 
-    async def on_run_error(self, ctx: RunContext[Any], *, error: BaseException) -> Any:
+    async def on_run_error(self, ctx: RunContext[DeepAgentDeps], *, error: BaseException) -> Any:
         """Run RUN_ERROR hooks when agent.run() fails."""
         matched = [h for h in self.hooks if h.event == HookEvent.RUN_ERROR]
         if not matched:
@@ -450,7 +450,9 @@ class HooksCapability(AbstractCapability[Any]):
                 await _run_hook(hook, hook_input, backend)
         raise error
 
-    async def before_model_request(self, ctx: RunContext[Any], request_context: Any) -> Any:
+    async def before_model_request(
+        self, ctx: RunContext[DeepAgentDeps], request_context: Any
+    ) -> Any:
         """Run BEFORE_MODEL_REQUEST hooks before each LLM call."""
         matched = [h for h in self.hooks if h.event == HookEvent.BEFORE_MODEL_REQUEST]
         if not matched:
@@ -465,7 +467,7 @@ class HooksCapability(AbstractCapability[Any]):
         return request_context
 
     async def after_model_request(
-        self, ctx: RunContext[Any], *, request_context: Any, response: Any
+        self, ctx: RunContext[DeepAgentDeps], *, request_context: Any, response: Any
     ) -> Any:
         """Run AFTER_MODEL_REQUEST hooks after each LLM response."""
         matched = [h for h in self.hooks if h.event == HookEvent.AFTER_MODEL_REQUEST]

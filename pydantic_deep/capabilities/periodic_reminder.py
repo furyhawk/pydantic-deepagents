@@ -32,6 +32,8 @@ from pydantic_ai import Agent, RunContext
 from pydantic_ai.capabilities import AbstractCapability
 from pydantic_ai.messages import ModelMessage, ModelRequest, UserPromptPart
 
+from pydantic_deep.deps import DeepAgentDeps
+
 logger = logging.getLogger(__name__)
 
 # Prefixes used by _render() to wrap injected reminders.  Used to filter
@@ -51,7 +53,7 @@ class ReminderGenerator(Protocol):
 
     async def __call__(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         turn: int,
         messages: list[ModelMessage],
     ) -> str:
@@ -128,7 +130,7 @@ class LLMReminderGenerator:
 
     async def __call__(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         turn: int,
         messages: list[ModelMessage],
     ) -> str:
@@ -238,7 +240,7 @@ def _should_fire(turn: int, reminder_count: int, cfg: PeriodicReminderConfig) ->
 
 
 @dataclass
-class PeriodicReminderCapability(AbstractCapability[Any]):
+class PeriodicReminderCapability(AbstractCapability[DeepAgentDeps]):
     """Capability that periodically reminds the agent of its original task.
 
     Uses `before_model_request` to increment a turn counter and inject a
@@ -257,13 +259,13 @@ class PeriodicReminderCapability(AbstractCapability[Any]):
     _turn_counter: int = field(default=0, init=False, repr=False)
     _reminder_count: int = field(default=0, init=False, repr=False)
 
-    async def for_run(self, ctx: RunContext[Any]) -> PeriodicReminderCapability:
+    async def for_run(self, ctx: RunContext[DeepAgentDeps]) -> PeriodicReminderCapability:
         """Return a fresh instance with isolated per-run counters."""
         return replace(self)
 
     async def before_model_request(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         request_context: Any,
     ) -> Any:
         """Increment turn counter and inject a reminder when it fires."""

@@ -15,6 +15,8 @@ from typing import TYPE_CHECKING, Any, Literal
 from pydantic_ai import Agent
 from pydantic_ai.capabilities import AbstractCapability
 
+from pydantic_deep.deps import DeepAgentDeps
+
 if TYPE_CHECKING:
     from pydantic_ai.models import ModelRequestContext
     from pydantic_ai.tools import RunContext
@@ -113,7 +115,7 @@ class MessageQueue:
 
 
 @dataclass
-class MessageQueueCapability(AbstractCapability[Any]):
+class MessageQueueCapability(AbstractCapability[DeepAgentDeps]):
     """Injects queued steering messages before each model request.
 
     Register via `create_deep_agent(message_queue=queue)` or directly::
@@ -126,7 +128,7 @@ class MessageQueueCapability(AbstractCapability[Any]):
 
     async def before_model_request(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         request_context: ModelRequestContext,
     ) -> ModelRequestContext:
         queued = await self.queue.drain_steering()

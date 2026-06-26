@@ -9,6 +9,7 @@ from pydantic_ai import RunContext
 from pydantic_ai.capabilities import AbstractCapability
 from pydantic_ai.toolsets import AbstractToolset
 
+from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.toolsets.memory import (
     DEFAULT_MEMORY_DIR,
     DEFAULT_PIN_END_MARKER,
@@ -17,7 +18,7 @@ from pydantic_deep.toolsets.memory import (
 
 
 @dataclass
-class MemoryCapability(AbstractCapability[Any]):
+class MemoryCapability(AbstractCapability[DeepAgentDeps]):
     """Capability providing persistent agent memory across sessions.
 
     Provides read_memory, write_memory, update_memory tools and injects
@@ -54,7 +55,7 @@ class MemoryCapability(AbstractCapability[Any]):
     def get_instructions(self) -> Any:
         toolset = self._toolset
 
-        async def _instructions(ctx: RunContext[Any]) -> str | None:
+        async def _instructions(ctx: RunContext[DeepAgentDeps]) -> str | None:
             if toolset is None or not hasattr(ctx.deps, "backend"):
                 return None
             parts = await toolset.get_instructions(ctx)  # pragma: no cover

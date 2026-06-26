@@ -27,8 +27,6 @@ from pydantic_ai_backends import (
 )
 from pydantic_ai_backends.types import ExecuteResponse
 
-from pydantic_deep.deps import unwrap_backend
-
 from .directory import _parse_skill_md, _validate_skill_metadata
 from .exceptions import (
     SkillResourceLoadError,
@@ -448,7 +446,10 @@ class BackendSkillsDirectory:
             script_timeout: Timeout for script execution in seconds.
         """
         # Unwrap adapter if needed — discovery calls sync backend methods
-        # directly because __init__ cannot be async.
+        # directly because __init__ cannot be async. Imported lazily to avoid a
+        # deps -> types -> skills -> deps import cycle.
+        from pydantic_deep.deps import unwrap_backend
+
         raw = unwrap_backend(backend)
         self._backend = raw
         self._path = path

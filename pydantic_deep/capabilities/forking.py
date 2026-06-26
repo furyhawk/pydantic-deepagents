@@ -20,12 +20,13 @@ from pydantic_ai import RunContext
 from pydantic_ai.capabilities import AbstractCapability
 from pydantic_ai.messages import ModelMessage
 
+from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.toolsets.forking.coordinator import ForkCoordinator
 from pydantic_deep.toolsets.forking.store import ForkStateStore, InMemoryForkStateStore
 
 
 @dataclass
-class LiveForkCapability(AbstractCapability[Any]):
+class LiveForkCapability(AbstractCapability[DeepAgentDeps]):
     """Capability that wires Live Run Forking into an agent.
 
     Args:
@@ -75,7 +76,7 @@ class LiveForkCapability(AbstractCapability[Any]):
         """
         return list(self._latest_messages)
 
-    async def for_run(self, ctx: RunContext[Any]) -> LiveForkCapability:
+    async def for_run(self, ctx: RunContext[DeepAgentDeps]) -> LiveForkCapability:
         """Return a fresh per-run capability with an independent coordinator.
 
         Preserves an unresolved coordinator from a previous turn rather
@@ -120,7 +121,7 @@ class LiveForkCapability(AbstractCapability[Any]):
         ctx.deps.fork_coordinator = coordinator
         return clone
 
-    async def after_run(self, ctx: RunContext[Any], *, result: Any) -> Any:
+    async def after_run(self, ctx: RunContext[DeepAgentDeps], *, result: Any) -> Any:
         """Anchor for the post-turn stash protocol - currently a no-op.
 
         The coordinator survives a parent turn ending because
@@ -135,7 +136,7 @@ class LiveForkCapability(AbstractCapability[Any]):
 
     async def before_model_request(
         self,
-        ctx: RunContext[Any],
+        ctx: RunContext[DeepAgentDeps],
         request_context: Any,
     ) -> Any:
         """Snapshot the latest message list.
