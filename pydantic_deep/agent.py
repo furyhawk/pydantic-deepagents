@@ -365,6 +365,49 @@ def _inject_subagent_extra_toolsets(
     sa_config["toolsets"] = existing
 
 
+def _set_toolset_retries(toolset: AbstractToolset[DeepAgentDeps], max_retries: int) -> None:
+    """Set `max_retries` on a `FunctionToolset` and all its registered tools."""
+    if isinstance(toolset, FunctionToolset):  # pragma: no branch
+        toolset.max_retries = max_retries
+        for tool in toolset.tools.values():
+            tool.max_retries = max_retries
+
+
+def _build_console_toolset(
+    *,
+    interrupt_on: dict[str, bool],
+    include_execute: bool | None,
+    backend: BackendProtocol,
+    edit_format: str,
+    retries: int,
+) -> AbstractToolset[DeepAgentDeps]:
+    """Build the filesystem/console toolset with approval gating resolved.
+
+    Write/edit are gated when `interrupt_on` asks for them; execute is gated
+    whenever any interrupt is enabled (the approval channel only exists then),
+    unless `interrupt_on` sets it explicitly. `include_execute`, when not `None`,
+    forces the execute tool on or off; otherwise it is auto-detected from whether
+    the backend is a `SandboxProtocol`.
+    """
+    require_write_approval = interrupt_on.get("write_file", False) or interrupt_on.get(
+        "edit_file", False
+    )
+    require_execute_approval = interrupt_on.get("execute", any(interrupt_on.values()))
+    should_include_execute = (
+        include_execute if include_execute is not None else isinstance(backend, SandboxProtocol)
+    )
+    console_toolset = create_console_toolset(
+        id="deep-console",
+        include_execute=should_include_execute,
+        require_write_approval=require_write_approval,
+        require_execute_approval=require_execute_approval,
+        image_support=True,
+        edit_format=edit_format,  # type: ignore[arg-type,unused-ignore]
+    )
+    _set_toolset_retries(console_toolset, retries)  # type: ignore[arg-type,unused-ignore]
+    return console_toolset  # type: ignore[no-any-return,unused-ignore]
+
+
 @overload
 def create_deep_agent(
     model: str | Model | None = None,
@@ -907,14 +950,6 @@ def create_deep_agent(  # noqa: C901
         if RESEARCH_SUBAGENT["name"] not in existing_names:
             effective_subagents.append(SubAgentConfig(**RESEARCH_SUBAGENT))
 
-    def _set_toolset_retries(toolset: AbstractToolset[DeepAgentDeps], max_retries: int) -> None:
-        """Set max_retries on a FunctionToolset and all its registered tools."""
-
-        if isinstance(toolset, FunctionToolset):  # pragma: no branch
-            toolset.max_retries = max_retries
-            for tool in toolset.tools.values():
-                tool.max_retries = max_retries
-
     all_toolsets: list[AbstractToolset[DeepAgentDeps]] = []
 
     _todo_proxy: _DepsTodoProxy | None = None
@@ -924,28 +959,15 @@ def create_deep_agent(  # noqa: C901
         all_toolsets.append(todo_toolset)
 
     if include_filesystem:
-        require_write_approval = interrupt_on.get("write_file", False) or interrupt_on.get(
-            "edit_file", False
+        all_toolsets.append(
+            _build_console_toolset(
+                interrupt_on=interrupt_on,
+                include_execute=include_execute,
+                backend=backend,
+                edit_format=edit_format,
+                retries=retries,
+            )
         )
-        # Default execute to gated whenever any interrupt is enabled (the approval channel
-        # only exists then); an empty interrupt_on stays ungated. Explicit value wins.
-        require_execute_approval = interrupt_on.get("execute", any(interrupt_on.values()))
-
-        # If explicitly set, use that; otherwise auto-detect from backend type
-        should_include_execute = (
-            include_execute if include_execute is not None else isinstance(backend, SandboxProtocol)
-        )
-
-        console_toolset = create_console_toolset(
-            id="deep-console",
-            include_execute=should_include_execute,
-            require_write_approval=require_write_approval,
-            require_execute_approval=require_execute_approval,
-            image_support=True,
-            edit_format=edit_format,  # type: ignore[arg-type,unused-ignore]
-        )
-        _set_toolset_retries(console_toolset, retries)  # type: ignore[arg-type,unused-ignore]
-        all_toolsets.append(console_toolset)  # type: ignore[arg-type,unused-ignore]
 
     _subagent_task_manager: Any | None = None
     subagent_toolset: Any | None = None
