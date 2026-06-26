@@ -28,12 +28,28 @@ _BACKEND_LABELS = {
 }
 
 
+_WRAP_WIDTH = 26  # sidebar is 30 wide minus padding
+
+
 def _header(text: str) -> str:
     return f"[$text-muted b]{text}[/]"
 
 
-def _bullet(text: str) -> str:
-    return f"[$accent]•[/] [$foreground]{text}[/]"
+def _wrap(items: list[str], width: int = _WRAP_WIDTH) -> list[str]:
+    """Pack items into space-separated lines that each fit `width` — a calm,
+    scannable tag block instead of one bullet per line."""
+    lines: list[str] = []
+    cur = ""
+    for item in items:
+        candidate = f"{cur}  {item}" if cur else item
+        if cur and len(candidate) > width:
+            lines.append(cur)
+            cur = item
+        else:
+            cur = candidate
+    if cur:
+        lines.append(cur)
+    return [f"[$foreground]{ln}[/]" for ln in lines]
 
 
 class SessionSidebar(Widget):
@@ -68,12 +84,12 @@ class SessionSidebar(Widget):
         lines: list[str] = []
 
         lines.append(_header("tools"))
-        lines += [_bullet(t) for t in self._tools(cfg)]
+        lines += _wrap(self._tools(cfg))
 
         extensions = self._extensions(cfg)
         if extensions:
             lines += ["", _header("extensions")]
-            lines += [_bullet(e) for e in extensions]
+            lines += _wrap(extensions)
 
         backend = self._backend_label() or self._backend_from_config(cfg)
         if backend:
@@ -82,12 +98,12 @@ class SessionSidebar(Widget):
         mcp = self._mcp_servers()
         if mcp:
             lines += ["", _header("mcp")]
-            lines += [_bullet(name) for name in mcp]
+            lines += _wrap(mcp)
 
         context = self._context_files()
         if context:
             lines += ["", _header("context")]
-            lines += [_bullet(name) for name in context]
+            lines += _wrap(context)
 
         content.update("\n".join(lines))
 

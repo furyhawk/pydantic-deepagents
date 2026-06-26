@@ -2,6 +2,15 @@
 
 Screen {
     background: $background;
+    /* Quiet, near-invisible scrollbars — they only hint until hovered. */
+    scrollbar-size-vertical: 1;
+    scrollbar-size-horizontal: 1;
+    scrollbar-color: $panel;
+    scrollbar-color-hover: $primary;
+    scrollbar-color-active: $accent;
+    scrollbar-background: $background;
+    scrollbar-background-hover: $background;
+    scrollbar-background-active: $background;
 }
 
 #main-layout {
@@ -103,20 +112,7 @@ SidePanel.visible {
     display: block;
 }
 
-TodosWidget {
-    height: auto;
-    padding: 1;
-    border: round $panel;
-    border-title-color: $accent;
-}
-
-SubagentsWidget {
-    height: auto;
-    padding: 1;
-    border: round $panel;
-    border-title-color: $accent;
-    margin: 1 0 0 0;
-}
+/* Right-panel sections are flat (header + items), styled in their widgets. */
 
 /* ── Status bar ──────────────────────────────────────── */
 

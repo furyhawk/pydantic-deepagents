@@ -18,10 +18,10 @@ class SidePanel(Vertical):
 
     DEFAULT_CSS = """
     SidePanel {
-        width: 32;
+        width: 30;
         display: none;
-        padding: 0 1;
-        border-left: tall $surface-lighten-2;
+        padding: 1 2;
+        border-left: tall $panel;
     }
     SidePanel.visible {
         display: block;
