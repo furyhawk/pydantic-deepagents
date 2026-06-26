@@ -453,6 +453,22 @@ class InputArea(Vertical):
             if prompt:
                 prompt.first().focus()
 
+    def prefill(self, text: str) -> None:
+        """Put `text` in the single-line input, cursor at end, and focus it.
+
+        Used when a picked command expects an inline argument (e.g. `/goal `):
+        rather than running with no argument, the command is staged so the user
+        can type the rest and submit.
+        """
+        self.is_multiline = False
+        prompts = self.query("PromptInput")
+        if not prompts:
+            return
+        prompt = prompts.first()
+        prompt.value = text  # type: ignore[attr-defined]
+        prompt.cursor_position = len(text)  # type: ignore[attr-defined]
+        prompt.focus()
+
     def toggle_multiline(self) -> None:
         """Toggle between single-line and multiline mode."""
         self.is_multiline = not self.is_multiline

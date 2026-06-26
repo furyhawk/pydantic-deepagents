@@ -103,3 +103,16 @@ async def test_context_warning_fires_once_per_crossing(
         # Climb back over 90% → one more warning.
         screen.on_context_updated(ContextUpdated(0.92, 184_000, 200_000))
         assert len(warnings) == 2
+
+
+async def test_input_prefill_stages_command(app: DeepApp) -> None:
+    """InputArea.prefill stages text in the single-line input for editing."""
+    from apps.cli.widgets.input_area import InputArea
+
+    async with app.run_test(size=(120, 35)) as pilot:
+        await pilot.pause()
+        input_area = app.screen.query_one(InputArea)
+        input_area.prefill("/goal ")
+        await pilot.pause()
+        prompt = input_area.query("PromptInput").first()
+        assert prompt.value == "/goal "  # type: ignore[attr-defined]

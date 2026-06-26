@@ -839,12 +839,21 @@ class ChatScreen(Screen):
         with contextlib.suppress(Exception):
             self.query_one(InputArea).focus_input()
 
+    #: Commands that expect an inline free-text argument — selecting them from
+    #: the picker stages `/cmd ` in the input instead of running with no arg.
+    _ARG_COMMANDS = frozenset({"/goal", "/export", "/theme"})
+
     def on_command_selected(self, event: CommandSelected) -> None:
         """Open the command picker or handle a selected command."""
 
         async def _handle_result(result: str | None) -> None:
-            if result:
-                self.app.handle_command(result)  # type: ignore[attr-defined]
+            if not result:
+                return
+            if result in self._ARG_COMMANDS:
+                with contextlib.suppress(Exception):
+                    self.query_one(InputArea).prefill(f"{result} ")
+                return
+            self.app.handle_command(result)  # type: ignore[attr-defined]
 
         self.app.push_screen(CommandPickerModal(), _handle_result)
 
