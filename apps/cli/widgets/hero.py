@@ -24,8 +24,12 @@ class HeroBanner(Widget):
 
     DEFAULT_CSS = """
     HeroBanner {
-        height: auto;
+        height: 1fr;
         padding: 1 2 1 2;
+        align: left middle;
+    }
+    HeroBanner > Vertical {
+        height: auto;
     }
     HeroBanner .hero-titlerow {
         height: 1;

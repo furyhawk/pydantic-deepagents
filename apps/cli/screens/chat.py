@@ -611,7 +611,9 @@ class ChatScreen(Screen):
             context_lines.append(f"created: {', '.join(bootstrapped)}")
 
         version = getattr(self.app, "app_version", "") or ""
-        msg_list.mount(HeroBanner(version=str(version), context_lines=context_lines))
+        msg_list.mount(
+            HeroBanner(version=str(version), context_lines=context_lines, id="welcome-hero")
+        )
         msg_list.scroll_end(animate=False)
 
         # Populate the capability sidebar + session footer now that deps are wired.
