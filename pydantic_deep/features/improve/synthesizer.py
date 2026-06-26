@@ -12,8 +12,8 @@ from typing import Any
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 
-from pydantic_deep.improve.prompts import SYNTHESIS_PROMPT
-from pydantic_deep.improve.types import ProposedChange, SessionInsights
+from pydantic_deep.features.improve.prompts import SYNTHESIS_PROMPT
+from pydantic_deep.features.improve.types import ProposedChange, SessionInsights
 from pydantic_deep.models import DEFAULT_IMPROVE_MODEL
 
 MAX_TOOL_SEQUENCE_CHARS = 8000

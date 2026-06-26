@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `teams`: `pydantic_deep.toolsets.teams` → `pydantic_deep.features.teams`.
   - `plan`: `pydantic_deep.toolsets.plan` → `pydantic_deep.features.plan`.
   - `checkpointing`: `pydantic_deep.toolsets.checkpointing` → `pydantic_deep.features.checkpointing`.
+  - `improve`: `pydantic_deep.improve` / `pydantic_deep.toolsets.improve` → `pydantic_deep.features.improve`.
 
 ## [0.3.33] - 2026-06-26
 

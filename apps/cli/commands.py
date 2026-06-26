@@ -458,7 +458,7 @@ async def _cmd_improve(app: DeepApp, arg: str) -> None:  # noqa: C901
             from apps.cli.config import get_sessions_dir
             from apps.cli.keystore import load_keys
             from apps.cli.modals.improve_review import ImproveReviewModal
-            from pydantic_deep.improve.analyzer import ImprovementAnalyzer
+            from pydantic_deep.features.improve.analyzer import ImprovementAnalyzer
 
             # Ensure API keys are available (improve creates its own agents)
             load_keys()

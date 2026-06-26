@@ -18,6 +18,7 @@ from pydantic_deep.features import context as context_feature
 from pydantic_deep.features import eviction as eviction_feature
 from pydantic_deep.features import history_archive as history_archive_feature
 from pydantic_deep.features import hooks as hooks_feature
+from pydantic_deep.features import improve as improve_feature
 from pydantic_deep.features import memory as memory_feature
 from pydantic_deep.features import message_queue as message_queue_feature
 from pydantic_deep.features import patch as patch_feature
@@ -237,6 +238,28 @@ class TestHooksShim:
     def test_top_level_exports_stable(self) -> None:
         assert pydantic_deep.HooksCapability is hooks_feature.HooksCapability
         assert pydantic_deep.Hook is hooks_feature.Hook
+
+
+class TestImproveShim:
+    def test_improve_package_reexports_and_warns(self) -> None:
+        import pydantic_deep.improve as shim
+
+        with pytest.warns(DeprecationWarning, match="features.improve"):
+            importlib.reload(shim)
+
+        assert shim.SessionExtractor is improve_feature.SessionExtractor
+        assert shim.ImproveToolset is improve_feature.ImproveToolset
+        assert shim.ImprovementReport is improve_feature.ImprovementReport
+
+    def test_toolsets_improve_reexports_and_warns(self) -> None:
+        import pydantic_deep.toolsets.improve as shim
+
+        with pytest.warns(DeprecationWarning, match="features.improve"):
+            importlib.reload(shim)
+
+        assert shim.ImproveToolset is improve_feature.ImproveToolset
+        assert callable(shim._format_report)
+        assert callable(shim._format_status)
 
 
 class TestStuckLoopShim:

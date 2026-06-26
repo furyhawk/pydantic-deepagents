@@ -9,18 +9,18 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from pydantic_deep.improve.analyzer import DEFAULT_CONTEXT_FILES, ImprovementAnalyzer
-from pydantic_deep.improve.extractor import (
+from pydantic_deep.features.improve.analyzer import DEFAULT_CONTEXT_FILES, ImprovementAnalyzer
+from pydantic_deep.features.improve.extractor import (
     SessionExtractor,
     _extract_timestamp,
 )
-from pydantic_deep.improve.prompts import (
+from pydantic_deep.features.improve.prompts import (
     CHUNK_MERGE_PROMPT,
     EXTRACTION_PROMPT,
     SYNTHESIS_PROMPT,
 )
-from pydantic_deep.improve.synthesizer import InsightSynthesizer
-from pydantic_deep.improve.types import (
+from pydantic_deep.features.improve.synthesizer import InsightSynthesizer
+from pydantic_deep.features.improve.types import (
     AgentLearningInsight,
     ContextInsight,
     DecisionInsight,
@@ -469,7 +469,7 @@ class TestSessionExtractor:
         mock_output = SessionInsights(
             session_id="session_tl", timestamp="", message_count=1, tool_calls_count=0
         )
-        with patch("pydantic_deep.improve.extractor.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.extractor.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_result = AsyncMock()
             mock_result.output = mock_output
@@ -503,7 +503,7 @@ class TestSessionExtractor:
             tool_calls_count=0,
             user_facts=[UserFactInsight(fact="test", category="other", confidence=0.5)],
         )
-        with patch("pydantic_deep.improve.extractor.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.extractor.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_result = AsyncMock()
             mock_result.output = mock_output
@@ -535,7 +535,7 @@ class TestSessionExtractor:
         mock_output = SessionInsights(
             session_id="session_counts", timestamp="", message_count=99, tool_calls_count=99
         )
-        with patch("pydantic_deep.improve.extractor.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.extractor.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_result = AsyncMock()
             mock_result.output = mock_output
@@ -558,7 +558,7 @@ class TestSessionExtractor:
         mock_output = SessionInsights(
             session_id="session3", timestamp="", message_count=2, tool_calls_count=0
         )
-        with patch("pydantic_deep.improve.extractor.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.extractor.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_result = AsyncMock()
             mock_result.output = mock_output
@@ -582,7 +582,7 @@ class TestSessionExtractor:
         mock_output = SessionInsights(
             session_id="x", timestamp="t", message_count=10, tool_calls_count=5
         )
-        with patch("pydantic_deep.improve.extractor.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.extractor.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_result = AsyncMock()
             mock_result.output = mock_output
@@ -634,7 +634,7 @@ class TestInsightSynthesizer:
         synth = InsightSynthesizer(model="test:test")
         si = SessionInsights(session_id="x", timestamp="", message_count=1, tool_calls_count=0)
 
-        with patch("pydantic_deep.improve.synthesizer.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.synthesizer.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_output = AsyncMock()
             mock_output.output.proposed_changes = []
@@ -647,7 +647,7 @@ class TestInsightSynthesizer:
         synth = InsightSynthesizer(model="test:test")
         si = SessionInsights(session_id="x", timestamp="", message_count=1, tool_calls_count=0)
 
-        with patch("pydantic_deep.improve.synthesizer.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.synthesizer.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_output = AsyncMock()
             mock_output.output.proposed_changes = []
@@ -663,7 +663,7 @@ class TestInsightSynthesizer:
         synth = InsightSynthesizer(model="test:test")
         si = SessionInsights(session_id="x", timestamp="", message_count=1, tool_calls_count=0)
 
-        with patch("pydantic_deep.improve.synthesizer.Agent") as MockAgent:
+        with patch("pydantic_deep.features.improve.synthesizer.Agent") as MockAgent:
             mock_agent = MockAgent.return_value
             mock_output = AsyncMock()
             mock_output.output.proposed_changes = []
@@ -1162,28 +1162,28 @@ class TestImprovementAnalyzer:
 
 class TestImproveToolset:
     def test_init(self) -> None:
-        from pydantic_deep.toolsets.improve import ImproveToolset
+        from pydantic_deep.features.improve import ImproveToolset
 
         ts = ImproveToolset(model="test")
         assert ts._model == "test"
         assert ts._context_files is None
 
     def test_init_with_context_files(self) -> None:
-        from pydantic_deep.toolsets.improve import ImproveToolset
+        from pydantic_deep.features.improve import ImproveToolset
 
         custom = {"MEMORY.md": "custom/MEMORY.md"}
         ts = ImproveToolset(model="test", context_files=custom)
         assert ts._context_files == custom
 
     def test_instructions_is_list(self) -> None:
-        from pydantic_deep.toolsets.improve import ImproveToolset
+        from pydantic_deep.features.improve import ImproveToolset
 
         ts = ImproveToolset(model="test")
         assert isinstance(ts._instructions, list)
         assert len(ts._instructions) == 1
 
     def test_format_report_no_changes(self) -> None:
-        from pydantic_deep.toolsets.improve import _format_report
+        from pydantic_deep.features.improve.toolset import _format_report
 
         report = ImprovementReport(analyzed_sessions=3, time_range="last 7 days", total_chunks=5)
         result = _format_report(report)
@@ -1191,7 +1191,7 @@ class TestImproveToolset:
         assert "No changes" in result
 
     def test_format_report_with_changes(self) -> None:
-        from pydantic_deep.toolsets.improve import _format_report
+        from pydantic_deep.features.improve.toolset import _format_report
 
         report = ImprovementReport(
             analyzed_sessions=2,
@@ -1215,7 +1215,7 @@ class TestImproveToolset:
         assert "1.00" in result
 
     def test_format_report_change_without_sources(self) -> None:
-        from pydantic_deep.toolsets.improve import _format_report
+        from pydantic_deep.features.improve.toolset import _format_report
 
         report = ImprovementReport(
             analyzed_sessions=1,
@@ -1239,13 +1239,13 @@ class TestImproveToolset:
         assert "..." in result  # Content truncated
 
     def test_format_status_never_run(self) -> None:
-        from pydantic_deep.toolsets.improve import _format_status
+        from pydantic_deep.features.improve.toolset import _format_status
 
         result = _format_status(None, {})
         assert "never been run" in result
 
     def test_format_status_with_data(self) -> None:
-        from pydantic_deep.toolsets.improve import _format_status
+        from pydantic_deep.features.improve.toolset import _format_status
 
         last_run = datetime.now(timezone.utc)
         state = {"last_run_sessions": 5, "last_run_changes": 3, "total_runs": 2}
@@ -1256,7 +1256,7 @@ class TestImproveToolset:
     def test_format_status_hours_ago(self) -> None:
         from datetime import timedelta
 
-        from pydantic_deep.toolsets.improve import _format_status
+        from pydantic_deep.features.improve.toolset import _format_status
 
         last_run = datetime.now(timezone.utc) - timedelta(hours=5)
         result = _format_status(last_run, {})
@@ -1265,14 +1265,14 @@ class TestImproveToolset:
     def test_format_status_days_ago(self) -> None:
         from datetime import timedelta
 
-        from pydantic_deep.toolsets.improve import _format_status
+        from pydantic_deep.features.improve.toolset import _format_status
 
         last_run = datetime.now(timezone.utc) - timedelta(days=3)
         result = _format_status(last_run, {})
         assert "days ago" in result
 
     def test_toolset_has_tools(self) -> None:
-        from pydantic_deep.toolsets.improve import ImproveToolset
+        from pydantic_deep.features.improve import ImproveToolset
 
         ts = ImproveToolset(model="test")
         # FunctionToolset registers tools during __init__
@@ -1281,7 +1281,7 @@ class TestImproveToolset:
     async def test_improve_tool_run(self, tmp_path: Path) -> None:
         from unittest.mock import MagicMock
 
-        from pydantic_deep.toolsets.improve import ImproveToolset
+        from pydantic_deep.features.improve import ImproveToolset
 
         sessions_dir = tmp_path / "sessions"
         sessions_dir.mkdir()
@@ -1293,7 +1293,7 @@ class TestImproveToolset:
         mock_ctx.deps = MagicMock()
         mock_ctx.deps.working_dir = str(tmp_path)
 
-        with patch("pydantic_deep.toolsets.improve.ImprovementAnalyzer") as MockAnalyzer:
+        with patch("pydantic_deep.features.improve.toolset.ImprovementAnalyzer") as MockAnalyzer:
             mock_analyzer = MockAnalyzer.return_value
             mock_report = ImprovementReport(
                 analyzed_sessions=0, time_range="last 7 days", total_chunks=0, timestamp="ts"
@@ -1303,7 +1303,7 @@ class TestImproveToolset:
 
             # Call the internal tool function directly
             # Get the improve function from the toolset
-            from pydantic_deep.improve.analyzer import ImprovementAnalyzer as RealAnalyzer
+            from pydantic_deep.features.improve.analyzer import ImprovementAnalyzer as RealAnalyzer
 
             analyzer = RealAnalyzer(model="test", sessions_dir=sessions_dir, working_dir=tmp_path)
             with patch.object(analyzer, "_discover_sessions", return_value=[]):
@@ -1311,8 +1311,8 @@ class TestImproveToolset:
             assert report.analyzed_sessions == 0
 
     async def test_get_improvement_status_no_state(self, tmp_path: Path) -> None:
-        from pydantic_deep.improve.analyzer import ImprovementAnalyzer
-        from pydantic_deep.toolsets.improve import _format_status
+        from pydantic_deep.features.improve.analyzer import ImprovementAnalyzer
+        from pydantic_deep.features.improve.toolset import _format_status
 
         analyzer = ImprovementAnalyzer(model="test", working_dir=tmp_path)
         last_run = analyzer.get_last_improve_time()

@@ -13,8 +13,8 @@ from typing import Any
 
 from pydantic_ai import Agent
 
-from pydantic_deep.improve.prompts import CHUNK_MERGE_PROMPT, EXTRACTION_PROMPT
-from pydantic_deep.improve.types import SessionInsights
+from pydantic_deep.features.improve.prompts import CHUNK_MERGE_PROMPT, EXTRACTION_PROMPT
+from pydantic_deep.features.improve.types import SessionInsights
 
 DEFAULT_MAX_TOKENS_PER_CHUNK: int = 140_000
 """Default maximum tokens per chunk (leaves room for system prompt)."""

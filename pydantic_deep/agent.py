@@ -53,6 +53,7 @@ from pydantic_deep.features.context import ContextToolset
 from pydantic_deep.features.eviction import EvictionCapability
 from pydantic_deep.features.history_archive import create_history_search_toolset
 from pydantic_deep.features.hooks import HookEvent, HooksCapability
+from pydantic_deep.features.improve import ImproveToolset
 from pydantic_deep.features.memory import (
     DEFAULT_MAX_MEMORY_LINES,
     DEFAULT_MEMORY_DIR,
@@ -83,7 +84,6 @@ from pydantic_deep.styles import OutputStyle, format_style_prompt, resolve_style
 from pydantic_deep.subagents import RESEARCH_SUBAGENT
 from pydantic_deep.toolsets.forking import create_fork_toolset
 from pydantic_deep.toolsets.forking.coordinator import _PerBranchCostTracking
-from pydantic_deep.toolsets.improve import ImproveToolset
 from pydantic_deep.toolsets.liteparse import LiteparseToolset
 from pydantic_deep.toolsets.skills import Skill, SkillsToolset
 from pydantic_deep.toolsets.skills.backend import BackendSkillsDirectory
