@@ -7,11 +7,31 @@ from apps.cli.widgets.assistant_message import (
     AssistantMessage,
     _esc,
     _fmt_tokens,
+    _linkify_bare_urls,
 )
 
 
 def test_esc_escapes_open_bracket() -> None:
     assert _esc("a [b] c") == r"a \[b] c"
+
+
+def test_linkify_wraps_bare_urls_only() -> None:
+    # Bare URL becomes a CommonMark autolink (renders as an OSC-8 hyperlink).
+    assert _linkify_bare_urls("see https://x.com now") == "see <https://x.com> now"
+    # Trailing sentence punctuation stays outside the link.
+    assert _linkify_bare_urls("at https://x.com/p.") == "at <https://x.com/p>."
+    # Existing markdown links and autolinks are left untouched.
+    assert _linkify_bare_urls("[d](https://x.com)") == "[d](https://x.com)"
+    assert _linkify_bare_urls("<https://x.com>") == "<https://x.com>"
+
+
+def test_chat_screen_binds_copy_selection() -> None:
+    from apps.cli.screens.chat import ChatScreen
+
+    actions = {b.action for b in ChatScreen.BINDINGS}
+    keys = {b.key for b in ChatScreen.BINDINGS}
+    assert "copy_text" in actions
+    assert "ctrl+shift+c" in keys
 
 
 def test_fmt_tokens_ranges() -> None:

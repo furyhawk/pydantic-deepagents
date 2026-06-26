@@ -252,6 +252,9 @@ class ChatScreen(Screen):
         Binding("ctrl+k", "show_todos", "TODOs"),
         Binding("ctrl+l", "clear_screen", "Clear"),
         Binding("ctrl+r", "search_messages", "Search"),
+        # Copy the mouse-drag text selection to the clipboard. ctrl+c is taken by
+        # interrupt, so Textual's built-in copy action gets ctrl+shift+c here.
+        Binding("ctrl+shift+c", "copy_text", "Copy selection", show=False),
         Binding("tab", "cycle_branch_tab", "Cycle branch", show=False),
         Binding("enter", "merge_focused_branch", "Merge focused branch", show=False),
         Binding("pageup", "scroll_up", "Scroll up", show=False),
