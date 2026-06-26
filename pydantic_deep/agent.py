@@ -408,6 +408,39 @@ def _build_console_toolset(
     return console_toolset  # type: ignore[no-any-return,unused-ignore]
 
 
+def _build_context_capabilities(
+    *,
+    on_context_update: Any | None,
+    context_manager_max_tokens: int | None,
+    summarization_model: str | None,
+    on_before_compress: Any | None,
+    on_after_compress: Any | None,
+) -> tuple[ContextManagerCapability, LimitWarnerCapability]:
+    """Build the context-manager + limit-warner capability pair.
+
+    Optional callbacks are only forwarded when set, so they never override the
+    capability's own defaults. The limit warner fires at 70% of the resolved
+    token budget — well before auto-compression kicks in at 90%.
+    """
+    kwargs: dict[str, Any] = {
+        "on_usage_update": on_context_update,
+        "summarization_model": summarization_model or DEFAULT_SUMMARIZATION_MODEL,
+        "include_compact_tool": True,
+    }
+    if context_manager_max_tokens:
+        kwargs["max_tokens"] = context_manager_max_tokens
+    if on_before_compress is not None:
+        kwargs["on_before_compress"] = on_before_compress
+    if on_after_compress is not None:
+        kwargs["on_after_compress"] = on_after_compress
+    context_mw = ContextManagerCapability(**kwargs)
+    limit_warner = LimitWarnerCapability(
+        max_context_tokens=context_mw._resolved_max_tokens,
+        warning_threshold=0.7,
+    )
+    return context_mw, limit_warner
+
+
 @overload
 def create_deep_agent(
     model: str | Model | None = None,
@@ -1179,28 +1212,15 @@ def create_deep_agent(  # noqa: C901
         all_toolsets.append(create_history_search_toolset(abs_messages_path))
 
     # Context manager capability (token tracking + auto-compression)
-    context_mw: Any | None = None
-    limit_warner: Any | None = None
+    context_mw: ContextManagerCapability | None = None
+    limit_warner: LimitWarnerCapability | None = None
     if context_manager:
-        _cm_kwargs: dict[str, Any] = {
-            "on_usage_update": on_context_update,
-        }
-        if context_manager_max_tokens:
-            _cm_kwargs["max_tokens"] = context_manager_max_tokens
-        _cm_kwargs["summarization_model"] = summarization_model or DEFAULT_SUMMARIZATION_MODEL
-        if on_before_compress is not None:
-            _cm_kwargs["on_before_compress"] = on_before_compress
-        if on_after_compress is not None:
-            _cm_kwargs["on_after_compress"] = on_after_compress
-        _cm_kwargs["include_compact_tool"] = True
-        context_mw = ContextManagerCapability(**_cm_kwargs)
-
-        # Warn the model before context limits are hit.
-        # warning_threshold=0.7 means URGENT at 70%, well before
-        # auto-compression kicks in at compress_threshold (default 0.9).
-        limit_warner = LimitWarnerCapability(
-            max_context_tokens=context_mw._resolved_max_tokens,
-            warning_threshold=0.7,
+        context_mw, limit_warner = _build_context_capabilities(
+            on_context_update=on_context_update,
+            context_manager_max_tokens=context_manager_max_tokens,
+            summarization_model=summarization_model,
+            on_before_compress=on_before_compress,
+            on_after_compress=on_after_compress,
         )
 
     # Cost tracking capability
