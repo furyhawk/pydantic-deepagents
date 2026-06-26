@@ -113,8 +113,8 @@ except StuckLoopError as e:
 
 | Component | Description |
 |-----------|-------------|
-| [`StuckLoopDetection`][pydantic_deep.capabilities.stuck_loop.StuckLoopDetection] | Capability that detects stuck loops |
-| [`StuckLoopError`][pydantic_deep.capabilities.stuck_loop.StuckLoopError] | Exception raised when `action="error"` |
+| [`StuckLoopDetection`][pydantic_deep.features.stuck_loop.StuckLoopDetection] | Capability that detects stuck loops |
+| [`StuckLoopError`][pydantic_deep.features.stuck_loop.StuckLoopError] | Exception raised when `action="error"` |
 
 ## Next Steps
 

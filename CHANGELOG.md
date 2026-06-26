@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `eviction`: `pydantic_deep.processors.eviction` → `pydantic_deep.features.eviction`.
   - `patch`: `pydantic_deep.processors.patch` → `pydantic_deep.features.patch`.
   - `history_archive`: `pydantic_deep.processors.history_archive` → `pydantic_deep.features.history_archive`.
+  - `stuck_loop`: `pydantic_deep.capabilities.stuck_loop` → `pydantic_deep.features.stuck_loop`.
 
 ## [0.3.33] - 2026-06-26
 

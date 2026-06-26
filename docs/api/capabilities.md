@@ -37,7 +37,7 @@ conceptual overview.
     options:
       show_source: false
 
-::: pydantic_deep.capabilities.stuck_loop.StuckLoopError
+::: pydantic_deep.features.stuck_loop.StuckLoopError
     options:
       show_source: false
 

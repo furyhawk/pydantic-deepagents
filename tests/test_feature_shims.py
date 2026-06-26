@@ -18,6 +18,7 @@ from pydantic_deep.features import eviction as eviction_feature
 from pydantic_deep.features import history_archive as history_archive_feature
 from pydantic_deep.features import memory as memory_feature
 from pydantic_deep.features import patch as patch_feature
+from pydantic_deep.features import stuck_loop as stuck_loop_feature
 
 
 class TestMemoryShim:
@@ -152,3 +153,18 @@ class TestHistoryArchiveShim:
         assert shim.SEARCH_HISTORY_DESCRIPTION == history_archive_feature.SEARCH_HISTORY_DESCRIPTION
         assert callable(shim._bm25_rank)
         assert callable(shim._load_messages)
+
+
+class TestStuckLoopShim:
+    def test_capabilities_stuck_loop_reexports_and_warns(self) -> None:
+        import pydantic_deep.capabilities.stuck_loop as shim
+
+        with pytest.warns(DeprecationWarning, match="features.stuck_loop"):
+            importlib.reload(shim)
+
+        assert shim.StuckLoopDetection is stuck_loop_feature.StuckLoopDetection
+        assert shim.StuckLoopError is stuck_loop_feature.StuckLoopError
+
+    def test_top_level_exports_stable(self) -> None:
+        assert pydantic_deep.StuckLoopDetection is stuck_loop_feature.StuckLoopDetection
+        assert pydantic_deep.StuckLoopError is stuck_loop_feature.StuckLoopError
