@@ -58,7 +58,7 @@ Use [`LiteparseToolset`][pydantic_deep.LiteparseToolset] directly for fine-grain
 ```python
 from pydantic_ai import Agent
 from pydantic_deep import DeepAgentDeps
-from pydantic_deep.toolsets.liteparse import LiteparseToolset
+from pydantic_deep.features.liteparse import LiteparseToolset
 
 agent = Agent(
     "anthropic:claude-sonnet-4-6",

@@ -20,6 +20,7 @@ from pydantic_deep.features import forking as forking_feature
 from pydantic_deep.features import history_archive as history_archive_feature
 from pydantic_deep.features import hooks as hooks_feature
 from pydantic_deep.features import improve as improve_feature
+from pydantic_deep.features import liteparse as liteparse_feature
 from pydantic_deep.features import memory as memory_feature
 from pydantic_deep.features import message_queue as message_queue_feature
 from pydantic_deep.features import patch as patch_feature
@@ -179,6 +180,20 @@ class TestCheckpointingShim:
         assert (
             pydantic_deep.InMemoryCheckpointStore is checkpointing_feature.InMemoryCheckpointStore
         )
+
+
+class TestLiteparseShim:
+    def test_toolsets_liteparse_reexports_and_warns(self) -> None:
+        import pydantic_deep.toolsets.liteparse as shim
+
+        with pytest.warns(DeprecationWarning, match="features.liteparse"):
+            importlib.reload(shim)
+
+        assert shim.LiteparseToolset is liteparse_feature.LiteparseToolset
+        assert shim.PARSE_DOCUMENT_DESCRIPTION == liteparse_feature.PARSE_DOCUMENT_DESCRIPTION
+
+    def test_top_level_exports_stable(self) -> None:
+        assert pydantic_deep.LiteparseToolset is liteparse_feature.LiteparseToolset
 
 
 class TestForkingShim:

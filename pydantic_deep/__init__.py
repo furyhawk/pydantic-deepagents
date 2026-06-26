@@ -189,6 +189,11 @@ from pydantic_deep.features.hooks import (
     HooksCapability,
     default_security_hook,
 )
+from pydantic_deep.features.liteparse import (
+    PARSE_DOCUMENT_DESCRIPTION,
+    SCREENSHOT_DOCUMENT_DESCRIPTION,
+    LiteparseToolset,
+)
 from pydantic_deep.features.memory import (
     DEFAULT_MAX_MEMORY_LINES,
     DEFAULT_MEMORY_DIR,
@@ -274,11 +279,6 @@ from pydantic_deep.styles import (
     resolve_style,
 )
 from pydantic_deep.toolsets import SkillsToolset, SubAgentToolset, TodoToolset, create_plan_toolset
-from pydantic_deep.toolsets.liteparse import (
-    PARSE_DOCUMENT_DESCRIPTION,
-    SCREENSHOT_DOCUMENT_DESCRIPTION,
-    LiteparseToolset,
-)
 from pydantic_deep.types import (
     BrowseResult,
     CompiledSubAgent,

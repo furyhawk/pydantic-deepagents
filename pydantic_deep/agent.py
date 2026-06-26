@@ -56,6 +56,7 @@ from pydantic_deep.features.forking.coordinator import _PerBranchCostTracking
 from pydantic_deep.features.history_archive import create_history_search_toolset
 from pydantic_deep.features.hooks import HookEvent, HooksCapability
 from pydantic_deep.features.improve import ImproveToolset
+from pydantic_deep.features.liteparse import LiteparseToolset
 from pydantic_deep.features.memory import (
     DEFAULT_MAX_MEMORY_LINES,
     DEFAULT_MEMORY_DIR,
@@ -86,7 +87,6 @@ from pydantic_deep.models import (
 from pydantic_deep.prompts import BASE_PROMPT
 from pydantic_deep.styles import OutputStyle, format_style_prompt, resolve_style
 from pydantic_deep.subagents import RESEARCH_SUBAGENT
-from pydantic_deep.toolsets.liteparse import LiteparseToolset
 from pydantic_deep.types import SubAgentConfig
 
 if TYPE_CHECKING:
