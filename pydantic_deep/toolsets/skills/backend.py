@@ -27,7 +27,7 @@ from pydantic_ai_backends import (
 )
 from pydantic_ai_backends.types import ExecuteResponse
 
-from .directory import _parse_skill_md, _validate_skill_metadata
+from .directory import _extract_skill_fields, _parse_skill_md
 from .exceptions import (
     SkillResourceLoadError,
     SkillScriptExecutionError,
@@ -517,33 +517,18 @@ class BackendSkillsDirectory:
         content = content_bytes.decode("utf-8")
 
         frontmatter, instructions = _parse_skill_md(content)
-
-        name = frontmatter.get("name")
-        description = frontmatter.get("description", "")
-
-        if not name:
-            if self._validate:
-                warnings.warn(
-                    f'Skipping skill at {skill_file_path}: missing required "name" field.',
-                    UserWarning,
-                    stacklevel=3,
-                )
-                return None
-            skill_dir = _get_skill_dir(skill_file_path)
-            name = skill_dir.rsplit("/", 1)[-1]
-
-        license_field = frontmatter.get("license")
-        compatibility_field = frontmatter.get("compatibility")
-        metadata = {
-            k: v
-            for k, v in frontmatter.items()
-            if k not in ("name", "description", "license", "compatibility")
-        }
-
-        if self._validate:
-            _validate_skill_metadata(frontmatter, instructions)
-
         skill_dir = _get_skill_dir(skill_file_path)
+
+        fields = _extract_skill_fields(
+            frontmatter,
+            instructions,
+            validate=self._validate,
+            name_fallback=skill_dir.rsplit("/", 1)[-1],
+            skill_file_label=skill_file_path,
+            stacklevel=3,
+        )
+        if fields is None:
+            return None
 
         # Discover resources — sync backend for glob_info, async for resource loading
         async_backend = ensure_async(self._backend)
@@ -556,18 +541,13 @@ class BackendSkillsDirectory:
                 backend=cast("AsyncSandboxProtocol", async_backend),
                 timeout=self._script_timeout,
             )
-            scripts = _discover_backend_scripts(self._backend, skill_dir, name, executor)
+            scripts = _discover_backend_scripts(self._backend, skill_dir, fields["name"], executor)
 
         return Skill(
-            name=name,
-            description=description,
-            content=instructions,
-            license=license_field,
-            compatibility=compatibility_field,
+            **fields,
             uri=skill_dir,
             resources=resources,  # type: ignore[arg-type]
             scripts=scripts,  # type: ignore[arg-type]
-            metadata=metadata if metadata else None,
         )
 
     @property

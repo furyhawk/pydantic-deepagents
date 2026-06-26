@@ -215,6 +215,54 @@ def _parse_skill_md(content: str) -> tuple[dict[str, Any], str]:
         raise SkillValidationError(f"Failed to parse YAML frontmatter: {e}") from e
 
 
+def _extract_skill_fields(
+    frontmatter: dict[str, Any],
+    instructions: str,
+    *,
+    validate: bool,
+    name_fallback: str,
+    skill_file_label: str,
+    stacklevel: int,
+) -> dict[str, Any] | None:
+    """Build the common `Skill` fields shared by filesystem and backend discovery.
+
+    Resolves the skill name (falling back to `name_fallback` when unvalidated),
+    runs metadata validation, and collects extra frontmatter keys into metadata.
+
+    Returns the field bundle (`name`, `description`, `content`, `license`,
+    `compatibility`, `metadata`), or `None` when the skill should be skipped
+    because it has no name under validation.
+    """
+    name = frontmatter.get("name")
+    if not name:
+        if validate:
+            warnings.warn(
+                f'Skipping skill at {skill_file_label}: missing required "name" field.',
+                UserWarning,
+                stacklevel=stacklevel,
+            )
+            return None
+        name = name_fallback
+
+    if validate:
+        _validate_skill_metadata(frontmatter, instructions)
+
+    metadata = {
+        k: v
+        for k, v in frontmatter.items()
+        if k not in ("name", "description", "license", "compatibility")
+    }
+
+    return {
+        "name": name,
+        "description": frontmatter.get("description", ""),
+        "content": instructions,
+        "license": frontmatter.get("license"),
+        "compatibility": frontmatter.get("compatibility"),
+        "metadata": metadata or None,
+    }
+
+
 def _discover_resources(skill_folder: Path) -> list[SkillResource]:
     """Discover resource files in a skill folder.
 
@@ -382,46 +430,27 @@ def _discover_skills(
             content = skill_file.read_text(encoding="utf-8")
             frontmatter, instructions = _parse_skill_md(content)
 
-            name = frontmatter.get("name")
-            description = frontmatter.get("description", "")
-
-            if not name:
-                if validate:
-                    warnings.warn(
-                        f'Skipping skill at {skill_file}: missing required "name" field.',
-                        UserWarning,
-                        stacklevel=2,
-                    )
-                    continue
-                else:
-                    name = skill_folder.name
-
-            license_field = frontmatter.get("license")
-            compatibility_field = frontmatter.get("compatibility")
-            metadata = {
-                k: v
-                for k, v in frontmatter.items()
-                if k not in ("name", "description", "license", "compatibility")
-            }
-
-            if validate:
-                _validate_skill_metadata(frontmatter, instructions)
+            fields = _extract_skill_fields(
+                frontmatter,
+                instructions,
+                validate=validate,
+                name_fallback=skill_folder.name,
+                skill_file_label=str(skill_file),
+                stacklevel=2,
+            )
+            if fields is None:
+                continue
 
             resources = _discover_resources(skill_folder)
             scripts = _discover_scripts(
-                skill_folder, name, script_executor or LocalSkillScriptExecutor()
+                skill_folder, fields["name"], script_executor or LocalSkillScriptExecutor()
             )
 
             skill = Skill(
-                name=name,
-                description=description,
-                content=instructions,
-                license=license_field,
-                compatibility=compatibility_field,
+                **fields,
                 uri=str(skill_folder.resolve()),
                 resources=resources,
                 scripts=scripts,
-                metadata=metadata if metadata else None,
             )
             skills.append(skill)
         except SkillValidationError:
