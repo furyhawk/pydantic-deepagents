@@ -12,6 +12,7 @@ import importlib
 import pytest
 
 import pydantic_deep
+from pydantic_deep.features import browser as browser_feature
 from pydantic_deep.features import context as context_feature
 from pydantic_deep.features import memory as memory_feature
 
@@ -75,3 +76,29 @@ class TestContextShim:
         assert pydantic_deep.ContextToolset is context_feature.ContextToolset
         assert pydantic_deep.ContextFilesCapability is context_feature.ContextFilesCapability
         assert pydantic_deep.ContextFile is context_feature.ContextFile
+
+
+class TestBrowserShim:
+    def test_toolsets_browser_reexports_and_warns(self) -> None:
+        import pydantic_deep.toolsets.browser as shim
+
+        with pytest.warns(DeprecationWarning, match="features.browser"):
+            importlib.reload(shim)
+
+        assert shim.BrowserToolset is browser_feature.BrowserToolset
+        assert shim.DEFAULT_TIMEOUT_MS == browser_feature.DEFAULT_TIMEOUT_MS
+        assert callable(shim._html_to_markdown)
+        assert callable(shim._check_allowed_domain)
+
+    def test_capabilities_browser_reexports_and_warns(self) -> None:
+        import pydantic_deep.capabilities.browser as shim
+
+        with pytest.warns(DeprecationWarning, match="features.browser"):
+            importlib.reload(shim)
+
+        assert shim.BrowserCapability is browser_feature.BrowserCapability
+        assert shim.BROWSER_INSTRUCTIONS == browser_feature.BROWSER_INSTRUCTIONS
+
+    def test_top_level_exports_stable(self) -> None:
+        assert pydantic_deep.BrowserToolset is browser_feature.BrowserToolset
+        assert pydantic_deep.BrowserCapability is browser_feature.BrowserCapability

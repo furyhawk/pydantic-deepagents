@@ -10,12 +10,12 @@ import pytest
 from pydantic_ai.models.test import TestModel
 from pydantic_ai.usage import RunUsage
 
-from pydantic_deep.capabilities.browser import (
+from pydantic_deep.features.browser.capability import (
     BROWSER_INSTRUCTIONS,
     BrowserCapability,
     _auto_install_chromium,
 )
-from pydantic_deep.toolsets.browser import (
+from pydantic_deep.features.browser.toolset import (
     DEFAULT_MAX_CONTENT_TOKENS,
     DEFAULT_TIMEOUT_MS,
     BrowserToolset,
@@ -62,13 +62,13 @@ class TestBrowserState:
 class TestRequireBrowser:
     def test_raises_when_playwright_missing(self) -> None:
         with (
-            patch("pydantic_deep.toolsets.browser._HAS_PLAYWRIGHT", False),
+            patch("pydantic_deep.features.browser.toolset._HAS_PLAYWRIGHT", False),
             pytest.raises(ImportError, match="playwright"),
         ):
             _require_browser()
 
     def test_noop_when_available(self) -> None:
-        with patch("pydantic_deep.toolsets.browser._HAS_PLAYWRIGHT", True):
+        with patch("pydantic_deep.features.browser.toolset._HAS_PLAYWRIGHT", True):
             _require_browser()  # must not raise
 
 
@@ -84,7 +84,7 @@ class TestAutoInstallChromium:
         mock_proc.communicate = AsyncMock(return_value=(b"", b""))
 
         with patch(
-            "pydantic_deep.capabilities.browser.asyncio.create_subprocess_exec",
+            "pydantic_deep.features.browser.capability.asyncio.create_subprocess_exec",
             return_value=mock_proc,
         ):
             result = await _auto_install_chromium()
@@ -99,7 +99,7 @@ class TestAutoInstallChromium:
         mock_proc.communicate = AsyncMock(return_value=(b"", b"some error"))
 
         with patch(
-            "pydantic_deep.capabilities.browser.asyncio.create_subprocess_exec",
+            "pydantic_deep.features.browser.capability.asyncio.create_subprocess_exec",
             return_value=mock_proc,
         ):
             result = await _auto_install_chromium()
@@ -118,8 +118,8 @@ class TestHtmlToMarkdown:
         mock_module.HTML2Text.return_value = mock_handler
 
         with (
-            patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", True),
-            patch("pydantic_deep.toolsets.browser._html2text_module", mock_module),
+            patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", True),
+            patch("pydantic_deep.features.browser.toolset._html2text_module", mock_module),
         ):
             result = _html_to_markdown("<h1>Title</h1>")
 
@@ -127,19 +127,19 @@ class TestHtmlToMarkdown:
         assert result == "# Title"
 
     def test_fallback_strips_tags(self) -> None:
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             result = _html_to_markdown("<p>Hello <b>world</b></p>")
         assert "Hello" in result
         assert "world" in result
         assert "<" not in result
 
     def test_fallback_empty_html(self) -> None:
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             result = _html_to_markdown("")
         assert result == ""
 
     def test_fallback_plain_text_unchanged(self) -> None:
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             result = _html_to_markdown("no tags here")
         assert result == "no tags here"
 
@@ -173,7 +173,7 @@ class TestCheckAllowedDomain:
         assert _check_allowed_domain("not-a-url", ["example.com"]) is False
 
     def test_urlparse_exception_returns_false(self) -> None:
-        with patch("pydantic_deep.toolsets.browser.urlparse", side_effect=Exception("parse error")):
+        with patch("pydantic_deep.features.browser.toolset.urlparse", side_effect=Exception("parse error")):
             assert _check_allowed_domain("https://example.com", ["example.com"]) is False
 
 
@@ -316,7 +316,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "navigate")
             result = await tool.function(ctx, "https://example.com")
 
@@ -343,7 +343,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state, screenshot_on_navigate=True)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "navigate")
             result = await tool.function(ctx, "https://example.com")
 
@@ -356,7 +356,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "click")
             result = await tool.function(ctx, "button#submit")
 
@@ -370,7 +370,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "click")
             await tool.function(ctx, "100,200")
 
@@ -383,7 +383,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "type_text")
             result = await tool.function(ctx, "#search", "hello")
 
@@ -422,7 +422,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "get_text")
             result = await tool.function(ctx)
 
@@ -462,7 +462,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "scroll")
             result = await tool.function(ctx, direction)
 
@@ -490,7 +490,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "scroll")
             await tool.function(ctx, "down", 100, 200)
 
@@ -504,7 +504,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "go_back")
             result = await tool.function(ctx)
 
@@ -518,7 +518,7 @@ class TestBrowserToolset:
         ts = BrowserToolset(state=state)
         ctx = _ctx()
 
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "go_forward")
             result = await tool.function(ctx)
 
@@ -655,7 +655,7 @@ class TestAllowedDomainEnforcement:
         page.url = "https://docs.safe.com/page"
         state = _BrowserState(page=page)
         ts = BrowserToolset(state=state, allowed_domains=["safe.com"])
-        with patch("pydantic_deep.toolsets.browser._HAS_HTML2TEXT", False):
+        with patch("pydantic_deep.features.browser.toolset._HAS_HTML2TEXT", False):
             tool = next(t for t in ts.tools.values() if t.name == "click")
             result = await tool.function(_ctx(), "button#ok")
         assert "Clicked" in result
@@ -753,7 +753,7 @@ class TestBrowserCapability:
             return None
 
         with patch(
-            "pydantic_deep.capabilities.browser.async_playwright",
+            "pydantic_deep.features.browser.capability.async_playwright",
             return_value=pw,
         ):
             await cap.wrap_run(_ctx(), handler=handler)
@@ -768,7 +768,7 @@ class TestBrowserCapability:
             return None
 
         with patch(
-            "pydantic_deep.capabilities.browser.async_playwright",
+            "pydantic_deep.features.browser.capability.async_playwright",
             return_value=pw,
         ):
             await cap.wrap_run(_ctx(), handler=noop_handler)
@@ -815,8 +815,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 
@@ -842,8 +842,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 
@@ -863,8 +863,8 @@ class TestBrowserCapability:
             raise RuntimeError("agent exploded")
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
             pytest.raises(RuntimeError, match="agent exploded"),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
@@ -884,8 +884,8 @@ class TestBrowserCapability:
             raise RuntimeError("tool failed")
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
             pytest.raises(RuntimeError, match="tool failed"),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
@@ -910,10 +910,10 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
             patch(
-                "pydantic_deep.capabilities.browser._auto_install_chromium",
+                "pydantic_deep.features.browser.capability._auto_install_chromium",
                 new_callable=AsyncMock,
                 return_value=False,
             ),
@@ -942,10 +942,10 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
             patch(
-                "pydantic_deep.capabilities.browser._auto_install_chromium",
+                "pydantic_deep.features.browser.capability._auto_install_chromium",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -969,10 +969,10 @@ class TestBrowserCapability:
 
         mock_installer = AsyncMock()
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
             patch(
-                "pydantic_deep.capabilities.browser._auto_install_chromium",
+                "pydantic_deep.features.browser.capability._auto_install_chromium",
                 mock_installer,
             ),
         ):
@@ -983,7 +983,7 @@ class TestBrowserCapability:
     @pytest.mark.asyncio
     async def test_get_page_returns_launch_error_message(self) -> None:
         """_get_page raises RuntimeError with launch_error when browser failed to start."""
-        from pydantic_deep.toolsets.browser import BrowserToolset, _BrowserState
+        from pydantic_deep.features.browser.toolset import BrowserToolset, _BrowserState
 
         state = _BrowserState(
             launch_error="Chromium is not installed. Run `playwright install chromium`"
@@ -999,7 +999,7 @@ class TestBrowserCapability:
 
         with (
             patch(
-                "pydantic_deep.capabilities.browser._require_browser",
+                "pydantic_deep.features.browser.capability._require_browser",
                 side_effect=ImportError("playwright not installed"),
             ),
             pytest.raises(ImportError, match="playwright"),
@@ -1024,8 +1024,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 
@@ -1060,8 +1060,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 
@@ -1084,8 +1084,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
         page.route.assert_awaited_once()
@@ -1100,8 +1100,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw2),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw2),
         ):
             await cap2.wrap_run(_ctx(), handler=handler2)
         page2.route.assert_not_called()
@@ -1125,8 +1125,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 
@@ -1192,8 +1192,8 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 
@@ -1231,9 +1231,9 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
-            patch("pydantic_deep.capabilities.browser.logger") as mock_logger,
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability.logger") as mock_logger,
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 
@@ -1276,9 +1276,9 @@ class TestBrowserCapability:
             return MagicMock()
 
         with (
-            patch("pydantic_deep.capabilities.browser._require_browser"),
-            patch("pydantic_deep.capabilities.browser.async_playwright", return_value=pw),
-            patch("pydantic_deep.capabilities.browser.logger") as mock_logger,
+            patch("pydantic_deep.features.browser.capability._require_browser"),
+            patch("pydantic_deep.features.browser.capability.async_playwright", return_value=pw),
+            patch("pydantic_deep.features.browser.capability.logger") as mock_logger,
         ):
             await cap.wrap_run(_ctx(), handler=handler)
 

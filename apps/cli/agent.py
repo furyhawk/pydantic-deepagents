@@ -398,7 +398,7 @@ def create_cli_agent(  # noqa: C901
     extra_capabilities: list[Any] = []
     if effective_browser:
         try:
-            from pydantic_deep.capabilities.browser import BrowserCapability
+            from pydantic_deep.features.browser import BrowserCapability
 
             effective_headless = (
                 browser_headless if browser_headless is not None else config.browser_headless

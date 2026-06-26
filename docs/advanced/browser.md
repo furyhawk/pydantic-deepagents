@@ -20,7 +20,7 @@ playwright install chromium
 
 ```python
 from pydantic_deep import create_deep_agent
-from pydantic_deep.capabilities.browser import BrowserCapability
+from pydantic_deep.features.browser import BrowserCapability
 
 agent = create_deep_agent(
     capabilities=[BrowserCapability()],
