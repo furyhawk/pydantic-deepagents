@@ -33,5 +33,5 @@ class UserMessage(Widget):
     def compose(self) -> ComposeResult:
         time_str = self._timestamp.strftime("%H:%M")
         escaped = self._text.replace("[", r"\[")
-        yield Static(f"[bold cyan]You[/bold cyan]  [dim]{time_str}[/dim]")
+        yield Static(f"[$accent b]You[/]  [$text-muted]{time_str}[/]")
         yield Static(f"  {escaped}")

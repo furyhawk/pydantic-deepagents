@@ -81,7 +81,7 @@ class AssistantMessage(Widget):
     def compose(self) -> ComposeResult:
         time_str = self._timestamp.strftime("%H:%M")
         self._label_widget = Static(
-            f"[bold green]Assistant[/bold green]  [dim]{time_str}[/dim]",
+            f"[$primary b]Assistant[/]  [$text-muted]{time_str}[/]",
             classes="assistant-label",
         )
         yield self._label_widget
