@@ -84,23 +84,15 @@ def _highlight(content: str, lang: str) -> Syntax:
     )
 
 
-# Per-tool glyphs shown in the header for instant visual scanning.
-_TOOL_ICONS: dict[str, str] = {
-    "read_file": "\U0001f4d6",  # 📖
-    "write_file": "✍️",  # ✍️
-    "edit_file": "✏️",  # ✏️
-    "execute": "⚡",  # ⚡
-    "grep": "\U0001f50d",  # 🔍
-    "glob": "\U0001f4c1",  # 📁
-    "task": "\U0001f916",  # 🤖
-    "web_search": "\U0001f310",  # 🌐
-    "web_fetch": "\U0001f517",  # 🔗
-}
+# A single monochrome marker for every tool call — cohesive with the minimalist
+# theme and width-stable (unlike emoji, whose cell width varies by terminal).
+# The tool name carries the meaning; status (spinner/✓/✗) shows progress.
+_TOOL_MARKER = "›"
 
 
 def _tool_icon(tool_name: str) -> str:
-    """Return a leading glyph for a tool, defaulting to the diamond marker."""
-    return _TOOL_ICONS.get(tool_name, "◆")  # ◆
+    """Return the leading marker for a tool call."""
+    return _TOOL_MARKER
 
 
 def _rich_escape(text: str) -> str:

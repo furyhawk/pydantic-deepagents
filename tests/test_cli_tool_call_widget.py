@@ -15,9 +15,10 @@ from apps.cli.widgets.tool_call import (
 
 
 def test_tool_icon_known_and_default() -> None:
-    assert _tool_icon("execute") == "⚡"
-    assert _tool_icon("read_file") == "\U0001f4d6"
-    assert _tool_icon("totally_unknown") == "◆"
+    # One monochrome marker for every tool (cohesive minimalist theme).
+    assert _tool_icon("execute") == "›"
+    assert _tool_icon("read_file") == "›"
+    assert _tool_icon("totally_unknown") == "›"
 
 
 def test_lang_for_path_by_extension_name_and_unknown() -> None:
