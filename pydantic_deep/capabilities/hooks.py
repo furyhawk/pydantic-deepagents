@@ -34,6 +34,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic_ai import RunContext
 from pydantic_ai.capabilities import AbstractCapability
+from pydantic_ai.exceptions import ModelRetry
 from pydantic_ai.messages import ToolCallPart
 from pydantic_ai.tools import ToolDefinition
 from pydantic_ai_backends import AsyncSandboxProtocol, SandboxProtocol
@@ -317,8 +318,6 @@ class HooksCapability(AbstractCapability[DeepAgentDeps]):
             result = await _run_hook(hook, hook_input, backend)
 
             if not result.allow:
-                from pydantic_ai.exceptions import ModelRetry
-
                 raise ModelRetry(result.reason or "Denied by hook")
 
             if result.modified_args is not None:

@@ -8,6 +8,8 @@ from typing import Any
 from pydantic_ai.tools import RunContext
 from pydantic_ai.toolsets.function import FunctionToolset
 from pydantic_ai_backends import StateBackend
+from subagents_pydantic_ai import SubAgentConfig
+from subagents_pydantic_ai.toolset import _compile_subagent
 
 from pydantic_deep.toolsets.teams.primitives import (
     AgentTeam,
@@ -119,8 +121,6 @@ def create_team_toolset(  # noqa: C901
 
         # Register members as subagents for execution
         if registry is not None:
-            from subagents_pydantic_ai import SubAgentConfig
-
             for member in team_members:
                 if registry.exists(member.name):
                     continue
@@ -132,8 +132,6 @@ def create_team_toolset(  # noqa: C901
                 )
                 if agent_factory is not None:
                     config["agent_factory"] = agent_factory
-                from subagents_pydantic_ai.toolset import _compile_subagent
-
                 compiled = _compile_subagent(config, member.model)
                 registry.register(config, compiled.agent)
 

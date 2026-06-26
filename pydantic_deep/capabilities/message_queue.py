@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic_ai import Agent
 from pydantic_ai.capabilities import AbstractCapability
+from pydantic_ai.messages import ModelRequest, UserPromptPart
 
 from pydantic_deep.deps import DeepAgentDeps
 
@@ -133,8 +134,6 @@ class MessageQueueCapability(AbstractCapability[DeepAgentDeps]):
     ) -> ModelRequestContext:
         queued = await self.queue.drain_steering()
         if queued:
-            from pydantic_ai.messages import ModelRequest, UserPromptPart
-
             steering_part = UserPromptPart(content=format_steering(queued))
 
             # Reassign a fresh list rather than mutating request_context.messages

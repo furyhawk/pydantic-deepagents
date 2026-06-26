@@ -39,6 +39,7 @@ from pydantic_ai_backends import (
     WriteResult,
 )
 
+from pydantic_deep.capabilities.message_queue import MessageQueue
 from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.toolsets.forking.types import (
     BranchIsolation,
@@ -48,7 +49,6 @@ from pydantic_deep.toolsets.forking.types import (
 )
 
 if TYPE_CHECKING:
-    from pydantic_deep.capabilities.message_queue import MessageQueue
     from pydantic_deep.toolsets.forking.materializer import ForkMaterializer
 
 
@@ -1017,9 +1017,7 @@ def clone_for_branch(deps: DeepAgentDeps, isolation: BranchIsolation) -> DeepAge
 
     new_message_queue: MessageQueue | None
     if isolation.message_queue == "isolated":
-        from pydantic_deep.capabilities.message_queue import MessageQueue as _MQ
-
-        new_message_queue = _MQ()
+        new_message_queue = MessageQueue()
     else:
         new_message_queue = deps.message_queue
 
