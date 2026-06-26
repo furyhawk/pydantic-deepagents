@@ -27,12 +27,14 @@ from pydantic_deep import (
     InMemoryForkStateStore,
     LiveForkCapability,
     MergeStrategy,
+    PendingApprovalRequest,
     clone_for_branch,
     create_deep_agent,
 )
 from pydantic_deep.capabilities.message_queue import MessageQueue
 from pydantic_deep.toolsets.checkpointing import InMemoryCheckpointStore
 from pydantic_deep.toolsets.forking import NOT_ENABLED_MESSAGE, create_fork_toolset
+from pydantic_deep.toolsets.forking.coordinator import _APPROVAL_POLL_INTERVAL_S
 from pydantic_deep.toolsets.forking.isolation import _read_backend_bytes
 
 
@@ -3336,3 +3338,95 @@ async def test_merge_tool_action_auto_not_committed_with_verdict_picks_winner():
     # The tool should have fallen through to merge_or_select(pick:<winner_id>)
     assert "winner=" in out
     assert coord.is_resolved
+
+
+# ---------------------------------------------------------------------------
+# A1 — auto/vote merge must not deadlock on a winner parked on approval.
+# ---------------------------------------------------------------------------
+
+
+async def test_await_winner_auto_denies_parked_approval():
+    """Non-interactive (auto/vote) commit denies a parked approval instead of hanging."""
+    from types import SimpleNamespace
+
+    deps = DeepAgentDeps(backend=StateBackend())
+    coord = _make_coordinator(_make_test_agent(), deps)
+    approval = PendingApprovalRequest(branch_id="w", description="execute: rm -rf /")
+    winner = SimpleNamespace(task=None, pending_approval=approval)
+
+    async def _parked() -> str:
+        answered = await approval.response.get()
+        assert answered is False  # auto-denied
+        winner.pending_approval = None  # branch resets it after answering
+        await asyncio.sleep(_APPROVAL_POLL_INTERVAL_S * 3)  # an iter sees not-done + no pending
+        return "done"
+
+    winner.task = asyncio.create_task(_parked())
+    await asyncio.sleep(0)  # let the task reach its await
+
+    result = await coord._await_winner(cast(Any, winner), auto_deny_approvals=True)
+    assert result == "done"
+
+
+async def test_await_winner_manual_plain_await():
+    """Manual mode awaits the task directly (a human answers approvals via the TUI)."""
+    from types import SimpleNamespace
+
+    deps = DeepAgentDeps(backend=StateBackend())
+    coord = _make_coordinator(_make_test_agent(), deps)
+
+    async def _quick() -> str:
+        return "ok"
+
+    winner = SimpleNamespace(task=asyncio.create_task(_quick()), pending_approval=None)
+    assert await coord._await_winner(cast(Any, winner), auto_deny_approvals=False) == "ok"
+
+
+# ---------------------------------------------------------------------------
+# A2 — aclose is locked + idempotent.
+# ---------------------------------------------------------------------------
+
+
+async def test_aclose_is_idempotent(tmp_path: Path) -> None:
+    deps = DeepAgentDeps(backend=StateBackend())
+    coord = _make_coordinator(_make_test_agent(), deps, materializer_root=tmp_path)
+    await coord.fork(
+        [BranchSpec(label="a", steer="A"), BranchSpec(label="b", steer="B")],
+        parent_history=_seed_history("p"),
+    )
+    await asyncio.gather(*(rt.task for rt in coord.branches.values()))
+
+    await coord.aclose()
+    assert coord._closed is True
+    await coord.aclose()  # second call is a no-op via the _closed guard
+    assert coord._closed is True
+
+
+async def test_cancel_branch_task_warns_when_loser_ignores_cancel(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A4: a loser that doesn't quiesce in time is logged, not silently ignored."""
+    from types import SimpleNamespace
+
+    from pydantic_deep.toolsets.forking import coordinator as _coord_mod
+
+    monkeypatch.setattr(_coord_mod, "_CANCEL_CLEANUP_TIMEOUT_S", 0.01)
+    coord = _make_coordinator(_make_test_agent(), DeepAgentDeps(backend=StateBackend()))
+    started = asyncio.Event()
+
+    async def _stubborn() -> None:
+        started.set()
+        try:
+            await asyncio.sleep(10)
+        except asyncio.CancelledError:
+            await asyncio.sleep(0.05)  # exceed the 0.01s quiesce window before honoring cancel
+            raise
+
+    task = asyncio.create_task(_stubborn())
+    await started.wait()
+    rt = SimpleNamespace(task=task)
+    with caplog.at_level("WARNING"):
+        await coord._cancel_branch_task(cast(Any, rt), "loser z")
+    assert any("did not stop" in r.getMessage() for r in caplog.records)
+    with contextlib.suppress(asyncio.CancelledError):
+        await task

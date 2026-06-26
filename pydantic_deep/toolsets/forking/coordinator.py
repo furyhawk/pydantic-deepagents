@@ -76,6 +76,10 @@ logger = logging.getLogger(__name__)
 
 _CANCEL_CLEANUP_TIMEOUT_S: float = 1.0
 
+#: Poll interval while driving an auto/vote winner past deferred approvals it
+#: parks on — no human can answer them, so they're denied until the task ends.
+_APPROVAL_POLL_INTERVAL_S: float = 0.05
+
 #: Branch states where a cancelled winner may legitimately have no partial
 #: history yet, so the merge falls back to the pre-fork parent history.
 _EXHAUSTED_BRANCH_STATES: frozenset[str] = frozenset(
@@ -366,6 +370,7 @@ class ForkCoordinator:
         self._cached_outcome: ResolveOutcome | None = None
         self._cached_outcome_key: tuple[Any, ...] | None = None
         self.branch_runner: BranchRunnerFunc | None = None
+        self._closed = False
 
     @property
     def fork_id(self) -> str | None:
@@ -840,19 +845,54 @@ class ForkCoordinator:
         if rt.task.done():
             return
         rt.task.cancel()
-        with contextlib.suppress(asyncio.CancelledError, asyncio.TimeoutError):
-            try:
-                await asyncio.wait_for(rt.task, timeout=_CANCEL_CLEANUP_TIMEOUT_S)
-            except Exception:  # pragma: no cover - defensive
-                logger.warning("%s cleanup raised", log_label, exc_info=True)
+        try:
+            await asyncio.wait_for(rt.task, timeout=_CANCEL_CLEANUP_TIMEOUT_S)
+        except asyncio.CancelledError:
+            pass  # the task acknowledged cancellation — expected
+        except asyncio.TimeoutError:
+            # The task ignored cancel for too long. We can't force-stop a coroutine,
+            # so surface it: a still-running loser's overlay reads fall through to the
+            # parent and could observe the winner's flushed bytes.
+            logger.warning(
+                "%s did not stop within %.1fs of cancel; it may still run during flush",
+                log_label,
+                _CANCEL_CLEANUP_TIMEOUT_S,
+            )
+        except Exception:  # pragma: no cover - defensive
+            logger.warning("%s cleanup raised", log_label, exc_info=True)
 
-    async def merge_or_select(self, action: str) -> MergeResult:
+    async def _await_winner(self, winner: BranchRuntime, *, auto_deny_approvals: bool) -> Any:
+        """Await the winning branch's task to completion.
+
+        In `manual` mode an interactive approver answers any deferred-tool
+        approval the branch parks on, so a plain `await` suffices. In
+        `auto`/`vote` mode there is no human — the branch would block on
+        `pending_approval` forever — so each approval is denied as it appears
+        until the task finishes. Denied calls are recorded by the branch loop
+        in `blocked_commands`, surfacing in the merge notification.
+        """
+        if not auto_deny_approvals:
+            return await winner.task
+        while not winner.task.done():
+            pending = winner.pending_approval
+            if pending is not None:
+                with contextlib.suppress(Exception):  # queue full / already answered
+                    pending.response.put_nowait(False)
+            await asyncio.wait({winner.task}, timeout=_APPROVAL_POLL_INTERVAL_S)
+        return winner.task.result()
+
+    async def merge_or_select(
+        self, action: str, *, _auto_deny_approvals: bool = False
+    ) -> MergeResult:
         """Resolve the fork by picking a winner.
 
         `action="pick:<branch_id>"` awaits the winning branch's task,
         cancels and discards the others, replays the winner's overlay
         onto the parent backend, releases every overlay, and saves a
         `post-fork:<fork_id>` checkpoint when checkpointing is available.
+
+        `_auto_deny_approvals` is set by the non-interactive auto/vote commit
+        path so a winner parked on a deferred approval can't deadlock the merge.
         """
         if not action.startswith("pick:"):
             raise ValueError(f"Unsupported merge action: {action!r}. Expected 'pick:<branch_id>'.")
@@ -868,7 +908,7 @@ class ForkCoordinator:
         # Await the winner outside the lock - it may park on human approval indefinitely,
         # which would freeze every other lock user. Take the lock only for the merge below.
         try:
-            result = await winner.task
+            result = await self._await_winner(winner, auto_deny_approvals=_auto_deny_approvals)
             history_after_merge = list(result.all_messages())
         except asyncio.CancelledError:
             if winner.status.state in _EXHAUSTED_BRANCH_STATES:
@@ -1287,7 +1327,9 @@ class ForkCoordinator:
         keeps the two paths from drifting if the commit semantics ever grow
         (e.g. an additional checkpoint, a notification hook).
         """
-        merge_result = await self.merge_or_select(f"pick:{verdict.winner_branch_id}")
+        merge_result = await self.merge_or_select(
+            f"pick:{verdict.winner_branch_id}", _auto_deny_approvals=True
+        )
         return ResolveOutcome(
             committed=True,
             auto_eligible=False,
@@ -1427,11 +1469,17 @@ class ForkCoordinator:
         is removed on abort (unless `keep_artifacts` is set), mirroring
         the merge-resolution cleanup. Safe to call multiple times.
         """
-        # Await before cleanup so a mid-write branch can't recreate the fork dir.
-        for rt in self.branches.values():
-            await self._cancel_branch_task(rt, f"aclose: branch {rt.status.id}")
-        if self.materializer is not None:  # pragma: no branch - fork() always allocates one
-            self.materializer.cleanup()
+        # Lock so close serialises with an in-flight merge/abort over the same
+        # branches + materializer; `_closed` makes repeat calls a no-op.
+        async with self._lock:
+            if self._closed:
+                return
+            self._closed = True
+            # Await before cleanup so a mid-write branch can't recreate the fork dir.
+            for rt in self.branches.values():
+                await self._cancel_branch_task(rt, f"aclose: branch {rt.status.id}")
+            if self.materializer is not None:  # pragma: no branch - fork() always allocates one
+                self.materializer.cleanup()
 
 
 def _find_parent_cost_tracking(deps: DeepAgentDeps) -> CostTracking | None:
