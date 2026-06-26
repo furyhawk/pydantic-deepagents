@@ -1258,12 +1258,20 @@ def create_deep_agent(  # noqa: C901
                 on_cost_update=on_cost_update,
             )
 
-    # Anthropic-specific keys are silently ignored by non-Anthropic models,
-    # so we set them unconditionally - no provider detection needed.
+    # Prompt caching cuts the dominant cost on multi-turn / subagent runs (the
+    # large, mostly-identical prefix is re-sent every turn). Each provider reads
+    # its own keys and ignores the other's, so we set both unconditionally — no
+    # provider detection needed. NOTE: the direct-Anthropic keys do NOT apply on
+    # the OpenRouter path (a common default), hence the parallel openrouter_* set.
     effective_model_settings: dict[str, Any] = {
+        # Direct Anthropic provider.
         "anthropic_cache_instructions": True,
         "anthropic_cache_tool_definitions": True,
         "anthropic_cache_messages": True,
+        # OpenRouter path (Anthropic/Gemini downstream).
+        "openrouter_cache_instructions": True,
+        "openrouter_cache_tool_definitions": True,
+        "openrouter_cache_messages": True,
     }
     # User-provided settings override defaults
     if model_settings:  # pragma: no cover
