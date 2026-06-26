@@ -13,7 +13,7 @@ Two delivery semantics are supported:
 
 ```python
 from pydantic_deep import create_deep_agent
-from pydantic_deep.capabilities.message_queue import MessageQueue, run_with_queue
+from pydantic_deep.features.message_queue import MessageQueue, run_with_queue
 from pydantic_deep.deps import DeepAgentDeps
 
 queue = MessageQueue()

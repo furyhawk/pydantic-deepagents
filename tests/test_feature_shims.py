@@ -18,6 +18,7 @@ from pydantic_deep.features import eviction as eviction_feature
 from pydantic_deep.features import history_archive as history_archive_feature
 from pydantic_deep.features import hooks as hooks_feature
 from pydantic_deep.features import memory as memory_feature
+from pydantic_deep.features import message_queue as message_queue_feature
 from pydantic_deep.features import patch as patch_feature
 from pydantic_deep.features import periodic_reminder as periodic_reminder_feature
 from pydantic_deep.features import stuck_loop as stuck_loop_feature
@@ -155,6 +156,18 @@ class TestHistoryArchiveShim:
         assert shim.SEARCH_HISTORY_DESCRIPTION == history_archive_feature.SEARCH_HISTORY_DESCRIPTION
         assert callable(shim._bm25_rank)
         assert callable(shim._load_messages)
+
+
+class TestMessageQueueShim:
+    def test_capabilities_message_queue_reexports_and_warns(self) -> None:
+        import pydantic_deep.capabilities.message_queue as shim
+
+        with pytest.warns(DeprecationWarning, match="features.message_queue"):
+            importlib.reload(shim)
+
+        assert shim.MessageQueue is message_queue_feature.MessageQueue
+        assert shim.MessageQueueCapability is message_queue_feature.MessageQueueCapability
+        assert shim.run_with_queue is message_queue_feature.run_with_queue
 
 
 class TestHooksShim:

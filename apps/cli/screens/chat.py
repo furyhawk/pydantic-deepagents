@@ -1255,7 +1255,7 @@ class ChatScreen(Screen):
                 if _queue is not None:
                     _follow_up_msgs = await _queue.drain_follow_up()
                     if _follow_up_msgs:
-                        from pydantic_deep.capabilities.message_queue import (
+                        from pydantic_deep.features.message_queue import (
                             format_follow_up as _fmt_fu,
                         )
 

@@ -42,7 +42,6 @@ from subagents_pydantic_ai import (
 )
 
 from pydantic_deep.capabilities.forking import LiveForkCapability
-from pydantic_deep.capabilities.message_queue import MessageQueueCapability
 from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.features.context import ContextToolset
 from pydantic_deep.features.eviction import EvictionCapability
@@ -54,6 +53,7 @@ from pydantic_deep.features.memory import (
     DEFAULT_PIN_END_MARKER,
     AgentMemoryToolset,
 )
+from pydantic_deep.features.message_queue import MessageQueueCapability
 from pydantic_deep.features.patch import PatchToolCallsCapability
 from pydantic_deep.features.periodic_reminder import (
     PeriodicReminderCapability,
@@ -96,7 +96,7 @@ if TYPE_CHECKING:
     from pydantic_ai.tools import ToolDefinition
     from pydantic_ai.toolsets import AbstractToolset
 
-    from pydantic_deep.capabilities.message_queue import MessageQueue
+    from pydantic_deep.features.message_queue import MessageQueue
     from pydantic_deep.toolsets.checkpointing import CheckpointFrequency
 
 OutputDataT = TypeVar("OutputDataT")

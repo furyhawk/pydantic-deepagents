@@ -4,7 +4,12 @@ These wrap pydantic-deep's toolsets as pydantic-ai capabilities,
 enabling clean composition via `Agent(capabilities=[...])`.
 """
 
-from pydantic_deep.capabilities.message_queue import (
+from pydantic_deep.capabilities.skills import SkillsCapability
+from pydantic_deep.features.browser import BrowserCapability
+from pydantic_deep.features.context import ContextFilesCapability
+from pydantic_deep.features.hooks import HooksCapability
+from pydantic_deep.features.memory import MemoryCapability
+from pydantic_deep.features.message_queue import (
     MessageQueue,
     MessageQueueCapability,
     QueuedMessage,
@@ -12,11 +17,6 @@ from pydantic_deep.capabilities.message_queue import (
     format_steering,
     run_with_queue,
 )
-from pydantic_deep.capabilities.skills import SkillsCapability
-from pydantic_deep.features.browser import BrowserCapability
-from pydantic_deep.features.context import ContextFilesCapability
-from pydantic_deep.features.hooks import HooksCapability
-from pydantic_deep.features.memory import MemoryCapability
 from pydantic_deep.features.periodic_reminder import (
     LLMReminderGenerator,
     PeriodicReminderCapability,

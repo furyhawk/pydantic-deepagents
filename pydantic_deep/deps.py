@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from pydantic_ai_shields import CostTracking
     from pydantic_ai_summarization import ContextManagerCapability
 
-    from pydantic_deep.capabilities.message_queue import MessageQueue
+    from pydantic_deep.features.message_queue import MessageQueue
     from pydantic_deep.toolsets.checkpointing import CheckpointStore
     from pydantic_deep.toolsets.forking.coordinator import ForkCoordinator
     from pydantic_deep.toolsets.plan.toolset import PlanOption

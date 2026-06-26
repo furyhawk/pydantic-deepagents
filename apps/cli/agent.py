@@ -13,9 +13,9 @@ from apps.cli.prompts import build_cli_instructions
 from apps.cli.reminder import _build_reminder_config
 from pydantic_deep.agent import DEFAULT_INSTRUCTIONS, create_deep_agent
 from pydantic_deep.capabilities.forking import LiveForkCapability
-from pydantic_deep.capabilities.message_queue import MessageQueue
 from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.features.hooks import Hook, HookEvent, HookInput, HookResult
+from pydantic_deep.features.message_queue import MessageQueue
 
 
 def _detect_fork_test_command(backend: Any) -> str | None:

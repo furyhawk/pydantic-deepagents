@@ -39,8 +39,8 @@ from pydantic_ai_backends import (
     WriteResult,
 )
 
-from pydantic_deep.capabilities.message_queue import MessageQueue
 from pydantic_deep.deps import DeepAgentDeps
+from pydantic_deep.features.message_queue import MessageQueue
 from pydantic_deep.toolsets.forking.types import (
     BranchIsolation,
     FileChange,

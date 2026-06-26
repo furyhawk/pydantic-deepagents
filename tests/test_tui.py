@@ -347,7 +347,7 @@ class TestMessageQueueIntegration:
 
         from apps.cli.messages import UserSubmitted
         from apps.cli.screens.chat import ChatScreen
-        from pydantic_deep.capabilities.message_queue import MessageQueue
+        from pydantic_deep.features.message_queue import MessageQueue
 
         async with app.run_test(size=(120, 35)) as pilot:
             await pilot.pause()
@@ -390,7 +390,7 @@ class TestMessageQueueIntegration:
 
         from apps.cli.messages import UserSubmitted
         from apps.cli.screens.chat import ChatScreen
-        from pydantic_deep.capabilities.message_queue import MessageQueue
+        from pydantic_deep.features.message_queue import MessageQueue
 
         async with app.run_test(size=(120, 35)) as pilot:
             await pilot.pause()

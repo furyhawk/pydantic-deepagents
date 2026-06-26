@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `stuck_loop`: `pydantic_deep.capabilities.stuck_loop` → `pydantic_deep.features.stuck_loop`.
   - `periodic_reminder`: `pydantic_deep.capabilities.periodic_reminder` → `pydantic_deep.features.periodic_reminder`.
   - `hooks`: `pydantic_deep.capabilities.hooks` → `pydantic_deep.features.hooks`.
+  - `message_queue`: `pydantic_deep.capabilities.message_queue` → `pydantic_deep.features.message_queue`.
 
 ## [0.3.33] - 2026-06-26
 
