@@ -14,6 +14,7 @@ containing a SKILL.md file with YAML frontmatter and Markdown instructions.
 import asyncio
 from pathlib import Path
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
 # Get the skills directory relative to this example
@@ -23,7 +24,7 @@ SKILLS_DIR = Path(__file__).parent / "skills"
 async def main():
     # Create the agent with skills
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="""
         You are a helpful coding assistant with access to specialized skills.
 
@@ -40,24 +41,8 @@ async def main():
 
     deps = DeepAgentDeps(backend=StateBackend())
 
-    # Example 1: List available skills
-    print("=" * 60)
-    print("Example 1: Listing available skills")
-    print("=" * 60)
-
-    result = await agent.run(
-        "What skills do you have available? List them with their descriptions.",
-        deps=deps,
-    )
-    print(result.output)
-
-    # Example 2: Use a skill to review code
-    print("\n" + "=" * 60)
-    print("Example 2: Using the code-review skill")
-    print("=" * 60)
-
-    # First, create a file to review
-    deps.backend.write(
+    # Create a file to review before the agent starts
+    await deps.backend.write(
         "/code/example.py",
         """def calculate_total(items):
     total = 0
@@ -72,31 +57,25 @@ def get_user_data(user_id):
     )
 
     result = await agent.run(
-        """Load the code-review skill and then review the code in /code/example.py.
-        Follow the skill's guidelines for the review.""",
+        """
+        1. First, list your available skills with their descriptions.
+        2. Then, load the code-review skill and review the code in /code/example.py.
+           Follow the skill's guidelines for the review.
+        3. Finally, load the test-generator skill and generate pytest tests for the
+           calculate_total function in /code/example.py.
+        """,
         deps=deps,
-        message_history=result.all_messages(),
-    )
-    print(result.output)
-
-    # Example 3: Use a skill to generate tests
-    print("\n" + "=" * 60)
-    print("Example 3: Using the test-generator skill")
-    print("=" * 60)
-
-    result = await agent.run(
-        """Load the test-generator skill and generate pytest tests for the
-        calculate_total function in /code/example.py.""",
-        deps=deps,
-        message_history=result.all_messages(),
     )
     print(result.output)
 
     # Show generated files
+    from pydantic_deep.deps import unwrap_backend
+
     print("\n" + "=" * 60)
     print("Files created:")
     print("=" * 60)
-    for path in sorted(deps.backend.files.keys()):
+    raw_backend = unwrap_backend(deps.backend)
+    for path in sorted(raw_backend.files.keys()):
         print(f"  {path}")
 
 
@@ -143,7 +122,6 @@ if __name__ == "__main__":
     elif len(sys.argv) > 1 and sys.argv[1] == "--load":
         asyncio.run(demo_skill_loading())
     else:
-        print("Running full example (requires ANTHROPIC_API_KEY)")
         print("Use --discover to just list discovered skills")
         print("Use --load to demo loading skill instructions")
         print()
