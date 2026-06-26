@@ -11,7 +11,7 @@ from typing import Any
 
 from pydantic_ai import Agent
 from pydantic_ai.messages import ModelMessage
-from textual.app import App, ComposeResult
+from textual.app import App, ComposeResult, ScreenStackError
 from textual.binding import Binding
 from textual.css.query import NoMatches
 from textual.reactive import reactive
@@ -71,6 +71,10 @@ class DeepApp(App):
     context_max: reactive[int] = reactive(0)
     total_cost: reactive[float] = reactive(0.0)
     current_cost: reactive[float] = reactive(0.0)
+    #: True once CostTracking has reported an authoritative cost. Distinguishes
+    #: "genuinely $0 / cached / un-priceable" from "not yet known" so the status
+    #: bar doesn't clobber a real zero with a fabricated estimate (C5).
+    cost_known: reactive[bool] = reactive(False)
     active_fork: reactive[CLIForkSession | None] = reactive(None)
     fork_branch_count: reactive[int] = reactive(2)
     fork_aggregate_budget_usd: reactive[float | None] = reactive["float | None"](None)
@@ -336,50 +340,47 @@ class DeepApp(App):
     @staticmethod
     def _pick_available_model(current: str) -> str:
         """If the current model's provider key isn't set, pick one that is."""
+        from apps.cli.providers import PROVIDERS
 
-        # Map provider prefix → env var → default model
-        provider_keys = [
-            ("openrouter:", "OPENROUTER_API_KEY", "openrouter:anthropic/claude-sonnet-4"),
-            ("anthropic:", "ANTHROPIC_API_KEY", "anthropic:claude-sonnet-4-6"),
-            ("openai:", "OPENAI_API_KEY", "openai:gpt-4.1"),
-            ("google", "GOOGLE_API_KEY", "google-gla:gemini-2.5-pro"),
-        ]
+        # Keyed providers only — a model name starts with its provider id.
+        keyed = [p for p in PROVIDERS if p.env_var]
 
-        # Check if current model's key is available
-        for prefix, env_var, _ in provider_keys:
-            if current.startswith(prefix) and os.environ.get(env_var):
-                return current  # Current model's key is set, keep it
+        # Current model's key is set → keep it.
+        for p in keyed:
+            if current.startswith(p.id) and os.environ.get(p.env_var):
+                return current
 
-        # Current model's key not set - find first available
-        for _prefix, env_var, default_model in provider_keys:
-            if os.environ.get(env_var):
-                return default_model
+        # Current model's key not set → fall back to the first provider with a key.
+        for p in keyed:
+            if os.environ.get(p.env_var):
+                return p.default_model
 
         return current  # No keys at all - return as-is, will fail with clear error
 
     # Watchers - propagate to widgets
 
     def watch_model_name(self, name: str) -> None:
-        try:
+        # Only the "not ready yet" cases are expected: no screen on the stack
+        # (reactive init before mount) or the target widget not mounted. Any
+        # other error is a real bug — don't bury it under bare `except` (C11).
+        with contextlib.suppress(NoMatches, ScreenStackError):
             self.screen.query_one(DeepHeader).model_name = name
             self.screen.query_one(StatusBar).model_name = name
-        except (NoMatches, Exception):
-            pass
 
     def watch_is_streaming(self, streaming: bool) -> None:
-        with contextlib.suppress(NoMatches, Exception):
+        with contextlib.suppress(NoMatches, ScreenStackError):
             self.screen.query_one(DeepHeader).is_streaming = streaming
 
     def watch_context_pct(self, pct: float) -> None:
-        with contextlib.suppress(NoMatches, Exception):
+        with contextlib.suppress(NoMatches, ScreenStackError):
             self.screen.query_one(StatusBar).context_pct = pct
 
     def watch_total_cost(self, cost: float) -> None:
-        with contextlib.suppress(NoMatches, Exception):
+        with contextlib.suppress(NoMatches, ScreenStackError):
             self.screen.query_one(StatusBar).total_cost = cost
 
     def watch_current_cost(self, cost: float) -> None:
-        with contextlib.suppress(NoMatches, Exception):
+        with contextlib.suppress(NoMatches, ScreenStackError):
             self.screen.query_one(StatusBar).current_cost = cost
 
     def watch_active_fork(self, new: CLIForkSession | None) -> None:
@@ -521,14 +522,9 @@ class DeepApp(App):
             screen = self.screen
             handler = getattr(screen, "fork_action_escape", None)
             if handler is not None:
-                task = asyncio.create_task(handler())
-
-                def _on_fork_esc_done(t: asyncio.Task[Any]) -> None:
-                    exc = t.exception()
-                    if exc is not None:  # pragma: no cover - defensive surfacing
-                        self.notify(f"Fork Esc handler failed: {exc}", severity="error")
-
-                task.add_done_callback(_on_fork_esc_done)
+                # Route through _spawn_tracked so the abort/terminate coroutine
+                # keeps a strong ref and can't be GC'd mid-flight (C7).
+                self._spawn_tracked(handler(), label="fork-esc")
                 return
 
         if self.agent_task and not self.agent_task.done():

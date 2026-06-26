@@ -93,6 +93,7 @@ class TestTUIWidgets:
             messages: list[str] = []
             app.notify = lambda msg, **kw: messages.append(msg)
             app.total_cost = 0.1234
+            app.cost_known = True
 
             await dispatch_command(app, "/cost")
             await pilot.pause()

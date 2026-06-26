@@ -179,6 +179,11 @@ class AssistantMessage(Widget):
         self._render_text()
 
     @property
+    def text(self) -> str:
+        """The accumulated assistant text (public accessor for copy commands)."""
+        return self._text
+
+    @property
     def is_empty(self) -> bool:
         """True when the message has no visible content."""
         return not self._text.strip() and not self._thinking.strip() and not self._tool_widgets

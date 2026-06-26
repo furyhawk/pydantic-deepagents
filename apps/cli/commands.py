@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import atexit
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -121,7 +123,7 @@ async def _cmd_copy(app: DeepApp, arg: str) -> None:
             msg_list = app.screen.query_one(MessageList)
             assistants = list(msg_list.query(AssistantMessage))
             if assistants:
-                text_to_copy = assistants[-1]._text
+                text_to_copy = assistants[-1].text
         except Exception:
             pass
 
@@ -253,9 +255,9 @@ async def _cmd_copy_all(app: DeepApp, arg: str) -> None:
         lines: list[str] = []
         for child in msg_list.children:
             if isinstance(child, UserMessage):
-                lines.append(f"You: {child._text}")
+                lines.append(f"You: {child.text}")
             elif isinstance(child, AssistantMessage):
-                lines.append(f"Assistant: {child._text}")
+                lines.append(f"Assistant: {child.text}")
             lines.append("")
 
         full_text = "\n".join(lines)
@@ -281,8 +283,9 @@ async def _cmd_cost(app: DeepApp, arg: str) -> None:
         total_output += getattr(usage, "output_tokens", 0) or 0
     # Prefer the authoritative cost from CostTracking (genai-prices, accurate
     # per active model). Fall back to a rough Sonnet-rate heuristic only when
-    # no tracked cost is available.
-    if app.total_cost > 0:
+    # no tracked cost has been reported — gating on `cost_known`, not a
+    # `> 0` test, so a genuine $0 turn is shown as $0.0000 (C5).
+    if app.cost_known:
         cost_label = f"${app.total_cost:.4f}"
     else:
         est_cost = (total_input * 3.0 + total_output * 15.0) / 1_000_000
@@ -590,14 +593,8 @@ async def _cmd_help(app: DeepApp, arg: str) -> None:
 
 
 async def _cmd_provider(app: DeepApp, arg: str) -> None:
+    from apps.cli.providers import PROVIDER_DEFAULT_MODELS as _PROVIDER_DEFAULT_MODELS
     from apps.cli.screens.onboarding import _PROVIDERS, ApiKeyModal, ProviderPickerModal
-
-    _PROVIDER_DEFAULT_MODELS = {
-        "openrouter": "openrouter:anthropic/claude-sonnet-4",
-        "anthropic": "anthropic:claude-sonnet-4-6",
-        "openai": "openai:gpt-4.1",
-        "google": "google-gla:gemini-2.5-pro",
-    }
 
     async def _handle_provider(provider_id: str | None) -> None:
         if provider_id is None:
@@ -1177,6 +1174,27 @@ async def _dispatch_fork_open_diff(app: DeepApp, _path_arg: str | None) -> None:
     await _open_diff_picker(app, kind=kind, initial_branch_id=None)
 
 
+#: Temp dirs created by `_labeled_symlinks`, removed at interpreter exit (C13).
+_FORK_SYMLINK_DIRS: set[Path] = set()
+
+
+def _cleanup_fork_symlink_dirs() -> None:
+    """Remove every temp dir `_labeled_symlinks` created (atexit hook, C13)."""
+    for d in _FORK_SYMLINK_DIRS:
+        shutil.rmtree(d, ignore_errors=True)
+
+
+atexit.register(_cleanup_fork_symlink_dirs)
+
+
+def _link_or_copy(src: Path, dst: Path) -> None:
+    """Symlink `dst` → `src`, copying instead where symlinks need privilege (Windows, C13)."""
+    try:
+        dst.symlink_to(src)
+    except OSError:
+        shutil.copy2(src, dst)
+
+
 def _labeled_symlinks(
     parent_path: Path | None,
     branch_paths: list[Path],
@@ -1189,22 +1207,25 @@ def _labeled_symlinks(
     Creates `{tempdir}/pd_{fork_id}/parent/{basename}` and
     `{tempdir}/pd_{fork_id}/{label}/{basename}` symlinks pointing at the
     materialiser paths.  Keeping the temp-dir prefix short ensures the
-    label component stays visible in PyCharm/VS Code title truncation.
+    label component stays visible in PyCharm/VS Code title truncation. The
+    temp dir is tracked for cleanup at exit, and falls back to a copy where
+    symlinks aren't permitted (C13).
     """
     tmp = Path(tempfile.gettempdir()) / f"pd_{fork_id[:_FORK_ID_PREFIX_LEN]}"
     tmp.mkdir(exist_ok=True)
+    _FORK_SYMLINK_DIRS.add(tmp)
     sym_branches: list[Path] = []
     for bp, label in zip(branch_paths, labels, strict=True):
         d = tmp / label
         d.mkdir(exist_ok=True)
         link = d / basename
-        link.symlink_to(bp.resolve())
+        _link_or_copy(bp.resolve(), link)
         sym_branches.append(link)
     if parent_path is not None:
         pd = tmp / "parent"
         pd.mkdir(exist_ok=True)
         plink = pd / basename
-        plink.symlink_to(parent_path.resolve())
+        _link_or_copy(parent_path.resolve(), plink)
         return plink, sym_branches
     return None, sym_branches
 

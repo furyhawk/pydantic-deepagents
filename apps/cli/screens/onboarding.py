@@ -12,14 +12,10 @@ from textual.widgets import Button, Input, OptionList, Static
 from textual.widgets.option_list import Option
 
 from apps.cli.keystore import save_key
+from apps.cli.providers import PROVIDERS
 
-_PROVIDERS = [
-    ("openrouter", "OpenRouter", "OPENROUTER_API_KEY", "https://openrouter.ai/keys"),
-    ("anthropic", "Anthropic (Claude)", "ANTHROPIC_API_KEY", "https://console.anthropic.com/"),
-    ("openai", "OpenAI (GPT)", "OPENAI_API_KEY", "https://platform.openai.com/api-keys"),
-    ("google", "Google (Gemini)", "GOOGLE_API_KEY", "https://aistudio.google.com/apikey"),
-    ("ollama", "Ollama (local, free)", "", ""),
-]
+#: (id, name, env_var, key_url) tuples, derived from the shared provider table (C14).
+_PROVIDERS = [(p.id, p.name, p.env_var, p.key_url) for p in PROVIDERS]
 
 
 def _check_provider_status() -> list[tuple[str, str, str, bool]]:

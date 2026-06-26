@@ -73,6 +73,7 @@ def run_tui(
 
             _app.current_cost = run_cost
             _app.total_cost = total_cost
+            _app.cost_known = True
             # Post to current screen (not app) - Textual messages bubble up, not down
             if _app.screen is not None:
                 _app.screen.post_message(

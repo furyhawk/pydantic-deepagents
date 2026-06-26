@@ -25,6 +25,11 @@ class UserMessage(Widget):
         self._text = text
         self._timestamp = timestamp or datetime.now()
 
+    @property
+    def text(self) -> str:
+        """The message text (public accessor for copy commands)."""
+        return self._text
+
     def compose(self) -> ComposeResult:
         time_str = self._timestamp.strftime("%H:%M")
         escaped = self._text.replace("[", r"\[")

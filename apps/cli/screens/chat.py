@@ -258,6 +258,13 @@ class ChatScreen(Screen):
     # Images grabbed from the clipboard, attached to the next submitted prompt.
     _pending_images: list[tuple[bytes, str]]
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        # Initialise here, not in on_mount: the ctrl+v / @file-ref bindings can
+        # fire before on_mount (or after a screen swap), so the attribute must
+        # exist for the whole screen lifetime (C6).
+        super().__init__(*args, **kwargs)
+        self._pending_images = []
+
     def compose(self) -> ComposeResult:
         yield DeepHeader()
         with Horizontal(id="main-layout"):
@@ -272,7 +279,6 @@ class ChatScreen(Screen):
 
     def on_mount(self) -> None:
         """Show welcome banner, init session, bootstrap context files, focus input."""
-        self._pending_images = []
         self._init_session()
         self._bootstrap_context_files()
         self._init_side_panel()
@@ -290,7 +296,7 @@ class ChatScreen(Screen):
 
         sa_widget = side.query_one(SubagentsWidget)
         defaults = []
-        agent = getattr(self.app, "agent", None)
+        agent = self.app.agent
         if agent:
             mgr = getattr(agent, "_task_manager", None)
             if mgr:
@@ -310,7 +316,7 @@ class ChatScreen(Screen):
     def _bootstrap_context_files(self) -> None:
         """Create AGENTS.md, SOUL.md and MEMORY.md if they don't exist."""
 
-        working_dir = Path(getattr(self.app, "working_dir", ".")).resolve()
+        working_dir = Path(self.app.working_dir).resolve()
         created: list[str] = []
 
         # AGENTS.md - project conventions (visible to agent + subagents)
@@ -419,7 +425,7 @@ class ChatScreen(Screen):
         try:
             from pydantic_ai.messages import ModelMessagesTypeAdapter
 
-            history = getattr(self.app, "message_history", [])
+            history = self.app.message_history
             if not history:
                 return
             data = ModelMessagesTypeAdapter.dump_json(history, indent=2)
@@ -468,7 +474,7 @@ class ChatScreen(Screen):
     def _sync_status_from_history(self) -> None:
         """Calculate cost and token usage from message_history and update status bar."""
         try:
-            history = getattr(self.app, "message_history", [])
+            history = self.app.message_history
             status = self.query_one(StatusBar)
             status.message_count = len(history)
 
@@ -486,10 +492,11 @@ class ChatScreen(Screen):
             status.total_input_tokens = total_input
             status.total_output_tokens = total_output
 
-            # Only fall back to a rough heuristic when no authoritative cost is
-            # available. CostTracking (genai-prices) feeds precise per-model
-            # values via on_cost_updated/app.total_cost; never overwrite those.
-            if self.app.total_cost <= 0:  # type: ignore
+            # Only fall back to a rough heuristic when CostTracking hasn't yet
+            # reported an authoritative cost. Gating on `cost_known` (not
+            # `total_cost <= 0`) keeps a genuine $0 turn from being clobbered
+            # by a fabricated Sonnet-rate estimate (C5).
+            if not self.app.cost_known:
                 # Estimate cost (~$3/MTok input, ~$15/MTok output for Sonnet-class)
                 estimated_cost = (total_input * 3.0 + total_output * 15.0) / 1_000_000
                 status.total_cost = estimated_cost
@@ -539,7 +546,7 @@ class ChatScreen(Screen):
 
         msg_list = self.query_one(MessageList)
 
-        working_dir = getattr(self.app, "working_dir", ".")
+        working_dir = self.app.working_dir
         root = Path(working_dir).resolve()
         lines: list[str] = []
 
@@ -775,7 +782,7 @@ class ChatScreen(Screen):
     def on_file_selected(self, event: FileSelected) -> None:
         """Open the file picker."""
 
-        working_dir = getattr(self.app, "working_dir", ".")
+        working_dir = self.app.working_dir
 
         async def _handle_result(result: str | None) -> None:
             if result:
@@ -1406,7 +1413,7 @@ class ChatScreen(Screen):
         surfaces *why* a server's tools were missing (e.g. figma without the
         desktop app), notifying each server at most once per session.
         """
-        deps = getattr(self.app, "deps", None)
+        deps = self.app.deps
         degraded = getattr(deps, "mcp_degraded", None)
         if not degraded:
             return
@@ -1438,7 +1445,7 @@ class ChatScreen(Screen):
         path = args.get("file_path") or args.get("path")
         if not path:
             return
-        deps = getattr(self.app, "deps", None)
+        deps = self.app.deps
         backend = getattr(deps, "backend", None)
         if backend is None:
             return
@@ -1472,9 +1479,7 @@ class ChatScreen(Screen):
         for the next prompt instead of being inlined as text.
         """
 
-        working_dir = Path(getattr(self.app, "working_dir", "."))
-        if not hasattr(self, "_pending_images"):
-            self._pending_images = []
+        working_dir = Path(self.app.working_dir)
 
         def replace_ref(match: re.Match[str]) -> str:
             filepath = match.group(1)
@@ -1515,7 +1520,7 @@ class ChatScreen(Screen):
             # Auto-scroll (debounced - Textual coalesces scroll_end calls)
             msg_list.scroll_end(animate=False)
         # Track for /copy
-        self.app.last_response = getattr(self.app, "last_response", "") + event.text  # type: ignore
+        self.app.last_response = self.app.last_response + event.text
 
     def on_agent_text_complete(self, _event: AgentTextComplete) -> None:
         msg_list = self.query_one(MessageList)
@@ -1698,7 +1703,7 @@ class ChatScreen(Screen):
 
         coordinator = session.coordinator
         coordinator.branch_runner = _stream_branch_via_iter
-        parent_model = getattr(self.app, "model_name", None) or None
+        parent_model = self.app.model_name or None
         branch_models: dict[str, str] = {}
         for branch_id in session.handle.branches:
             runtime = coordinator.branches[branch_id]
