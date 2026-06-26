@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     #: A slash-command handler: receives the app and the raw argument string.
     CommandHandler = Callable[[DeepApp, str], Awaitable[None]]
 
-from pydantic_ai.messages import TextPart, ToolCallPart, ToolReturnPart, UserPromptPart
 
 from apps.cli.debug_log import get_logger
 from apps.cli.forking import (
@@ -31,7 +30,6 @@ from apps.cli.modals.diff_picker import DiffPickerModal, DiffPickerResult
 from apps.cli.modals.fork_config import ForkConfigModal
 from apps.cli.modals.fork_picker import ForkPickerModal
 from apps.cli.modals.merge_picker import MergePickerModal, MergePickerResult
-from apps.cli.text_heuristics import looks_like_error
 from apps.cli.widgets.judge_loading import JudgeAborted, JudgeLoadingScreen
 from apps.cli.widgets.merge_acceptance import MergeAcceptanceAction, MergeAcceptanceWidget
 from apps.cli.widgets.status_bar import StatusBar
@@ -405,10 +403,10 @@ async def _cmd_settings(app: DeepApp, arg: str) -> None:
     app.push_screen(SettingsScreen())
 
 
-async def _cmd_load(app: DeepApp, arg: str) -> None:  # noqa: C901
+async def _cmd_load(app: DeepApp, arg: str) -> None:
     from apps.cli.modals.session_picker import SessionPickerModal
 
-    async def _handle_load(session_id: str | None) -> None:  # noqa: C901
+    async def _handle_load(session_id: str | None) -> None:
         if not session_id:
             return
         try:
@@ -431,53 +429,7 @@ async def _cmd_load(app: DeepApp, arg: str) -> None:  # noqa: C901
 
             msg_list = app.screen.query_one(MessageList)
             msg_list.clear_messages()
-
-            from pydantic_ai.messages import (
-                TextPart,
-                ToolCallPart,
-                ToolReturnPart,
-                UserPromptPart,
-            )
-
-            completed_call_ids: set[str] = {
-                part.tool_call_id
-                for msg in history
-                for part in msg.parts
-                if isinstance(part, ToolReturnPart)
-            }
-
-            for msg in history:
-                for part in msg.parts:
-                    if isinstance(part, UserPromptPart):
-                        content = part.content
-                        if isinstance(content, str) and content:
-                            msg_list.append_user_message(content)
-                    elif isinstance(part, TextPart):
-                        if part.content:
-                            assistant_msg = msg_list.begin_assistant_message()
-                            assistant_msg.append_text(part.content)
-                            assistant_msg.finalize_text()
-                            msg_list.end_assistant_message()
-                    elif isinstance(part, ToolCallPart):
-                        args = part.args_as_dict()
-                        call_id = part.tool_call_id
-                        assistant_msg = msg_list.current_assistant
-                        if assistant_msg is None:
-                            assistant_msg = msg_list.begin_assistant_message()
-                        assistant_msg.add_tool_call(part.tool_name, args, call_id)
-                        if call_id not in completed_call_ids:
-                            assistant_msg.complete_tool_call(call_id, "Interrupted", 0.0, True)
-                    elif isinstance(part, ToolReturnPart):
-                        content = str(part.content)
-                        assistant_msg = msg_list.current_assistant
-                        if assistant_msg is not None:
-                            assistant_msg.complete_tool_call(
-                                part.tool_call_id, content, 0.0, looks_like_error(content)
-                            )
-
-            if msg_list.current_assistant is not None:
-                msg_list.current_assistant.finalize_text()
-                msg_list.end_assistant_message()
+            msg_list.replay_messages_into(history)
 
             app.notify(
                 f"Loaded session: {len(history)} messages",
@@ -1321,46 +1273,7 @@ def _replay_branch_into_main_chat(
     except Exception:
         return
 
-    completed_call_ids: set[str] = {
-        part.tool_call_id
-        for msg in branch_messages
-        for part in getattr(msg, "parts", [])
-        if isinstance(part, ToolReturnPart)
-    }
-
-    for msg in branch_messages:
-        for part in getattr(msg, "parts", []):
-            if isinstance(part, UserPromptPart):
-                content = part.content
-                if isinstance(content, str) and content:
-                    msg_list.append_user_message(content)
-            elif isinstance(part, TextPart):
-                if part.content:
-                    assistant_msg = msg_list.begin_assistant_message()
-                    assistant_msg.append_text(part.content)
-                    assistant_msg.finalize_text()
-                    msg_list.end_assistant_message()
-            elif isinstance(part, ToolCallPart):
-                args = part.args_as_dict()
-                call_id = part.tool_call_id
-                assistant_msg = msg_list.current_assistant
-                if assistant_msg is None:
-                    assistant_msg = msg_list.begin_assistant_message()
-                assistant_msg.add_tool_call(part.tool_name, args, call_id)
-                if call_id not in completed_call_ids:
-                    assistant_msg.complete_tool_call(call_id, "No return", 0.0, True)
-            elif isinstance(part, ToolReturnPart):
-                content_str = str(part.content)
-                assistant_msg = msg_list.current_assistant
-                if assistant_msg is not None:
-                    assistant_msg.complete_tool_call(
-                        part.tool_call_id, content_str, 0.0, looks_like_error(content_str)
-                    )
-
-    if msg_list.current_assistant is not None:
-        msg_list.current_assistant.finalize_text()
-        msg_list.end_assistant_message()
-
+    msg_list.replay_messages_into(branch_messages)
     chat.add_system_message(_build_replay_summary(label, result))
 
 
