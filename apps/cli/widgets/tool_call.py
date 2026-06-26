@@ -150,12 +150,40 @@ def _discovered_tool_names(result: str) -> list[str]:
     return _DISCOVERED_NAME_RE.findall(result)
 
 
+def _special_args_preview(tool_name: str, args: dict[str, Any]) -> str | None:
+    """Compact header for background-shell / web / search tools.
+
+    Returns ``None`` when ``tool_name`` is not one of these, so the caller falls
+    through to the main dispatch. Kept separate so :func:`_format_args_preview`
+    stays under the complexity budget.
+    """
+    if tool_name == "run_in_background":
+        one_line = " ".join(str(args.get("command", "?")).split())
+        return one_line[:79] + "…" if len(one_line) > 80 else one_line
+    if tool_name in ("read_output", "kill_shell"):
+        return str(args.get("shell_id", "?"))
+    if tool_name == "list_shells":
+        return ""
+    if tool_name in ("web_search", "web_fetch"):
+        query = args.get("query") or args.get("url", "?")
+        return f'"{query[:50]}"'
+    if tool_name == "search_tools":
+        queries = args.get("queries") or []
+        if isinstance(queries, list) and queries:
+            return ", ".join(f'"{q}"' for q in queries[:3])
+        return ""
+    return None
+
+
 def _format_args_preview(tool_name: str, args: dict[str, Any]) -> str:
     """Format tool call arguments as a compact one-liner.
 
     The header is a single line, so long values are trimmed here only; the
     full value (command, diff, content) is rendered in the body/expanded view.
     """
+    special = _special_args_preview(tool_name, args)
+    if special is not None:
+        return special
     if tool_name == "read_file":
         path = args.get("file_path") or args.get("path", "?")
         parts = [str(path)]
@@ -191,14 +219,6 @@ def _format_args_preview(tool_name: str, args: dict[str, Any]) -> str:
         name = args.get("subagent_type") or args.get("name", "?")
         desc = args.get("description", "")
         return f'{name}, "{desc[:40]}"'
-    elif tool_name in ("web_search", "web_fetch"):
-        query = args.get("query") or args.get("url", "?")
-        return f'"{query[:50]}"'
-    elif tool_name == "search_tools":
-        queries = args.get("queries") or []
-        if isinstance(queries, list) and queries:
-            return ", ".join(f'"{q}"' for q in queries[:3])
-        return ""
     elif tool_name in (
         "read_todos",
         "write_todos",
@@ -428,21 +448,32 @@ class ToolCallWidget(Widget):
                 )
             return "\n".join([*cmd_lines, *body])
 
+        # Background launch: show the command (▷) then the start confirmation.
+        if self.tool_name == "run_in_background":
+            cmd = str(self.args.get("command", ""))
+            cmd_lines = [
+                f"{prefix}    ⎿  [bold $accent]▷ {_rich_escape(line)}[/]"
+                for line in cmd.splitlines()
+            ]
+            out_lines = result.strip().splitlines()
+            body = [
+                f"[dim]{prefix}    ⎿  {_rich_escape(line)}[/dim]"
+                for line in out_lines[:_PREVIEW_LIMIT]
+            ]
+            return "\n".join([*cmd_lines, *body])
+
         # Tool search: show the discovered tool names as accent chips, not raw JSON.
         if self.tool_name == "search_tools":
             names = _discovered_tool_names(result)
             if names:
                 count = len(names)
                 head = (
-                    f"[dim]{prefix}    ⎿  discovered {count} "
-                    f"tool{'s' if count != 1 else ''}[/dim]"
+                    f"[dim]{prefix}    ⎿  discovered {count} tool{'s' if count != 1 else ''}[/dim]"
                 )
                 shown = names[:_PREVIEW_LIMIT]
                 chips = "  ".join(f"[$accent]{_rich_escape(n)}[/]" for n in shown)
                 more = (
-                    f"  [dim]+{count - _PREVIEW_LIMIT} more[/dim]"
-                    if count > _PREVIEW_LIMIT
-                    else ""
+                    f"  [dim]+{count - _PREVIEW_LIMIT} more[/dim]" if count > _PREVIEW_LIMIT else ""
                 )
                 return f"{head}\n{prefix}       {chips}{more}"
 

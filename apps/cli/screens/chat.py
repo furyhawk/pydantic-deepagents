@@ -67,6 +67,7 @@ from apps.cli.widgets.input_area import InputArea
 from apps.cli.widgets.message_list import MessageList
 from apps.cli.widgets.notification import notify_error, notify_success, notify_warning
 from apps.cli.widgets.queued_panel import QueuedWidget
+from apps.cli.widgets.shells_panel import ShellsWidget
 from apps.cli.widgets.status_bar import StatusBar
 from apps.cli.widgets.subagents_panel import SubagentsWidget
 from apps.cli.widgets.todos_panel import TodosWidget
@@ -293,6 +294,7 @@ class ChatScreen(Screen):
         with Vertical(id="bottom-bar"):
             with Vertical(id="activity-dock"):
                 yield SubagentsWidget()
+                yield ShellsWidget()
                 yield ForkBadgeWidget()
                 yield TodosWidget()
                 yield QueuedWidget()
@@ -324,6 +326,7 @@ class ChatScreen(Screen):
             dock = self.query_one("#activity-dock")
             panels = (
                 self.query_one(SubagentsWidget),
+                self.query_one(ShellsWidget),
                 self.query_one(ForkBadgeWidget),
                 self.query_one(TodosWidget),
                 self.query_one(QueuedWidget),
@@ -906,6 +909,14 @@ class ChatScreen(Screen):
                 "dissolve_team",
             }
         )
+        _SHELL_TOOLS = frozenset(
+            {
+                "run_in_background",
+                "read_output",
+                "kill_shell",
+                "list_shells",
+            }
+        )
         _subagent_tasks: dict[str, dict[str, Any]] = {}  # task_id -> info
         _turn_started = _time.monotonic()
         _turn_counts: dict[str, int] = {}
@@ -1083,6 +1094,9 @@ class ChatScreen(Screen):
                                             "error" if is_error else "completed"
                                         )
                                         self._update_subagents_panel(_subagent_tasks)
+
+                                    if tool_name in _SHELL_TOOLS:
+                                        self._refresh_shells_panel()
 
                                     if tool_name == "fork_run":
                                         from apps.cli.forking import reconcile_active_fork
@@ -1698,6 +1712,24 @@ class ChatScreen(Screen):
             self._sync_activity_dock()
         except Exception:
             pass  # Panel may not be mounted yet
+
+    def _refresh_shells_panel(self) -> None:
+        """Pull the live background-shell registry from the backend and push it
+        into the pinned ShellsWidget. Safe to call from any shell tool result —
+        a backend without background support just yields an empty list."""
+        try:
+            shells_widget = self.query_one(ShellsWidget)
+        except Exception:
+            return  # Panel may not be mounted yet
+        deps = getattr(self.app, "deps", None)
+        backend = getattr(deps, "backend", None)
+        lister = getattr(backend, "list_background", None)
+        shells: list[Any] = []
+        if callable(lister):
+            with contextlib.suppress(Exception):
+                shells = list(lister())
+        shells_widget.shells = shells
+        self._sync_activity_dock()
 
     # Actions
 
