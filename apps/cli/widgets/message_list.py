@@ -25,9 +25,7 @@ class MessageList(VerticalScroll):
 
     _current_assistant: AssistantMessage | None = None
 
-    def append_user_message(
-        self, text: str, attachments: list[str] | None = None
-    ) -> UserMessage:
+    def append_user_message(self, text: str, attachments: list[str] | None = None) -> UserMessage:
         """Add a user message and scroll to bottom."""
         msg = UserMessage(text, attachments=attachments)
         self.mount(msg)
@@ -61,6 +59,25 @@ class MessageList(VerticalScroll):
             self._current_assistant = None
             with contextlib.suppress(Exception):
                 msg.remove()
+
+    def remove_last_turn(self) -> None:
+        """Remove the trailing assistant reply and its preceding user message.
+
+        Keeps the visible transcript in sync when a turn is dropped from history
+        (``/undo``, ``/retry``). When the tail is a lone user message with no
+        reply yet, only that message is removed.
+        """
+        removed_assistant = False
+        for child in reversed(list(self.children)):
+            if isinstance(child, AssistantMessage) and not removed_assistant:
+                with contextlib.suppress(Exception):
+                    child.remove()
+                removed_assistant = True
+            elif isinstance(child, UserMessage):
+                with contextlib.suppress(Exception):
+                    child.remove()
+                break
+        self._current_assistant = None
 
     def clear_messages(self) -> None:
         """Remove all messages."""

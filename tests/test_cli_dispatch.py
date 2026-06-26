@@ -106,6 +106,31 @@ class TestAliases:
             app.exit.assert_called_once()
 
 
+class TestUndoSyncsWidgets:
+    async def test_undo_removes_visible_turn(self, app):
+        from apps.cli.widgets.assistant_message import AssistantMessage
+        from apps.cli.widgets.message_list import MessageList
+        from apps.cli.widgets.user_message import UserMessage
+
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            msg_list = app.screen.query_one(MessageList)
+            msg_list.append_user_message("first")
+            a = msg_list.begin_assistant_message()
+            a.append_text("reply")
+            await pilot.pause()
+            app.message_history = ["req", "resp"]
+            assert len(msg_list.query(UserMessage)) == 1
+            assert len(msg_list.query(AssistantMessage)) == 1
+
+            await dispatch_command(app, "/undo")
+            await pilot.pause()
+            # Both history and the on-screen turn are gone.
+            assert app.message_history == []
+            assert len(msg_list.query(UserMessage)) == 0
+            assert len(msg_list.query(AssistantMessage)) == 0
+
+
 class TestRetry:
     async def test_no_prompt_warns(self, app):
         async with app.run_test(size=(120, 40)) as pilot:

@@ -100,14 +100,22 @@ async def _cmd_clear(app: DeepApp, arg: str) -> None:
 
 
 async def _cmd_undo(app: DeepApp, arg: str) -> None:
+    from apps.cli.widgets.message_list import MessageList
+
     if len(app.message_history) >= 2:
         app.message_history = app.message_history[:-2]
-        app.notify("Removed last turn")
+        msg = "Removed last turn"
     elif app.message_history:
         app.message_history = app.message_history[:-1]
-        app.notify("Removed last message")
+        msg = "Removed last message"
     else:
         app.notify("No messages to undo", severity="warning")
+        return
+    # Keep the visible transcript in sync — otherwise the removed turn lingers
+    # on screen even though the model no longer sees it.
+    with contextlib.suppress(Exception):
+        app.screen.query_one(MessageList).remove_last_turn()
+    app.notify(msg)
 
 
 async def _cmd_retry(app: DeepApp, arg: str) -> None:
@@ -130,11 +138,14 @@ async def _cmd_retry(app: DeepApp, arg: str) -> None:
     if not hasattr(chat, "_run_agent"):
         app.notify("Retry is unavailable here", severity="error")
         return
-    # Drop the previous turn (request + response) so the model re-runs fresh.
+    # Drop the previous turn (request + response) so the model re-runs fresh,
+    # and clear its widgets so the transcript shows one clean retry.
     if len(app.message_history) >= 2:
         app.message_history = app.message_history[:-2]
     with contextlib.suppress(Exception):
-        chat.query_one(MessageList).append_user_message(prompt)
+        msg_list = chat.query_one(MessageList)
+        msg_list.remove_last_turn()
+        msg_list.append_user_message(prompt)
     chat._run_agent(prompt)  # type: ignore[attr-defined]
 
 
