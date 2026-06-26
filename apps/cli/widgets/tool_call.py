@@ -134,12 +134,12 @@ def _diff_lines(
             for line in old_lines[i1:i2]:
                 removed += 1
                 if len(rendered) < limit:
-                    rendered.append(f"{prefix}    ⎿  [red]- {_rich_escape(line)}[/red]")
+                    rendered.append(f"{prefix}    ⎿  [$error]- {_rich_escape(line)}[/]")
         if tag in ("replace", "insert"):
             for line in new_lines[j1:j2]:
                 added += 1
                 if len(rendered) < limit:
-                    rendered.append(f"{prefix}    ⎿  [green]+ {_rich_escape(line)}[/green]")
+                    rendered.append(f"{prefix}    ⎿  [$success]+ {_rich_escape(line)}[/]")
 
     shown = added + removed
     if shown > limit:
@@ -394,7 +394,7 @@ class ToolCallWidget(Widget):
                     )
                 return Group(*parts)
             body = [
-                f"{prefix}    ⎿  [green]+ {_rich_escape(line)}[/green]"
+                f"{prefix}    ⎿  [$success]+ {_rich_escape(line)}[/]"
                 for line in content_lines[:_PREVIEW_LIMIT]
             ]
             if len(content_lines) > _PREVIEW_LIMIT:
@@ -435,9 +435,9 @@ class ToolCallWidget(Widget):
         """Compact ``+N -M`` badge for edit/write tools (empty when no change)."""
         parts = []
         if self._added:
-            parts.append(f"[green]+{self._added}[/green]")
+            parts.append(f"[$success]+{self._added}[/]")
         if self._removed:
-            parts.append(f"[red]-{self._removed}[/red]")
+            parts.append(f"[$error]-{self._removed}[/]")
         return ("  " + " ".join(parts)) if parts else ""
 
     def _refresh_header(self) -> None:
@@ -456,24 +456,22 @@ class ToolCallWidget(Widget):
             else:
                 call_str = self.tool_name
             if self._cancelling:
-                header.update(
-                    f"{prefix}[yellow]{icon}[/yellow] {call_str}  [yellow]⏹ stopping…[/yellow]"
-                )
+                header.update(f"{prefix}[$warning]{icon}[/] {call_str}  [$warning]⏹ stopping…[/]")
             else:
                 frame = self._spinner.frame
-                right = f"{frame} {self._spinner.elapsed:.1f}s"
-                header.update(f"{prefix}{icon} {call_str}  {right}")
+                right = f"[$accent]{frame}[/] [$text-muted]{self._spinner.elapsed:.1f}s[/]"
+                header.update(f"{prefix}[$accent]{icon}[/] {call_str}  {right}")
         elif self.status == "success":
             call_str = f"{self.tool_name}({args_preview})" if args_preview else self.tool_name
             header.update(
-                f"{prefix}[green]{icon}[/green] {call_str}{badge}"
-                f"  [dim]{self.elapsed:.1f}s[/dim] [bold green]✓[/bold green]"
+                f"{prefix}[$success]{icon}[/] {call_str}{badge}"
+                f"  [$text-muted]{self.elapsed:.1f}s[/] [$success b]✓[/]"
             )
         elif self.status == "error":
             call_str = f"{self.tool_name}({args_preview})" if args_preview else self.tool_name
             header.update(
-                f"{prefix}[red]{icon}[/red] {call_str}{badge}"
-                f"  [dim]{self.elapsed:.1f}s[/dim] [bold red]✗[/bold red]"
+                f"{prefix}[$error]{icon}[/] {call_str}{badge}"
+                f"  [$text-muted]{self.elapsed:.1f}s[/] [$error b]✗[/]"
             )
 
     def _refresh_output(self) -> None:

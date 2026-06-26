@@ -39,14 +39,14 @@ def test_diff_lines_counts_and_colors() -> None:
     lines, added, removed = _diff_lines("a\nb\nc", "a\nB\nc", "")
     assert added == 1
     assert removed == 1
-    assert any("[red]- b" in line for line in lines)
-    assert any("[green]+ B" in line for line in lines)
+    assert any("[$error]- b" in line for line in lines)
+    assert any("[$success]+ B" in line for line in lines)
 
 
 def test_diff_lines_pure_insert() -> None:
     lines, added, removed = _diff_lines("", "x\ny", "")
     assert (added, removed) == (2, 0)
-    assert all("[green]+" in line for line in lines)
+    assert all("[$success]+" in line for line in lines)
 
 
 def test_diff_lines_truncates_over_limit() -> None:
@@ -104,8 +104,8 @@ async def test_widget_edit_diff_and_header_badge() -> None:
         assert "-1" in w._diff_badge()
         preview = w.result_preview
         assert isinstance(preview, str)
-        assert "[red]- foo" in preview
-        assert "[green]+ bar" in preview
+        assert "[$error]- foo" in preview
+        assert "[$success]+ bar" in preview
 
 
 async def test_widget_write_file_preview_and_execute_command() -> None:
@@ -180,8 +180,8 @@ async def test_widget_write_file_overwrite_shows_minus_diff() -> None:
         assert w._added >= 1
         preview = w.result_preview
         assert isinstance(preview, str)
-        assert "[red]- # Python" in preview
-        assert "[green]+ # JavaScript" in preview
+        assert "[$error]- # Python" in preview
+        assert "[$success]+ # JavaScript" in preview
         assert "updated" in preview
 
 
@@ -236,7 +236,7 @@ async def test_widget_write_file_unknown_ext_falls_back_to_text() -> None:
         w.complete("wrote", 0.1)
         await pilot.pause()
         assert isinstance(w.result_preview, str)
-        assert "[green]+ a" in w.result_preview
+        assert "[$success]+ a" in w.result_preview
 
 
 async def test_widget_subagent_write_keeps_text_nesting() -> None:
@@ -266,7 +266,7 @@ async def test_widget_subagent_write_keeps_text_nesting() -> None:
         await pilot.pause()
         assert isinstance(w.result_preview, str)
         assert "│" in w.result_preview
-        assert "[green]+ x = 1" in w.result_preview
+        assert "[$success]+ x = 1" in w.result_preview
 
 
 async def test_widget_mark_cancelling() -> None:
