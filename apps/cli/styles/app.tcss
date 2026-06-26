@@ -35,7 +35,7 @@ UserMessage {
     height: auto;
     padding: 0 2;
     margin: 1 0 0 0;
-    border-top: solid $surface-lighten-1;
+    border-left: thick $primary;
 }
 
 UserMessage .user-label {
@@ -50,11 +50,10 @@ UserMessage .user-text {
 AssistantMessage {
     height: auto;
     margin: 1 0 0 0;
-    border-top: solid $surface-lighten-1;
 }
 
 AssistantMessage .assistant-label {
-    color: $success-lighten-1;
+    color: $accent;
     padding: 0 2;
 }
 
@@ -64,7 +63,7 @@ ToolCallWidget {
     height: auto;
     padding: 0 2;
     margin: 0 0 0 1;
-    border-left: tall $surface-lighten-2;
+    border-left: tall $primary 40%;
 }
 
 ToolCallWidget .tool-header {
@@ -97,7 +96,7 @@ SidePanel {
     width: 32;
     display: none;
     padding: 0 1;
-    border-left: tall $surface-lighten-2;
+    border-left: tall $primary 40%;
 }
 
 SidePanel.visible {
@@ -107,13 +106,15 @@ SidePanel.visible {
 TodosWidget {
     height: auto;
     padding: 1;
-    border: round $surface-lighten-2;
+    border: round $panel;
+    border-title-color: $accent;
 }
 
 SubagentsWidget {
     height: auto;
     padding: 1;
-    border: round $surface-lighten-2;
+    border: round $panel;
+    border-title-color: $accent;
     margin: 1 0 0 0;
 }
 

@@ -35,11 +35,11 @@ class HintsBar(Static):
     def reset(self) -> None:
         """Restore the default keyboard hint text."""
         self.update(
-            "[dim]↑[/dim] history   "
-            "[dim]/[/dim] commands   "
-            "[dim]@[/dim] files   "
-            "[dim]Ctrl+J[/dim] multiline   "
-            "[dim]Ctrl+K[/dim] todos"
+            "[$accent]↑[/] history   "
+            "[$accent]/[/] commands   "
+            "[$accent]@[/] files   "
+            "[$accent]Ctrl+J[/] multiline   "
+            "[$accent]Ctrl+K[/] todos"
         )
 
 
@@ -57,7 +57,7 @@ class PromptPrefix(Static):
     """
 
     def __init__(self) -> None:
-        super().__init__("> ")
+        super().__init__("❯ ")
 
 
 class PromptRow(Horizontal):
@@ -228,7 +228,7 @@ class InputArea(Vertical):
 
     @staticmethod
     def _running_hints() -> str:
-        return "[dim]>>[/dim] steer   write to queue   [dim]Esc[/dim] interrupt"
+        return "[$accent]>>[/] steer   write to queue   [$accent]Esc[/] interrupt"
 
     def watch_is_agent_running(self, running: bool) -> None:
         if self.is_multiline:

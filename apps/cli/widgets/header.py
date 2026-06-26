@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from textual.app import ComposeResult
 from textual.events import Resize
 from textual.reactive import reactive
@@ -9,6 +11,13 @@ from textual.widget import Widget
 from textual.widgets import Static
 
 from apps.cli.widgets.spinner import Spinner
+
+_MARKUP_RE = re.compile(r"\[/?[^\]]*\]")
+
+
+def _plain_len(markup: str) -> int:
+    """Length of `markup` with all `[...]` tags removed (for layout maths)."""
+    return len(_MARKUP_RE.sub("", markup))
 
 
 def _fmt(count: int) -> str:
@@ -97,27 +106,31 @@ class DeepHeader(Widget):
         except Exception:
             return  # Not yet composed
 
-        parts: list[str] = []
-        parts.append(f"[bold]pydantic-deep[/bold] v{self.version}")
+        sep = "  [$text-muted]·[/]  "
+        parts: list[str] = [f"[$accent]◆[/] [b]pydantic-deep[/b] [$text-muted]v{self.version}[/]"]
         if self.branch:
-            parts.append(self.branch)
+            parts.append(f"[$text-muted]{self.branch}[/]")
 
         if self.is_streaming:
             frame = self._spinner.frame
             elapsed = self._spinner.elapsed
             if self.is_thinking:
-                parts.append(f"[bold]{frame}[/bold] [italic]thinking...[/italic] {elapsed:.0f}s")
+                parts.append(
+                    f"[$accent]{frame}[/] [i $text-muted]thinking…[/] "
+                    f"[$text-muted]{elapsed:.0f}s[/]"
+                )
             else:
-                parts.append(f"[bold]{frame}[/bold] {elapsed:.0f}s")
-            content.update("  ·  ".join(parts))
+                parts.append(f"[$accent]{frame}[/] [$text-muted]{elapsed:.0f}s[/]")
+            content.update(sep.join(parts))
         else:
             if self.model_name:
-                parts.append(self.model_name)
+                parts.append(f"[$text-muted]{self.model_name}[/]")
             # Token usage and cost
             total = self.total_input_tokens + self.total_output_tokens
             if total > 0:
                 parts.append(
-                    f"in:{_fmt(self.total_input_tokens)} out:{_fmt(self.total_output_tokens)}"
+                    f"[$text-muted]in:{_fmt(self.total_input_tokens)} "
+                    f"out:{_fmt(self.total_output_tokens)}[/]"
                 )
             if self.total_cost > 0:
                 cost_str = (
@@ -125,14 +138,12 @@ class DeepHeader(Widget):
                     if self.total_cost < 0.01
                     else f"${self.total_cost:.2f}"
                 )
-                parts.append(cost_str)
-            info_text = "  ·  ".join(parts)
-            # Calculate plain text length (strip Rich markup for length calc)
-            plain_len = len(info_text.replace("[bold]", "").replace("[/bold]", ""))
-            # Fill remaining width with ─ separator
-            available = self._width - plain_len - 3  # 3 = padding + gap
+                parts.append(f"[$text-muted]{cost_str}[/]")
+            info_text = sep.join(parts)
+            # Fill remaining width with a faint rule, using a markup-stripped length.
+            available = self._width - _plain_len(info_text) - 3  # 3 = padding + gap
             if available > 2:
                 separator = " " + "─" * available
-                content.update(f"{info_text}[dim]{separator}[/dim]")
+                content.update(f"{info_text}[$text-muted]{separator}[/]")
             else:
                 content.update(info_text)

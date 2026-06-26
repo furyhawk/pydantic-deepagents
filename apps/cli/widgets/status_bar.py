@@ -9,16 +9,16 @@ from textual.widgets import Static
 
 
 def _context_bar(pct: float, width: int = 10) -> str:
-    """Render a progress bar like ████░░░░░░ 73%."""
+    """Render a slim progress bar like ▰▰▰▱▱▱▱▱▱▱ 30% in theme colours."""
     filled = int(pct * width)
     empty = width - filled
     if pct >= 0.9:
-        color = "red"
+        color = "$error"
     elif pct >= 0.7:
-        color = "yellow"
+        color = "$warning"
     else:
-        color = "green"
-    bar = f"[{color}]{'█' * filled}[/{color}]{'░' * empty}"
+        color = "$success"
+    bar = f"[{color}]{'▰' * filled}[/][$text-muted]{'▱' * empty}[/]"
     return f"{bar} {pct:.0%}"
 
 
@@ -105,13 +105,13 @@ class StatusBar(Widget):
 
         # Approve mode — always show
         if self.approve_mode == "manual":
-            parts.append("[dim]manual[/dim]")
+            parts.append("[$text-muted]● manual[/]")
         else:
-            parts.append("[green]auto[/green]")
+            parts.append("[$warning]● auto[/]")
 
         # Goal loop — show while an active goal is driving turns
         if self.goal_active:
-            parts.append("[cyan]◎ goal[/cyan]")
+            parts.append("[$accent]◎ goal[/]")
 
         # Todos
         if self.total_todos > 0:
@@ -145,6 +145,6 @@ class StatusBar(Widget):
         # Model name (shortened) — always show
         if self.model_name:
             short = self.model_name.split(":")[-1] if ":" in self.model_name else self.model_name
-            parts.append(f"[dim]{short}[/dim]")
+            parts.append(f"[$text-muted]{short}[/]")
 
-        content.update(" · ".join(parts))
+        content.update("  [$text-muted]·[/]  ".join(parts))
