@@ -3,14 +3,22 @@
 from __future__ import annotations
 
 import contextvars
+import os
 import warnings
 from collections.abc import AsyncIterator, Callable, Sequence
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 from pydantic_ai import Agent, UsageLimits
 from pydantic_ai._agent_graph import HistoryProcessor
-from pydantic_ai.capabilities import AbstractCapability
+from pydantic_ai.capabilities import (
+    AbstractCapability,
+    ProcessHistory,
+    Thinking,
+    WebFetch,
+    WebSearch,
+)
 from pydantic_ai.exceptions import ModelAPIError
 from pydantic_ai.models import Model
 from pydantic_ai.models.fallback import FallbackModel
@@ -24,13 +32,23 @@ from pydantic_ai_backends import (
     create_console_toolset,
     ensure_async,
 )
+from pydantic_ai_shields import CostTracking
+from pydantic_ai_summarization import ContextManagerCapability, LimitWarnerCapability
 from pydantic_ai_todo import create_todo_toolset
 from subagents_pydantic_ai import (
+    DynamicAgentRegistry,
     UsageLimitsFactory,
     create_subagent_toolset,
 )
 
-from pydantic_deep.capabilities.hooks import HookEvent
+from pydantic_deep.capabilities.forking import LiveForkCapability
+from pydantic_deep.capabilities.hooks import HookEvent, HooksCapability
+from pydantic_deep.capabilities.message_queue import MessageQueueCapability
+from pydantic_deep.capabilities.periodic_reminder import (
+    PeriodicReminderCapability,
+    PeriodicReminderConfig,
+)
+from pydantic_deep.capabilities.stuck_loop import StuckLoopDetection
 from pydantic_deep.deps import DeepAgentDeps
 from pydantic_deep.instructions import build_instruction_providers, render_instructions
 from pydantic_deep.models import (
@@ -38,9 +56,36 @@ from pydantic_deep.models import (
     DEFAULT_MODEL,
     DEFAULT_SUMMARIZATION_MODEL,
 )
+from pydantic_deep.processors.eviction import EvictionCapability
+from pydantic_deep.processors.history_archive import create_history_search_toolset
+from pydantic_deep.processors.patch import PatchToolCallsCapability
 from pydantic_deep.prompts import BASE_PROMPT
+from pydantic_deep.styles import format_style_prompt, resolve_style
+from pydantic_deep.subagents import RESEARCH_SUBAGENT
+from pydantic_deep.toolsets.checkpointing import (
+    CheckpointMiddleware,
+    CheckpointToolset,
+    InMemoryCheckpointStore,
+)
+from pydantic_deep.toolsets.context import ContextToolset
+from pydantic_deep.toolsets.forking import create_fork_toolset
+from pydantic_deep.toolsets.forking.coordinator import _PerBranchCostTracking
+from pydantic_deep.toolsets.improve import ImproveToolset
+from pydantic_deep.toolsets.liteparse import LiteparseToolset
+from pydantic_deep.toolsets.memory import (
+    DEFAULT_MAX_MEMORY_LINES,
+    DEFAULT_MEMORY_DIR,
+    DEFAULT_PIN_END_MARKER,
+    AgentMemoryToolset,
+)
+from pydantic_deep.toolsets.plan import (
+    PLANNER_DESCRIPTION,
+    PLANNER_INSTRUCTIONS,
+    create_plan_toolset,
+)
 from pydantic_deep.toolsets.skills import Skill, SkillsToolset
 from pydantic_deep.toolsets.skills.backend import BackendSkillsDirectory
+from pydantic_deep.toolsets.teams import create_team_toolset
 from pydantic_deep.types import SubAgentConfig
 
 if TYPE_CHECKING:
@@ -50,9 +95,7 @@ if TYPE_CHECKING:
     from pydantic_ai.tools import ToolDefinition
     from pydantic_ai.toolsets import AbstractToolset
 
-    from pydantic_deep.capabilities.forking import LiveForkCapability
     from pydantic_deep.capabilities.message_queue import MessageQueue
-    from pydantic_deep.capabilities.periodic_reminder import PeriodicReminderConfig
     from pydantic_deep.toolsets.checkpointing import CheckpointFrequency
 
 OutputDataT = TypeVar("OutputDataT")
@@ -116,10 +159,6 @@ def _wrap_with_fallback_and_hooks(
     model to try; the final model's failure is silently returned as True (chain
     exhausted) without emitting a spurious event.
     """
-
-    from pydantic_ai_backends import ensure_async
-
-    from pydantic_deep.capabilities.hooks import HooksCapability
 
     hooks_cap = HooksCapability(hooks=fallback_hooks)
     async_backend = ensure_async(backend)
@@ -286,8 +325,6 @@ def _inject_subagent_context_toolset(sa_config: SubAgentConfig) -> None:
     per_sa_files = sa_config.get("context_files")
     if not per_sa_files:
         return
-    from pydantic_deep.toolsets.context import ContextToolset
-
     existing = list(sa_config.get("toolsets", []))
     existing.append(ContextToolset(context_files=per_sa_files))
     sa_config["toolsets"] = existing
@@ -302,13 +339,6 @@ def _inject_subagent_memory_toolset(sa_config: SubAgentConfig, memory_dir: str |
     # Memory enabled by default; can be disabled via extra.memory=False
     if not extra.get("memory", True):
         return
-    from pydantic_deep.toolsets.memory import (
-        DEFAULT_MAX_MEMORY_LINES,
-        DEFAULT_MEMORY_DIR,
-        DEFAULT_PIN_END_MARKER,
-        AgentMemoryToolset,
-    )
-
     mem = AgentMemoryToolset(
         agent_name=sa_config["name"],
         memory_dir=memory_dir or DEFAULT_MEMORY_DIR,
@@ -857,12 +887,6 @@ def create_deep_agent(  # noqa: C901
     # subagents list would double the injected context/memory toolsets.
     effective_subagents: list[SubAgentConfig] = [SubAgentConfig(**sa) for sa in (subagents or [])]
     if include_plan and include_subagents:
-        from pydantic_deep.toolsets.plan import (
-            PLANNER_DESCRIPTION,
-            PLANNER_INSTRUCTIONS,
-            create_plan_toolset,
-        )
-
         _plans_dir = plans_dir or "/plans"
         plan_toolset = create_plan_toolset(plans_dir=_plans_dir)
         planner_config: SubAgentConfig = {
@@ -878,8 +902,6 @@ def create_deep_agent(  # noqa: C901
 
     # Built-in research subagent (deep agent with web + filesystem)
     if include_builtin_subagents and include_subagents:
-        from pydantic_deep.subagents import RESEARCH_SUBAGENT
-
         # Only add if user hasn't already defined a "research" subagent
         existing_names = {sa["name"] for sa in effective_subagents}
         if RESEARCH_SUBAGENT["name"] not in existing_names:
@@ -991,8 +1013,6 @@ def create_deep_agent(  # noqa: C901
     # Context toolset
     context_toolset = None
     if context_files or context_discovery:
-        from pydantic_deep.toolsets.context import ContextToolset
-
         context_toolset = ContextToolset(
             context_files=context_files,
             context_discovery=context_discovery,
@@ -1003,8 +1023,6 @@ def create_deep_agent(  # noqa: C901
     # Memory toolset
     memory_toolset = None
     if include_memory:
-        from pydantic_deep.toolsets.memory import DEFAULT_MEMORY_DIR, AgentMemoryToolset
-
         _memory_dir = memory_dir or DEFAULT_MEMORY_DIR
         memory_toolset = AgentMemoryToolset(
             agent_name="main",
@@ -1026,26 +1044,17 @@ def create_deep_agent(  # noqa: C901
 
     # Checkpoint toolset (added before agent creation so it's in toolsets list)
     if include_checkpoints:
-        from pydantic_deep.toolsets.checkpointing import (
-            CheckpointToolset,
-            InMemoryCheckpointStore,
-        )
-
         _cp_store = checkpoint_store or InMemoryCheckpointStore()
         checkpoint_toolset = CheckpointToolset(store=_cp_store)
         all_toolsets.append(checkpoint_toolset)
 
     # Team toolset
     if include_teams:
-        from pydantic_deep.toolsets.teams import create_team_toolset
-
         # Wire teams to subagent execution engine when both are enabled
         _team_kwargs: dict[str, Any] = {}
         if include_subagents and _subagent_task_manager is not None:
             _team_registry = subagent_registry
             if _team_registry is None:
-                from subagents_pydantic_ai import DynamicAgentRegistry
-
                 _team_registry = DynamicAgentRegistry()
             _team_kwargs["registry"] = _team_registry
             _team_kwargs["task_manager"] = _subagent_task_manager
@@ -1090,34 +1099,26 @@ def create_deep_agent(  # noqa: C901
 
     # Improve toolset (self-improvement from session analysis)
     if include_improve:
-        from pathlib import Path as _Path
-
-        from pydantic_deep.toolsets.improve import ImproveToolset
-
-        _improve_sessions = _Path(".pydantic-deep/sessions")
+        _improve_sessions = Path(".pydantic-deep/sessions")
         if backend is not None:  # pragma: no branch
             _wd = getattr(backend, "root_dir", None)
             if _wd:  # pragma: no branch
-                _improve_sessions = _Path(str(_wd)) / ".pydantic-deep" / "sessions"
+                _improve_sessions = Path(str(_wd)) / ".pydantic-deep" / "sessions"
 
         improve_toolset = ImproveToolset(
             sessions_dir=_improve_sessions,
-            working_dir=_Path("."),
+            working_dir=Path("."),
             model=model if isinstance(model, str) else DEFAULT_IMPROVE_MODEL,
         )
         all_toolsets.append(improve_toolset)
 
     # LiteParse document parsing toolset
     if include_liteparse:
-        from pydantic_deep.toolsets.liteparse import LiteparseToolset
-
         liteparse_toolset = LiteparseToolset()
         all_toolsets.append(liteparse_toolset)
 
     # Inject output style into instructions
     if output_style is not None:
-        from pydantic_deep.styles import format_style_prompt, resolve_style
-
         resolved = resolve_style(output_style, styles_dir)
         base_instructions = base_instructions + "\n\n" + format_style_prompt(resolved)
 
@@ -1145,8 +1146,6 @@ def create_deep_agent(  # noqa: C901
     # Resolve history_messages_path to absolute for the middleware
     abs_messages_path: str | None = None
     if include_history_archive and context_manager:
-        import os
-
         if os.path.isabs(history_messages_path):  # pragma: no cover
             abs_messages_path = history_messages_path
         elif hasattr(backend, "root_dir"):
@@ -1155,16 +1154,12 @@ def create_deep_agent(  # noqa: C901
             abs_messages_path = os.path.join(os.getcwd(), history_messages_path)
 
         # Register the search tool (reads the same file the middleware writes to)
-        from pydantic_deep.processors.history_archive import create_history_search_toolset
-
         all_toolsets.append(create_history_search_toolset(abs_messages_path))
 
     # Context manager capability (token tracking + auto-compression)
     context_mw: Any | None = None
     limit_warner: Any | None = None
     if context_manager:
-        from pydantic_ai_summarization import ContextManagerCapability, LimitWarnerCapability
-
         _cm_kwargs: dict[str, Any] = {
             "on_usage_update": on_context_update,
         }
@@ -1189,14 +1184,8 @@ def create_deep_agent(  # noqa: C901
     # Cost tracking capability
     cost_cap: Any | None = None
     if cost_tracking:
-        from pydantic_ai_shields import CostTracking
-
         model_name = model if isinstance(model, str) else None
         if forking:
-            from pydantic_deep.toolsets.forking.coordinator import (
-                _PerBranchCostTracking,
-            )
-
             cost_cap = _PerBranchCostTracking(
                 model_name=model_name,
                 budget_usd=cost_budget_usd,
@@ -1230,13 +1219,9 @@ def create_deep_agent(  # noqa: C901
         all_capabilities.append(_TodoProxyBinder(_todo_proxy))
 
     if patch_tool_calls:
-        from pydantic_deep.processors.patch import PatchToolCallsCapability
-
         all_capabilities.append(PatchToolCallsCapability())
 
     if eviction_token_limit is not None:
-        from pydantic_deep.processors.eviction import EvictionCapability
-
         all_capabilities.append(
             EvictionCapability(
                 backend=ensure_async(backend),
@@ -1247,17 +1232,11 @@ def create_deep_agent(  # noqa: C901
         )
 
     if hooks is not None:
-        from pydantic_deep.capabilities.hooks import HooksCapability
-
         all_capabilities.append(HooksCapability(hooks=hooks))
 
     if include_checkpoints:
-        from pydantic_deep.toolsets.checkpointing import (
-            CheckpointMiddleware as _CheckpointCap,
-        )
-
         all_capabilities.append(
-            _CheckpointCap(
+            CheckpointMiddleware(
                 store=_cp_store,
                 frequency=checkpoint_frequency,
                 max_checkpoints=max_checkpoints,
@@ -1265,24 +1244,15 @@ def create_deep_agent(  # noqa: C901
         )
 
     if stuck_loop_detection:
-        from pydantic_deep.capabilities.stuck_loop import StuckLoopDetection
-
         # Polling tools are intentionally called many times with identical
         # arguments - exempt them so the detector doesn't fire on normal usage.
         _sld_ignore: set[str] = {"inspect_branches"} if forking else set()
         all_capabilities.append(StuckLoopDetection(ignore_tools=_sld_ignore))
 
     if message_queue is not None:
-        from pydantic_deep.capabilities.message_queue import MessageQueueCapability
-
         all_capabilities.append(MessageQueueCapability(queue=message_queue))
 
     if periodic_reminder:
-        from pydantic_deep.capabilities.periodic_reminder import (
-            PeriodicReminderCapability,
-            PeriodicReminderConfig,
-        )
-
         _reminder_cfg = (
             periodic_reminder
             if isinstance(periodic_reminder, PeriodicReminderConfig)
@@ -1292,21 +1262,16 @@ def create_deep_agent(  # noqa: C901
 
     _fork_capability: Any = None
     if forking:
-        from pydantic_deep.capabilities.forking import LiveForkCapability as _LiveForkCap
-
-        if isinstance(forking, _LiveForkCap):
+        if isinstance(forking, LiveForkCapability):
             _fork_capability = forking
         elif forking is True:
-            _fork_capability = _LiveForkCap()
+            _fork_capability = LiveForkCapability()
         else:
             raise TypeError(
                 f"forking must be bool or LiveForkCapability, got {type(forking).__name__}"
             )
         all_capabilities.append(_fork_capability)
-
-        from pydantic_deep.toolsets.forking import create_fork_toolset as _create_fork_ts
-
-        all_toolsets.append(_create_fork_ts())
+        all_toolsets.append(create_fork_toolset())
 
     if middleware:
         all_capabilities.extend(middleware)
@@ -1325,18 +1290,12 @@ def create_deep_agent(  # noqa: C901
     # so a model that lacks native `WebFetchTool` now errors instead of falling
     # back. We opt back into the local fallback to preserve pre-2.0 behaviour.
     if web_search:  # pragma: no cover
-        from pydantic_ai.capabilities import WebSearch
-
         all_capabilities.append(WebSearch(local="duckduckgo"))
 
     if web_fetch:  # pragma: no cover
-        from pydantic_ai.capabilities import WebFetch
-
         all_capabilities.append(WebFetch(local=True))
 
     if thinking is not False:  # pragma: no cover
-        from pydantic_ai.capabilities import Thinking
-
         effort: Any = thinking if isinstance(thinking, str) else True
         all_capabilities.append(Thinking(effort=effort))
 
@@ -1346,8 +1305,6 @@ def create_deep_agent(  # noqa: C901
     # history-affecting capabilities (context manager, eviction) so they operate
     # on the already-managed history.
     if all_processors:
-        from pydantic_ai.capabilities import ProcessHistory
-
         all_capabilities.extend(ProcessHistory(processor) for processor in all_processors)
 
     # Add user-provided capabilities
