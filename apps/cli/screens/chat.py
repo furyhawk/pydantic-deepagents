@@ -339,6 +339,7 @@ class ChatScreen(Screen):
                     defaults.append({"name": name, "status": "idle", "description": ""})
         if not defaults:
             defaults = [
+                {"name": "general-purpose", "status": "idle", "description": ""},
                 {"name": "planner", "status": "idle", "description": ""},
                 {"name": "research", "status": "idle", "description": ""},
             ]

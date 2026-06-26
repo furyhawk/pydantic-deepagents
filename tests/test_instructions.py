@@ -87,6 +87,16 @@ class TestSections:
     def test_lean_subagent_section_empty_without_configs(self) -> None:
         assert make_lean_subagent_section([])(_ctx()) == ""
 
+    def test_builtins_include_general_purpose_implementer(self) -> None:
+        """A general-purpose subagent must be available so the agent can delegate
+        actual build/file work — not just research/planning."""
+        from pydantic_deep.subagents import BUILTIN_SUBAGENTS
+
+        gp = next((s for s in BUILTIN_SUBAGENTS if s["name"] == "general-purpose"), None)
+        assert gp is not None
+        desc = gp["description"].lower()
+        assert "implement" in desc or "writing" in desc or "files" in desc
+
 
 class TestBuildAndRender:
     def test_all_features_off_keeps_uploads_only(self) -> None:

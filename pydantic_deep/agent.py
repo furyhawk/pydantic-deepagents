@@ -87,7 +87,7 @@ from pydantic_deep.models import (
 )
 from pydantic_deep.prompts import BASE_PROMPT
 from pydantic_deep.styles import OutputStyle, format_style_prompt, resolve_style
-from pydantic_deep.subagents import RESEARCH_SUBAGENT
+from pydantic_deep.subagents import BUILTIN_SUBAGENTS
 from pydantic_deep.types import SubAgentConfig
 
 if TYPE_CHECKING:
@@ -994,12 +994,15 @@ def create_deep_agent(  # noqa: C901
         if planner_config["name"] not in existing_names:
             effective_subagents.append(planner_config)
 
-    # Built-in research subagent (deep agent with web + filesystem)
+    # Built-in subagents (each a full deep agent with web + filesystem): a
+    # general-purpose implementer plus the research specialist. Without the
+    # general-purpose one the agent has nothing to delegate actual build/file
+    # work to and falls back to doing everything itself.
     if include_builtin_subagents and include_subagents:
-        # Only add if user hasn't already defined a "research" subagent
         existing_names = {sa["name"] for sa in effective_subagents}
-        if RESEARCH_SUBAGENT["name"] not in existing_names:
-            effective_subagents.append(SubAgentConfig(**RESEARCH_SUBAGENT))
+        for builtin in BUILTIN_SUBAGENTS:
+            if builtin["name"] not in existing_names:
+                effective_subagents.append(SubAgentConfig(**builtin))
 
     all_toolsets: list[AbstractToolset[DeepAgentDeps]] = []
 
