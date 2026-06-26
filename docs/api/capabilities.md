@@ -60,6 +60,6 @@ hook definitions.
 
 ## PatchToolCallsCapability
 
-::: pydantic_deep.processors.patch.PatchToolCallsCapability
+::: pydantic_deep.features.patch.PatchToolCallsCapability
     options:
       show_source: false

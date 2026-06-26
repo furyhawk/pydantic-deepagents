@@ -564,7 +564,7 @@ Raw History
 
 ### 1. `patch_tool_calls_processor` (sync)
 
-**Source:** `pydantic_deep/processors/patch.py`
+**Source:** `pydantic_deep/features/patch/capability.py`
 
 Fixes broken message history from interrupted conversations.
 

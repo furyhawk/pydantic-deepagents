@@ -245,7 +245,7 @@ Large tool outputs are evicted to the backend *before* they enter history by
 History processor that fixes orphaned tool calls in message history.
 
 ```python
-from pydantic_deep.processors.patch import patch_tool_calls_processor
+from pydantic_deep.features.patch import patch_tool_calls_processor
 
 # Use as history processor
 agent = Agent("anthropic:claude-sonnet-4-6", history_processors=[patch_tool_calls_processor])

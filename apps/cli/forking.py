@@ -230,7 +230,7 @@ async def start_fork_from_cli(
     coordinator.capability = cap
     app.deps.fork_coordinator = coordinator
 
-    from pydantic_deep.processors.patch import patch_tool_calls_processor
+    from pydantic_deep.features.patch import patch_tool_calls_processor
 
     safe_history = patch_tool_calls_processor(list(app.message_history))
     merge_strategy = MergeStrategy(

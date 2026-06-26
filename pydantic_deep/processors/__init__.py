@@ -7,7 +7,7 @@ from pydantic_deep.features.eviction import (
     EVICTION_MESSAGE_TEMPLATE,
     EvictionCapability,
 )
-from pydantic_deep.processors.patch import (
+from pydantic_deep.features.patch import (
     CANCELLED_MESSAGE,
     patch_tool_calls_processor,
 )

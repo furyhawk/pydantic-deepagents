@@ -985,7 +985,7 @@ class TestOrphanToolCallScrub:
         """Direct verification: `patch_tool_calls_processor` is called with the parent history."""
         from pydantic_ai.messages import ModelMessage
 
-        from pydantic_deep.processors import patch as patch_module
+        from pydantic_deep.features import patch as patch_module
 
         real_patch = patch_module.patch_tool_calls_processor
 

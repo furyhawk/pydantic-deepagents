@@ -58,6 +58,7 @@ from pydantic_deep.features.memory import (
     DEFAULT_PIN_END_MARKER,
     AgentMemoryToolset,
 )
+from pydantic_deep.features.patch import PatchToolCallsCapability
 from pydantic_deep.instructions import build_instruction_providers, render_instructions
 from pydantic_deep.models import (
     DEFAULT_IMPROVE_MODEL,
@@ -65,7 +66,6 @@ from pydantic_deep.models import (
     DEFAULT_SUMMARIZATION_MODEL,
 )
 from pydantic_deep.processors.history_archive import create_history_search_toolset
-from pydantic_deep.processors.patch import PatchToolCallsCapability
 from pydantic_deep.prompts import BASE_PROMPT
 from pydantic_deep.styles import OutputStyle, format_style_prompt, resolve_style
 from pydantic_deep.subagents import RESEARCH_SUBAGENT

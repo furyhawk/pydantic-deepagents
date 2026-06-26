@@ -796,7 +796,7 @@ async def _dispatch_merge(app: DeepApp) -> None:
             app.notify(f"Merge failed: {e}", severity="error")
             return
 
-        from pydantic_deep.processors.patch import patch_tool_calls_processor
+        from pydantic_deep.features.patch import patch_tool_calls_processor
 
         parent_len = len(app.message_history)
         patched = patch_tool_calls_processor(list(result.history_after_merge))
@@ -909,7 +909,7 @@ async def _handle_judge_result(
 
     outcome = result
     if outcome.committed and outcome.merge_result is not None:
-        from pydantic_deep.processors.patch import patch_tool_calls_processor
+        from pydantic_deep.features.patch import patch_tool_calls_processor
 
         parent_len = len(app.message_history)
         patched = patch_tool_calls_processor(list(outcome.merge_result.history_after_merge))

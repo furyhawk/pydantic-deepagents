@@ -881,7 +881,7 @@ class ChatScreen(Screen):
             return {}
 
         try:
-            from pydantic_deep.processors.patch import patch_tool_calls_processor
+            from pydantic_deep.features.patch import patch_tool_calls_processor
 
             history = patch_tool_calls_processor(list(history))
 
@@ -1992,7 +1992,7 @@ class ChatScreen(Screen):
             app.notify(f"Merge failed: {e}", severity="error")
             return
 
-        from pydantic_deep.processors.patch import patch_tool_calls_processor
+        from pydantic_deep.features.patch import patch_tool_calls_processor
 
         app.message_history = patch_tool_calls_processor(list(result.history_after_merge))
         label = runtime.spec.label

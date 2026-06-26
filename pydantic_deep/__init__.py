@@ -150,6 +150,11 @@ from pydantic_deep.features.memory import (
     get_memory_path,
     load_memory,
 )
+from pydantic_deep.features.patch import (
+    CANCELLED_MESSAGE,
+    PatchToolCallsCapability,
+    patch_tool_calls_processor,
+)
 from pydantic_deep.goal import (
     DEFAULT_GOAL_MODEL,
     GoalEvaluation,
@@ -173,11 +178,6 @@ from pydantic_deep.mcp import (
     builtin_mcp_servers,
     parse_mcp_servers,
     probe_mcp_server,
-)
-from pydantic_deep.processors.patch import (
-    CANCELLED_MESSAGE,
-    PatchToolCallsCapability,
-    patch_tool_calls_processor,
 )
 from pydantic_deep.prompts import BASE_PROMPT
 from pydantic_deep.spec import DeepAgent, DeepAgentSpec

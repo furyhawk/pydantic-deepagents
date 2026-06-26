@@ -16,6 +16,7 @@ from pydantic_deep.features import browser as browser_feature
 from pydantic_deep.features import context as context_feature
 from pydantic_deep.features import eviction as eviction_feature
 from pydantic_deep.features import memory as memory_feature
+from pydantic_deep.features import patch as patch_feature
 
 
 class TestMemoryShim:
@@ -119,3 +120,18 @@ class TestEvictionShim:
 
     def test_top_level_exports_stable(self) -> None:
         assert pydantic_deep.EvictionCapability is eviction_feature.EvictionCapability
+
+
+class TestPatchShim:
+    def test_processors_patch_reexports_and_warns(self) -> None:
+        import pydantic_deep.processors.patch as shim
+
+        with pytest.warns(DeprecationWarning, match="features.patch"):
+            importlib.reload(shim)
+
+        assert shim.PatchToolCallsCapability is patch_feature.PatchToolCallsCapability
+        assert shim.patch_tool_calls_processor is patch_feature.patch_tool_calls_processor
+        assert shim.CANCELLED_MESSAGE == patch_feature.CANCELLED_MESSAGE
+
+    def test_top_level_exports_stable(self) -> None:
+        assert pydantic_deep.PatchToolCallsCapability is patch_feature.PatchToolCallsCapability
