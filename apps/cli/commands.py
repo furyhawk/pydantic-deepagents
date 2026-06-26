@@ -407,9 +407,9 @@ async def _cmd_goal(app: DeepApp, arg: str) -> None:
 
 
 async def _cmd_settings(app: DeepApp, arg: str) -> None:
-    from apps.cli.screens.settings import SettingsScreen
+    from apps.cli.modals.settings_view import SettingsModal
 
-    app.push_screen(SettingsScreen())
+    app.push_screen(SettingsModal())
 
 
 async def _cmd_load(app: DeepApp, arg: str) -> None:
@@ -606,41 +606,6 @@ async def _cmd_theme(app: DeepApp, arg: str) -> None:
         app.notify(f"Available themes: {names}. Use /theme <name>")
 
 
-async def _cmd_config(app: DeepApp, arg: str) -> None:
-    log = get_logger()
-    from apps.cli.config import (
-        format_config,
-        load_config,
-        set_config_value,
-    )
-
-    if arg.startswith("set "):
-        # /config set key value
-        set_parts = arg[4:].strip().split(maxsplit=1)
-        if len(set_parts) < 2:
-            app.notify("Usage: /config set <key> <value>", severity="warning")
-            return
-        key, val = set_parts[0], set_parts[1]
-        try:
-            from apps.cli.config import DEFAULT_CONFIG_PATH
-
-            set_config_value(DEFAULT_CONFIG_PATH, key, val)
-            app.notify(f"Set {key} = {val}")
-            log.info("Config updated", key=key, value=val)
-        except KeyError as exc:
-            app.notify(str(exc), severity="error")
-    else:
-        # /config — show current config
-        config = load_config()
-        text = format_config(config)
-        try:
-            app.screen.add_system_message(  # type: ignore[attr-defined]
-                f"**Current config:**\n\n```toml\n{text}\n```"
-            )
-        except Exception:
-            app.notify(text[:200])
-
-
 async def _cmd_bug(app: DeepApp, arg: str) -> None:
     import webbrowser
 
@@ -695,7 +660,6 @@ _COMMANDS: dict[str, CommandHandler] = {
     "/provider": _cmd_provider,
     "/save": _cmd_save,
     "/theme": _cmd_theme,
-    "/config": _cmd_config,
     "/bug": _cmd_bug,
     "/fork": _cmd_fork,
     "/fork-config": _cmd_fork_config,

@@ -17,7 +17,6 @@ from apps.cli.modals._filter_input import FilterInput as _FilterInput
 COMMANDS: list[tuple[str, str]] = [
     ("/clear", "Clear conversation history"),
     ("/compact", "Compress context (LLM summarization)"),
-    ("/config", "View or change settings (e.g., /config set model ...)"),
     ("/context", "Show context window usage"),
     ("/copy", "Copy last response to clipboard"),
     ("/copy-all", "Copy entire conversation to clipboard"),
@@ -41,7 +40,7 @@ COMMANDS: list[tuple[str, str]] = [
     ("/remind", "Switch periodic reminder mode"),
     ("/save", "Save current session"),
     ("/screenshot", "Export the current screen as an SVG image"),
-    ("/settings", "Open settings"),
+    ("/settings", "Change settings (toggle features, model, theme)"),
     ("/skills", "List available skills"),
     ("/theme", "Switch color theme"),
     ("/todos", "Show todo list"),

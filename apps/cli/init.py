@@ -38,7 +38,7 @@ show_cost = true
 show_tokens = true
 
 # Tools that require user approval before execution
-# Use /config set approve_tools "execute,write_file" to change
+# Edit this list directly, or change other settings with /settings in the CLI
 approve_tools = ["execute"]
 """
 
