@@ -588,46 +588,12 @@ class ChatScreen(Screen):
             pass
 
     def _show_welcome(self) -> None:
-        """Mount the animated welcome hero with project context."""
-        from apps.cli.widgets.hero import HeroBanner
+        """Initialize the empty welcome state.
 
-        msg_list = self.query_one(MessageList)
-
-        working_dir = self.app.working_dir
-        root = Path(working_dir).resolve()
-        context_lines: list[str] = []
-
-        try:
-            from apps.cli.local_context import (
-                detect_language,
-                detect_package_manager,
-                detect_test_command,
-            )
-
-            lang = detect_language(root)
-            pkg = detect_package_manager(root)
-            test_cmd = detect_test_command(root)
-            if lang:
-                info = lang
-                if pkg:
-                    info += f" · {pkg}"
-                context_lines.append(info)
-            if test_cmd:
-                context_lines.append(f"test: {test_cmd}")
-        except Exception:
-            pass
-
-        bootstrapped = getattr(self, "_bootstrapped_files", [])
-        if bootstrapped:
-            context_lines.append(f"created: {', '.join(bootstrapped)}")
-
-        version = getattr(self.app, "app_version", "") or ""
-        msg_list.mount(
-            HeroBanner(version=str(version), context_lines=context_lines, id="welcome-hero")
-        )
-        msg_list.scroll_end(animate=False)
-
-        # Refresh the session footer now that deps are wired.
+        The identity/version live in the top header, so there's no welcome
+        banner in the conversation — it would just duplicate the header. This
+        only refreshes the session footer now that deps are wired.
+        """
         self._refresh_session_footer()
 
     # User input handling

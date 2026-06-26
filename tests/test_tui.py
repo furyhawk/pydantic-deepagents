@@ -20,34 +20,9 @@ class TestTUIWidgets:
             await pilot.pause()
             assert app.screen.__class__.__name__ == "ChatScreen"
 
-    async def test_welcome_shown(self, app):
-        async with app.run_test(size=(120, 35)) as pilot:
-            await pilot.pause()
-            await pilot.pause()
-            from apps.cli.widgets.message_list import MessageList
-
-            msg_list = app.screen.query_one(MessageList)
-            assert len(msg_list.children) >= 1
-
-    async def test_welcome_mounts_animated_hero(self, app):
-        async with app.run_test(size=(120, 35)) as pilot:
-            await pilot.pause()
-            await pilot.pause()
-            from apps.cli.widgets.ambient import AmbientBand
-            from apps.cli.widgets.hero import HeroBanner
-
-            assert len(app.screen.query(HeroBanner)) == 1
-            band = app.screen.query_one(AmbientBand)
-            # The ambient wave produces a spread of distinct colours, and a tick
-            # advances the phase without error.
-            dim, bright = band._palette()
-            assert dim.hex != bright.hex
-            phase_before = band._phase
-            band._advance()
-            assert band._phase > phase_before
-
-    async def test_welcome_hero_persists_with_messages_below(self, app):
-        """The welcome hero stays at the top; messages mount underneath it."""
+    async def test_welcome_starts_with_empty_conversation(self, app):
+        """No welcome banner in the conversation — identity lives in the top
+        header, so the message list starts empty (no duplicate hero)."""
         async with app.run_test(size=(120, 35)) as pilot:
             await pilot.pause()
             await pilot.pause()
@@ -55,12 +30,8 @@ class TestTUIWidgets:
             from apps.cli.widgets.message_list import MessageList
 
             msg_list = app.screen.query_one(MessageList)
-            assert len(msg_list.query(HeroBanner)) == 1
-            msg_list.append_user_message("hello")
-            await pilot.pause()
-            # Hero remains; the message is added below it.
-            assert len(msg_list.query(HeroBanner)) == 1
-            assert isinstance(msg_list.children[0], HeroBanner)
+            assert len(msg_list.children) == 0
+            assert len(msg_list.query(HeroBanner)) == 0
 
     def test_quiet_console_logging_strips_terminal_handlers(self):
         """fastmcp/mcp must not log to the terminal under the TUI (it paints over
@@ -174,8 +145,8 @@ class TestTUIWidgets:
             msg_list = app.screen.query_one(MessageList)
             msg_list.append_user_message("test")
             await pilot.pause()
-            # welcome hero + user message
-            assert len(msg_list.children) >= 2
+            # No hero; just the user message.
+            assert len(msg_list.children) >= 1
 
     async def test_shell_command(self, app):
         async with app.run_test(size=(120, 35)) as pilot:
@@ -186,8 +157,8 @@ class TestTUIWidgets:
             from apps.cli.widgets.message_list import MessageList
 
             msg_list = app.screen.query_one(MessageList)
-            # welcome + user "!echo hello" + assistant result = 3+
-            assert len(msg_list.children) >= 3
+            # user "!echo hello" + assistant result = 2+
+            assert len(msg_list.children) >= 2
 
     async def test_header_state(self, app):
         async with app.run_test(size=(120, 35)) as pilot:
