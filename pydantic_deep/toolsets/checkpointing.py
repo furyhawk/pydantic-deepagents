@@ -38,17 +38,22 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from pydantic_ai import RunContext
-from pydantic_ai.messages import ModelMessage, ModelMessagesTypeAdapter
+from pydantic_ai.capabilities import AbstractCapability
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelMessagesTypeAdapter,
+    ModelRequest,
+    ToolCallPart,
+    ToolReturnPart,
+)
+from pydantic_ai.tools import ToolDefinition
 from pydantic_ai.toolsets import FunctionToolset
-
-if TYPE_CHECKING:
-    pass
 
 
 @dataclass
@@ -318,19 +323,6 @@ async def _save_and_prune(
         await store.remove_oldest()
 
 
-from dataclasses import dataclass  # noqa: E402
-from dataclasses import field as dataclass_field  # noqa: E402
-from dataclasses import replace as dataclass_replace  # noqa: E402
-
-from pydantic_ai.capabilities import AbstractCapability  # noqa: E402
-from pydantic_ai.messages import (  # noqa: E402
-    ModelRequest,
-    ToolCallPart,
-    ToolReturnPart,
-)
-from pydantic_ai.tools import ToolDefinition  # noqa: E402
-
-
 @dataclass
 class CheckpointMiddleware(AbstractCapability[Any]):
     """Capability that auto-saves conversation checkpoints.
@@ -354,11 +346,11 @@ class CheckpointMiddleware(AbstractCapability[Any]):
     store: CheckpointStore | None = None
     frequency: str = "every_tool"
     max_checkpoints: int = 20
-    _turn_counter: int = dataclass_field(default=0, init=False, repr=False)
+    _turn_counter: int = field(default=0, init=False, repr=False)
 
     async def for_run(self, ctx: RunContext[Any]) -> CheckpointMiddleware:
         """Return a fresh instance with isolated per-run state."""
-        return dataclass_replace(self)
+        return replace(self)
 
     def _resolve_store(self, deps: Any) -> CheckpointStore | None:
         """Get checkpoint store from deps or fallback."""

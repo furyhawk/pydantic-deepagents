@@ -27,11 +27,15 @@ import json
 import logging
 import re
 from collections.abc import Awaitable, Callable, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
+from pydantic_ai import RunContext
+from pydantic_ai.capabilities import AbstractCapability
+from pydantic_ai.messages import ToolCallPart
+from pydantic_ai.tools import ToolDefinition
 from pydantic_ai_backends import AsyncSandboxProtocol, SandboxProtocol
 
 if TYPE_CHECKING:
@@ -254,14 +258,6 @@ def _get_sandbox_backend(deps: DeepAgentDeps | None) -> AsyncSandboxProtocol | N
     if isinstance(raw, SandboxProtocol):
         return backend  # type: ignore[return-value,unused-ignore]
     return None
-
-
-from dataclasses import dataclass, field  # noqa: E402
-
-from pydantic_ai import RunContext  # noqa: E402
-from pydantic_ai.capabilities import AbstractCapability  # noqa: E402
-from pydantic_ai.messages import ToolCallPart  # noqa: E402
-from pydantic_ai.tools import ToolDefinition  # noqa: E402
 
 
 @dataclass
