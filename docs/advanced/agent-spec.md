@@ -1,6 +1,9 @@
 # Agent Spec (YAML/JSON)
 
-Define agents declaratively using YAML or JSON files instead of Python code.
+Not every agent needs to be defined in Python. When you'd rather keep
+configuration in a file — to version it, share it, or let non-developers tweak it
+— **agent specs** let you describe an agent declaratively in YAML or JSON and load
+it with one call. Same agent, no code.
 
 ## Quick Start
 

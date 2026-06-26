@@ -1,6 +1,11 @@
 # Capabilities
 
-pydantic-deep uses pydantic-ai's native **Capabilities API** for lifecycle hooks, cross-cutting concerns, and composable agent behaviors. Several features (cost tracking, hooks, checkpointing, context management) are implemented as capabilities.
+Ever wondered how cost tracking, hooks, checkpointing, and context management all
+"just happen" around your tool calls? They're **capabilities** — pydantic-ai's
+native mechanism for cross-cutting behavior that wraps the agent lifecycle. If a
+feature needs to observe or alter what happens before/after a model request or a
+tool call, it's a capability. This page shows how they compose, and how to write
+your own.
 
 !!! note "Migration from middleware"
     The previous middleware system (`pydantic-ai-middleware`, `MiddlewareAgent`, `AgentMiddleware`) has been replaced by pydantic-ai's built-in Capabilities API. If you are migrating from the old middleware approach, see the [migration notes](#migrating-from-middleware) below.
