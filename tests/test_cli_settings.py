@@ -38,12 +38,14 @@ class TestSettingsModal:
             modal.action_move(1)  # wrap back to first
             assert modal._sel == 0
 
-    async def test_toggle_persists_inverted_value(self, app, monkeypatch):
+    async def test_toggle_persists_and_applies_live(self, app, monkeypatch):
         calls: list[tuple[str, str]] = []
         monkeypatch.setattr(
             "apps.cli.modals.settings_view.set_config_value",
             lambda _path, key, value: calls.append((key, value)),
         )
+        reconfigured: list[bool] = []
+        monkeypatch.setattr(app, "reconfigure_agent", lambda *a, **k: reconfigured.append(True))
         async with app.run_test(size=(120, 40)) as pilot:
             await app.push_screen(SettingsModal())
             await pilot.pause()
@@ -55,6 +57,8 @@ class TestSettingsModal:
             modal.action_activate()
             assert calls and calls[-1][0] == key
             assert calls[-1][1] in ("true", "false")
+            # The change is applied immediately, not deferred to a restart.
+            assert reconfigured == [True]
 
     async def test_thinking_cycles_to_next(self, app, monkeypatch):
         calls: list[tuple[str, str]] = []
@@ -62,6 +66,8 @@ class TestSettingsModal:
             "apps.cli.modals.settings_view.set_config_value",
             lambda _path, key, value: calls.append((key, value)),
         )
+        reconfigured: list[bool] = []
+        monkeypatch.setattr(app, "reconfigure_agent", lambda *a, **k: reconfigured.append(True))
         async with app.run_test(size=(120, 40)) as pilot:
             await app.push_screen(SettingsModal())
             await pilot.pause()
@@ -70,3 +76,4 @@ class TestSettingsModal:
             modal.action_activate()
             assert calls and calls[-1][0] == "thinking_effort"
             assert calls[-1][1] in _THINKING_CYCLE
+            assert reconfigured == [True]

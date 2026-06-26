@@ -140,12 +140,21 @@ class SettingsModal(ModalScreen[None]):
         with contextlib.suppress(Exception):
             set_config_value(DEFAULT_CONFIG_PATH, key, value)
 
+    def _apply_live(self) -> None:
+        """Rebuild the agent from the freshly-persisted config so the change
+        takes effect now — no restart needed."""
+        reconfigure = getattr(self.app, "reconfigure_agent", None)
+        if reconfigure is not None:
+            with contextlib.suppress(Exception):
+                reconfigure()
+
     def _toggle(self, key: str) -> None:
         cfg = load_config()
         new = not bool(getattr(cfg, key, False))
         self._persist(key, "true" if new else "false")
+        self._apply_live()
         self._repaint()
-        self.app.notify(f"{key} {'on' if new else 'off'} — applies on restart")
+        self.app.notify(f"{key} {'on' if new else 'off'}")
 
     def _cycle_thinking(self) -> None:
         cfg = load_config()
@@ -153,6 +162,7 @@ class SettingsModal(ModalScreen[None]):
         idx = _THINKING_CYCLE.index(cur) if cur in _THINKING_CYCLE else -1
         nxt = _THINKING_CYCLE[(idx + 1) % len(_THINKING_CYCLE)]
         self._persist("thinking_effort", nxt)
+        self._apply_live()
         self._repaint()
 
     def _cycle_theme(self) -> None:
