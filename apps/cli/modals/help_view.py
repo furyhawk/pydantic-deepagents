@@ -92,5 +92,5 @@ class HelpModal(ModalScreen[None]):
             yield Static(_HELP_TEXT)
             yield Static("[dim]Esc or q to close[/dim]")
 
-    def action_dismiss(self) -> None:
+    def action_dismiss(self, result: object = None) -> None:
         self.dismiss(None)

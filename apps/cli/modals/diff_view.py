@@ -113,5 +113,5 @@ class DiffViewModal(ModalScreen[None]):
 
             yield Static("\n[dim]Esc or q to close[/dim]")
 
-    def action_dismiss(self) -> None:
+    def action_dismiss(self, result: object = None) -> None:
         self.dismiss(None)

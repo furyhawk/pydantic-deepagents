@@ -217,7 +217,7 @@ class TestLocalContextToolset:
         ctx = MagicMock()
         result = await toolset.get_instructions(ctx)
         assert isinstance(result, list)
-        joined = "\n\n".join(result)
+        joined = "\n\n".join(part.content for part in result)
         assert "### Local Context" in joined
         assert "test.py" in joined
 

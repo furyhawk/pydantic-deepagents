@@ -11,6 +11,7 @@ from rich.syntax import Syntax
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.reactive import reactive
+from textual.timer import Timer
 from textual.widget import Widget
 from textual.widgets import Static
 
@@ -248,7 +249,7 @@ class ToolCallWidget(Widget):
     elapsed: reactive[float] = reactive(0.0)
     expanded: reactive[bool] = reactive(False)
 
-    _timer_handle: object | None = None
+    _timer_handle: Timer | None = None
 
     def __init__(
         self,

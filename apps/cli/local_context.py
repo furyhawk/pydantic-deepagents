@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from pydantic_ai import RunContext
+from pydantic_ai.messages import InstructionPart
 from pydantic_ai.toolsets import FunctionToolset
 
 from pydantic_deep.deps import DeepAgentDeps
@@ -433,9 +434,11 @@ class LocalContextToolset(FunctionToolset[DeepAgentDeps]):
             )
         return self._cached_context
 
-    async def get_instructions(self, ctx: RunContext[DeepAgentDeps]) -> list[str] | None:
+    async def get_instructions(
+        self, ctx: RunContext[DeepAgentDeps]
+    ) -> list[InstructionPart] | None:
         """Inject local context into the system prompt."""
-        return [self._build_context()]
+        return [InstructionPart(content=self._build_context(), dynamic=True)]
 
 
 __all__ = [
