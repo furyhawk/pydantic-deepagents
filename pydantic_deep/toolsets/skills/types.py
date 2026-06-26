@@ -176,6 +176,76 @@ class SkillScript:
             raise ValueError(f"Script '{self.name}' has no function")
 
 
+def _register_skill_resource(
+    resources: list[SkillResource],
+    func: Callable[..., Any] | None,
+    *,
+    name: str | None,
+    description: str | None,
+    takes_ctx: bool | None,
+    docstring_format: DocstringFormat,
+    schema_generator: type[GenerateJsonSchema] | None,
+) -> Callable[..., Any]:
+    """Build a `resource` decorator that appends a `SkillResource` to `resources`."""
+
+    def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
+        func_schema = _function_schema.function_schema(
+            f,
+            schema_generator=schema_generator or GenerateToolJsonSchema,
+            takes_ctx=takes_ctx,
+            docstring_format=docstring_format,
+            require_parameter_descriptions=False,
+        )
+        resources.append(
+            SkillResource(
+                name=name or f.__name__,
+                description=description or func_schema.description,
+                function=f,
+                takes_ctx=func_schema.takes_ctx,
+                function_schema=func_schema,
+            )
+        )
+        return f
+
+    return decorator if func is None else decorator(func)
+
+
+def _register_skill_script(
+    scripts: list[SkillScript],
+    skill_name: str,
+    func: Callable[..., Any] | None,
+    *,
+    name: str | None,
+    description: str | None,
+    takes_ctx: bool | None,
+    docstring_format: DocstringFormat,
+    schema_generator: type[GenerateJsonSchema] | None,
+) -> Callable[..., Any]:
+    """Build a `script` decorator that appends a `SkillScript` to `scripts`."""
+
+    def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
+        func_schema = _function_schema.function_schema(
+            f,
+            schema_generator=schema_generator or GenerateToolJsonSchema,
+            takes_ctx=takes_ctx,
+            docstring_format=docstring_format,
+            require_parameter_descriptions=False,
+        )
+        scripts.append(
+            SkillScript(
+                name=name or f.__name__,
+                description=description or func_schema.description,
+                function=f,
+                takes_ctx=func_schema.takes_ctx,
+                function_schema=func_schema,
+                skill_name=skill_name,
+            )
+        )
+        return f
+
+    return decorator if func is None else decorator(func)
+
+
 @dataclass
 class Skill:
     """A skill instance with metadata, content, resources, and scripts.
@@ -259,30 +329,15 @@ class Skill:
             The original function (allows use as decorator).
         """
 
-        def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
-            resource_name = name or f.__name__
-            gen = schema_generator or GenerateToolJsonSchema
-            func_schema = _function_schema.function_schema(
-                f,
-                schema_generator=gen,
-                takes_ctx=takes_ctx,
-                docstring_format=docstring_format,
-                require_parameter_descriptions=False,
-            )
-            resource = SkillResource(
-                name=resource_name,
-                description=description or func_schema.description,
-                function=f,
-                takes_ctx=func_schema.takes_ctx,
-                function_schema=func_schema,
-            )
-            self.resources.append(resource)
-            return f
-
-        if func is None:
-            return decorator
-        else:
-            return decorator(func)
+        return _register_skill_resource(
+            self.resources,
+            func,
+            name=name,
+            description=description,
+            takes_ctx=takes_ctx,
+            docstring_format=docstring_format,
+            schema_generator=schema_generator,
+        )
 
     def script(
         self,
@@ -311,31 +366,16 @@ class Skill:
             The original function (allows use as decorator).
         """
 
-        def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
-            script_name = name or f.__name__
-            gen = schema_generator or GenerateToolJsonSchema
-            func_schema = _function_schema.function_schema(
-                f,
-                schema_generator=gen,
-                takes_ctx=takes_ctx,
-                docstring_format=docstring_format,
-                require_parameter_descriptions=False,
-            )
-            script = SkillScript(
-                name=script_name,
-                description=description or func_schema.description,
-                function=f,
-                takes_ctx=func_schema.takes_ctx,
-                function_schema=func_schema,
-                skill_name=self.name,
-            )
-            self.scripts.append(script)
-            return f
-
-        if func is None:
-            return decorator
-        else:
-            return decorator(func)
+        return _register_skill_script(
+            self.scripts,
+            self.name,
+            func,
+            name=name,
+            description=description,
+            takes_ctx=takes_ctx,
+            docstring_format=docstring_format,
+            schema_generator=schema_generator,
+        )
 
 
 class SkillWrapper(Generic[DepsT]):
@@ -425,30 +465,15 @@ class SkillWrapper(Generic[DepsT]):
             The original function (allows use as decorator).
         """
 
-        def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
-            resource_name = name or f.__name__
-            gen = schema_generator or GenerateToolJsonSchema
-            func_schema = _function_schema.function_schema(
-                f,
-                schema_generator=gen,
-                takes_ctx=takes_ctx,
-                docstring_format=docstring_format,
-                require_parameter_descriptions=False,
-            )
-            resource = SkillResource(
-                name=resource_name,
-                description=description or func_schema.description,
-                function=f,
-                takes_ctx=func_schema.takes_ctx,
-                function_schema=func_schema,
-            )
-            self.resources.append(resource)
-            return f
-
-        if func is None:
-            return decorator
-        else:
-            return decorator(func)
+        return _register_skill_resource(
+            self.resources,
+            func,
+            name=name,
+            description=description,
+            takes_ctx=takes_ctx,
+            docstring_format=docstring_format,
+            schema_generator=schema_generator,
+        )
 
     def script(
         self,
@@ -474,31 +499,16 @@ class SkillWrapper(Generic[DepsT]):
             The original function (allows use as decorator).
         """
 
-        def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
-            script_name = name or f.__name__
-            gen = schema_generator or GenerateToolJsonSchema
-            func_schema = _function_schema.function_schema(
-                f,
-                schema_generator=gen,
-                takes_ctx=takes_ctx,
-                docstring_format=docstring_format,
-                require_parameter_descriptions=False,
-            )
-            script = SkillScript(
-                name=script_name,
-                description=description or func_schema.description,
-                function=f,
-                takes_ctx=func_schema.takes_ctx,
-                function_schema=func_schema,
-                skill_name=self.name,
-            )
-            self.scripts.append(script)
-            return f
-
-        if func is None:
-            return decorator
-        else:
-            return decorator(func)
+        return _register_skill_script(
+            self.scripts,
+            self.name,
+            func,
+            name=name,
+            description=description,
+            takes_ctx=takes_ctx,
+            docstring_format=docstring_format,
+            schema_generator=schema_generator,
+        )
 
     def to_skill(self) -> Skill:
         """Convert the wrapper to a Skill dataclass.
