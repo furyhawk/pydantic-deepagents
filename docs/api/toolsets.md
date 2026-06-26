@@ -424,7 +424,7 @@ Multi-agent team management. See [Teams](../advanced/teams.md).
 ### Factory
 
 ```python
-from pydantic_deep.toolsets.teams import create_team_toolset
+from pydantic_deep.features.teams import create_team_toolset
 
 toolset = create_team_toolset(
     id="deep-team",

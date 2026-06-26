@@ -1,12 +1,17 @@
-"""Agent teams with shared todos and peer-to-peer messaging.
+"""Deprecated import location for the teams feature.
 
-Teams provide coordination infrastructure on top of the subagent execution
-engine. When a `registry` is provided, team members are registered as subagents
-and `assign_task` delegates to the subagent `task()` tool for actual execution.
+The implementation moved to :mod:`pydantic_deep.features.teams` (see the
+CHANGELOG). This module re-exports the public names for backward compatibility
+and will be removed in the next minor release. Import from
+``pydantic_deep.features.teams`` or the top-level ``pydantic_deep`` instead.
 """
 
-from pydantic_deep.models import DEFAULT_TEAM_MEMBER_MODEL
-from pydantic_deep.toolsets.teams.primitives import (
+from __future__ import annotations
+
+import warnings
+
+from pydantic_deep.features.teams import (
+    DEFAULT_TEAM_MEMBER_MODEL,
     AgentTeam,
     SharedTodoItem,
     SharedTodoList,
@@ -15,8 +20,8 @@ from pydantic_deep.toolsets.teams.primitives import (
     TeamMemberSpec,
     TeamMessage,
     TeamMessageBus,
+    create_team_toolset,
 )
-from pydantic_deep.toolsets.teams.toolset import create_team_toolset
 
 __all__ = [
     "DEFAULT_TEAM_MEMBER_MODEL",
@@ -30,3 +35,10 @@ __all__ = [
     "TeamMessageBus",
     "create_team_toolset",
 ]
+
+warnings.warn(
+    "pydantic_deep.toolsets.teams has moved to pydantic_deep.features.teams; "
+    "update your imports (this shim will be removed in the next minor release).",
+    DeprecationWarning,
+    stacklevel=2,
+)

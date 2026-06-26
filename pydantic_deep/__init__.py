@@ -155,6 +155,17 @@ from pydantic_deep.features.patch import (
     PatchToolCallsCapability,
     patch_tool_calls_processor,
 )
+from pydantic_deep.features.teams import (
+    AgentTeam,
+    SharedTodoItem,
+    SharedTodoList,
+    TeamMember,
+    TeamMemberHandle,
+    TeamMemberSpec,
+    TeamMessage,
+    TeamMessageBus,
+    create_team_toolset,
+)
 from pydantic_deep.goal import (
     DEFAULT_GOAL_MODEL,
     GoalEvaluation,
@@ -267,17 +278,6 @@ from pydantic_deep.toolsets.skills import (
     SkillsDirectory,
     SkillValidationError,
     SkillWrapper,
-)
-from pydantic_deep.toolsets.teams import (
-    AgentTeam,
-    SharedTodoItem,
-    SharedTodoList,
-    TeamMember,
-    TeamMemberHandle,
-    TeamMemberSpec,
-    TeamMessage,
-    TeamMessageBus,
-    create_team_toolset,
 )
 from pydantic_deep.types import (
     BrowseResult,

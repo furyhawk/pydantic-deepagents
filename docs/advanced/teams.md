@@ -59,7 +59,7 @@ When `include_subagents=True`, team members are created as **deep agents** with 
 By default, team members are created as deep agents with `include_filesystem=True` and `include_todo=True`. You can customize this via `agent_factory`:
 
 ```python
-from pydantic_deep.toolsets.teams import create_team_toolset
+from pydantic_deep.features.teams import create_team_toolset
 
 def my_factory(config):
     return create_deep_agent(
@@ -80,10 +80,10 @@ team_toolset = create_team_toolset(
 
 ## Shared TODO List
 
-The [`SharedTodoList`][pydantic_deep.toolsets.teams.SharedTodoList] is an asyncio-safe task tracker with claiming and dependencies.
+The [`SharedTodoList`][pydantic_deep.features.teams.SharedTodoList] is an asyncio-safe task tracker with claiming and dependencies.
 
 ```python
-from pydantic_deep.toolsets.teams import SharedTodoList
+from pydantic_deep.features.teams import SharedTodoList
 
 todos = SharedTodoList()
 
@@ -115,10 +115,10 @@ await todos.claim(task_b, "bob")      # True -- dependency resolved
 
 ## Message Bus
 
-The [`TeamMessageBus`][pydantic_deep.toolsets.teams.TeamMessageBus] provides peer-to-peer messaging between registered agents.
+The [`TeamMessageBus`][pydantic_deep.features.teams.TeamMessageBus] provides peer-to-peer messaging between registered agents.
 
 ```python
-from pydantic_deep.toolsets.teams import TeamMessageBus
+from pydantic_deep.features.teams import TeamMessageBus
 
 bus = TeamMessageBus()
 bus.register("alice")
@@ -154,14 +154,14 @@ deps = DeepAgentDeps(
 
 | Component | Description |
 |-----------|-------------|
-| [`SharedTodoItem`][pydantic_deep.toolsets.teams.SharedTodoItem] | Task with assignment, dependencies, and status |
-| [`SharedTodoList`][pydantic_deep.toolsets.teams.SharedTodoList] | Asyncio-safe task list with claiming and blocking |
-| [`TeamMessage`][pydantic_deep.toolsets.teams.TeamMessage] | Message between team members |
-| [`TeamMessageBus`][pydantic_deep.toolsets.teams.TeamMessageBus] | Peer-to-peer message routing |
-| [`TeamMember`][pydantic_deep.toolsets.teams.TeamMember] | Member definition (name, role, instructions) |
-| [`TeamMemberHandle`][pydantic_deep.toolsets.teams.TeamMemberHandle] | Runtime handle to a team member |
-| [`AgentTeam`][pydantic_deep.toolsets.teams.AgentTeam] | Team coordinator with shared state |
-| [`create_team_toolset`][pydantic_deep.toolsets.teams.create_team_toolset] | Factory for team management tools |
+| [`SharedTodoItem`][pydantic_deep.features.teams.SharedTodoItem] | Task with assignment, dependencies, and status |
+| [`SharedTodoList`][pydantic_deep.features.teams.SharedTodoList] | Asyncio-safe task list with claiming and blocking |
+| [`TeamMessage`][pydantic_deep.features.teams.TeamMessage] | Message between team members |
+| [`TeamMessageBus`][pydantic_deep.features.teams.TeamMessageBus] | Peer-to-peer message routing |
+| [`TeamMember`][pydantic_deep.features.teams.TeamMember] | Member definition (name, role, instructions) |
+| [`TeamMemberHandle`][pydantic_deep.features.teams.TeamMemberHandle] | Runtime handle to a team member |
+| [`AgentTeam`][pydantic_deep.features.teams.AgentTeam] | Team coordinator with shared state |
+| [`create_team_toolset`][pydantic_deep.features.teams.create_team_toolset] | Factory for team management tools |
 
 ## Next Steps
 

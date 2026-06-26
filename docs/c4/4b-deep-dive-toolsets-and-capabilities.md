@@ -316,7 +316,7 @@ class AgentMemoryToolset(FunctionToolset[Any]):
 
 ### 9. TeamToolset
 
-**Source:** `pydantic_deep/toolsets/teams.py`
+**Source:** `pydantic_deep/features/teams.py`
 
 **Tools:**
 - `spawn_team` — Create and start an agent team

@@ -22,6 +22,7 @@ from pydantic_deep.features import message_queue as message_queue_feature
 from pydantic_deep.features import patch as patch_feature
 from pydantic_deep.features import periodic_reminder as periodic_reminder_feature
 from pydantic_deep.features import stuck_loop as stuck_loop_feature
+from pydantic_deep.features import teams as teams_feature
 
 
 class TestMemoryShim:
@@ -156,6 +157,22 @@ class TestHistoryArchiveShim:
         assert shim.SEARCH_HISTORY_DESCRIPTION == history_archive_feature.SEARCH_HISTORY_DESCRIPTION
         assert callable(shim._bm25_rank)
         assert callable(shim._load_messages)
+
+
+class TestTeamsShim:
+    def test_toolsets_teams_reexports_and_warns(self) -> None:
+        import pydantic_deep.toolsets.teams as shim
+
+        with pytest.warns(DeprecationWarning, match="features.teams"):
+            importlib.reload(shim)
+
+        assert shim.AgentTeam is teams_feature.AgentTeam
+        assert shim.create_team_toolset is teams_feature.create_team_toolset
+        assert shim.TeamMessageBus is teams_feature.TeamMessageBus
+
+    def test_top_level_exports_stable(self) -> None:
+        assert pydantic_deep.AgentTeam is teams_feature.AgentTeam
+        assert pydantic_deep.create_team_toolset is teams_feature.create_team_toolset
 
 
 class TestMessageQueueShim:

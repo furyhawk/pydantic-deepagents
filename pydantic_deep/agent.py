@@ -60,6 +60,7 @@ from pydantic_deep.features.periodic_reminder import (
     PeriodicReminderConfig,
 )
 from pydantic_deep.features.stuck_loop import StuckLoopDetection
+from pydantic_deep.features.teams import create_team_toolset
 from pydantic_deep.instructions import build_instruction_providers, render_instructions
 from pydantic_deep.models import (
     DEFAULT_IMPROVE_MODEL,
@@ -86,7 +87,6 @@ from pydantic_deep.toolsets.plan import (
 )
 from pydantic_deep.toolsets.skills import Skill, SkillsToolset
 from pydantic_deep.toolsets.skills.backend import BackendSkillsDirectory
-from pydantic_deep.toolsets.teams import create_team_toolset
 from pydantic_deep.types import SubAgentConfig
 
 if TYPE_CHECKING:

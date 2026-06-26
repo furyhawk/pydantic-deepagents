@@ -11,7 +11,7 @@ from pydantic_ai_backends import StateBackend
 from subagents_pydantic_ai import SubAgentConfig
 from subagents_pydantic_ai.toolset import _compile_subagent
 
-from pydantic_deep.toolsets.teams.primitives import (
+from pydantic_deep.features.teams.primitives import (
     AgentTeam,
     TeamMember,
     TeamMemberSpec,
