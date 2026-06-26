@@ -11,6 +11,7 @@ from datetime import datetime
 
 from pydantic_ai import RunContext
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
 
@@ -42,7 +43,7 @@ async def log_message(
     backend = ctx.deps.backend
 
     # Read existing log
-    existing = backend.read("/logs/agent.log")
+    existing = await backend.read("/logs/agent.log")
     if "Error:" in existing:
         # File doesn't exist, create it
         content = log_entry
@@ -54,7 +55,7 @@ async def log_message(
                 lines.append(line.split("\t", 1)[1])
         content = "\n".join(lines) + log_entry
 
-    backend.write("/logs/agent.log", content)
+    await backend.write("/logs/agent.log", content)
 
     return f"Logged: {log_entry.strip()}"
 
@@ -71,7 +72,7 @@ async def analyze_code_complexity(
     Returns:
         Complexity analysis report.
     """
-    content = ctx.deps.backend.read(file_path)
+    content = await ctx.deps.backend.read(file_path)
 
     if "Error:" in content:
         return content
@@ -99,7 +100,7 @@ async def analyze_code_complexity(
 async def main():
     # Create agent with custom tools
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="""
         You are a development assistant with custom tools:
         - get_current_time: Get the current timestamp
@@ -136,7 +137,7 @@ async def main():
     # Show the log file
     print("\n" + "=" * 50)
     print("Log file contents:")
-    log_content = deps.backend.read("/logs/agent.log")
+    log_content = await deps.backend.read("/logs/agent.log")
     print(log_content)
 
 

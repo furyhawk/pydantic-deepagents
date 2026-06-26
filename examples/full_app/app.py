@@ -44,6 +44,7 @@ import asyncio
 import contextlib
 import json
 import logging
+import os
 import re
 import uuid
 from contextlib import asynccontextmanager
@@ -79,6 +80,8 @@ from pydantic_ai.messages import (
     ToolReturnPart,
     UserPromptPart,
 )
+from pydantic_ai.models.openai import OpenAIResponsesModel
+from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.tools import (
     DeferredToolRequests,
     DeferredToolResults,
@@ -549,6 +552,30 @@ just call it and wait for approval. Never refuse to run a command or say you can
 
 # Agent creation (ALL features wired here)
 
+# Default model and LLM endpoint configuration (can be overridden by .env)
+MODEL_NAME: str = os.getenv("MODEL_NAME", "openai-responses:o4-mini")
+LLM_BASE_URL: str = os.getenv("LLM_BASE_URL", "http://localhost:8011/v1")
+LLM_API_KEY: str | None = os.getenv("LLM_API_KEY")
+USE_RATE_LIMITER: bool = (LLM_API_KEY or "no-key-required") != "no-key-required"
+
+
+def get_model() -> str | OpenAIResponsesModel:
+    """Get the configured model, using a local OpenAI-compatible endpoint if
+    ``LLM_BASE_URL`` is set (default: ``http://localhost:8011/v1``).
+
+    Returns a model **instance** (with a custom provider) when
+    ``LLM_BASE_URL`` is non-empty, otherwise returns the plain model name
+    string for pydantic-ai's default resolution.
+    """
+    if LLM_BASE_URL:
+        return OpenAIResponsesModel(
+            MODEL_NAME or "openai-responses:o4-mini",
+            provider=OpenAIProvider(
+                base_url=LLM_BASE_URL,
+                api_key=LLM_API_KEY or "no-key-required",
+            ),
+        )
+    return MODEL_NAME
 
 def create_agent() -> Agent[DeepAgentDeps, str]:
     """Create the shared agent with ALL pydantic-deep features.
@@ -573,12 +600,7 @@ def create_agent() -> Agent[DeepAgentDeps, str]:
     agent_registry = DynamicAgentRegistry()
     factory_toolset = create_agent_factory_toolset(
         registry=agent_registry,
-        allowed_models=[
-            "anthropic:claude-sonnet-4-6",
-            "anthropic:claude-haiku-4-5-20251001",
-            "anthropic:claude-haiku-4-5-20251001",
-        ],
-        default_model="anthropic:claude-haiku-4-5-20251001",
+        default_model=get_model(),
         max_agents=5,
         id="agent-factory",
     )
@@ -590,7 +612,7 @@ def create_agent() -> Agent[DeepAgentDeps, str]:
     )
 
     return create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions=MAIN_INSTRUCTIONS,
         backend=None,  # Backend comes from deps at runtime (per-session Docker container)
         # --- Toolsets ---
@@ -1266,7 +1288,7 @@ async def _stream_tool_calls(
             elif isinstance(event, FunctionToolResultEvent):
                 tool_call_id = event.tool_call_id
                 tool_name = tool_names_by_id.get(tool_call_id, "unknown")
-                result_content = event.result.content
+                result_content = event.part.content
                 logger.info(f"  TOOL RESULT: {tool_name} -> {str(result_content)[:100]}...")
 
                 await websocket.send_json(
@@ -1339,7 +1361,7 @@ async def upload_file(
 
         # Verify the file exists in the container (if backend supports execute)
         if hasattr(session.deps.backend, "execute"):
-            verify_result = session.deps.backend.execute(f'ls -la "{path}"')  # type: ignore[union-attr]
+            verify_result = await session.deps.backend.execute(f'ls -la "{path}"')  # type: ignore[union-attr]
             logger.info(f"Verify upload: {verify_result.output.strip()}")
 
         return JSONResponse(
@@ -1371,7 +1393,7 @@ async def list_files(session_id: str = Query(..., description="Session ID")):
 
     # List workspace files from container (if backend supports execute)
     if hasattr(session.deps.backend, "execute"):
-        result = session.deps.backend.execute("find /workspace -type f 2>/dev/null")  # type: ignore[union-attr]
+        result = await session.deps.backend.execute("find /workspace -type f 2>/dev/null")  # type: ignore[union-attr]
         if result.exit_code == 0:
             files["workspace"] = [f for f in result.output.strip().split("\n") if f]
 
@@ -1493,7 +1515,7 @@ async def get_file_binary(filepath: str, session_id: str = Query(..., descriptio
         # Read binary file from container using base64
         if hasattr(session.deps.backend, "execute"):
             # Use quotes around path to handle spaces
-            result = session.deps.backend.execute(f'base64 "{decoded_path}"')
+            result = await session.deps.backend.execute(f'base64 "{decoded_path}"')
             logger.debug(f"base64 command exit code: {result.exit_code}")
 
             if result.exit_code != 0:
@@ -1878,7 +1900,7 @@ async def preview_file(session_id: str, filepath: str):
         if hasattr(session.deps.backend, "execute"):
             if is_binary:
                 # Read binary file via base64
-                result = session.deps.backend.execute(f'base64 "{filepath}"')
+                result = await session.deps.backend.execute(f'base64 "{filepath}"')
                 if result.exit_code != 0:
                     raise HTTPException(status_code=404, detail=f"File not found: {filepath}")
 
@@ -1895,7 +1917,7 @@ async def preview_file(session_id: str, filepath: str):
                 return Response(content=binary_content, media_type=content_type)
             else:
                 # Read text file - use cat WITHOUT -n (no line numbers)
-                result = session.deps.backend.execute(f'cat "{filepath}"')
+                result = await session.deps.backend.execute(f'cat "{filepath}"')
                 if result.exit_code != 0:
                     raise HTTPException(status_code=404, detail=f"File not found: {filepath}")
 

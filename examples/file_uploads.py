@@ -9,6 +9,7 @@ This example demonstrates how to upload files for agent processing:
 
 import asyncio
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent, run_with_files
 
 
@@ -20,7 +21,7 @@ async def example_run_with_files():
 
     # Create agent and deps
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="""
         You are a data analyst. When given data files:
         1. Read the file to understand its structure
@@ -63,7 +64,7 @@ async def example_direct_upload():
     print("=" * 60)
 
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="You are a helpful assistant that analyzes JSON configs.",
     )
     deps = DeepAgentDeps(backend=StateBackend())
@@ -97,7 +98,7 @@ async def example_large_file():
     print("=" * 60)
 
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="""
         You are a log analyzer. For large files:
         - Use read_file with offset and limit to paginate

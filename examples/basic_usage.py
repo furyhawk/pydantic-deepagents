@@ -8,13 +8,14 @@ This example demonstrates the core functionality:
 
 import asyncio
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
 
-async def main():
+async def main() -> None:
     # Create a deep agent with default settings
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="""
         You are a helpful coding assistant.
         When given a task:
@@ -43,7 +44,7 @@ async def main():
         print(f"  {path}: {len(data['content'])} lines")
 
     # Read the created file
-    content = deps.backend.read("/calculator.py")
+    content = await deps.backend.read("/calculator.py")
     print("\nCreated file content:")
     print(content)
 
