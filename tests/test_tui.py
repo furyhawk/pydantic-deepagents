@@ -153,12 +153,21 @@ class TestTUIWidgets:
             await pilot.pause()
             await pilot.pause()
             app.run_shell_command("echo hello")
-            await pilot.pause()
             from apps.cli.widgets.message_list import MessageList
 
             msg_list = app.screen.query_one(MessageList)
-            # user "!echo hello" + assistant result = 2+
+            # The subprocess now runs off the event loop, so the assistant
+            # result lands a few ticks after the user "!echo hello" message.
+            for _ in range(50):
+                await pilot.pause()
+                if len(msg_list.children) >= 2:
+                    break
             assert len(msg_list.children) >= 2
+            # The command output actually made it to the transcript.
+            from apps.cli.widgets.assistant_message import AssistantMessage
+
+            results = list(msg_list.query(AssistantMessage))
+            assert any("hello" in r.text for r in results)
 
     async def test_header_state(self, app):
         async with app.run_test(size=(120, 35)) as pilot:

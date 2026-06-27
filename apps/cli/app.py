@@ -467,8 +467,12 @@ class DeepApp(App):
     # Shell commands
 
     def run_shell_command(self, command: str) -> None:
-        """Execute a shell command and show output in message list + save to session."""
+        """Run a shell command without blocking the UI; show + persist output.
 
+        The subprocess runs in a worker thread (via `_run_shell_async`) so a
+        long command like `!make test` keeps the TUI responsive instead of
+        freezing the event loop for up to the 60s timeout.
+        """
         try:
             msg_list = self.screen.query_one(MessageList)
         except (NoMatches, Exception):
@@ -476,9 +480,17 @@ class DeepApp(App):
             return
 
         msg_list.append_user_message(f"!{command}")
+        screen = self.screen
+        self._spawn_tracked(
+            self._run_shell_async(command, screen, msg_list),
+            label=f"shell {command[:20]}",
+        )
 
+    async def _run_shell_async(self, command: str, screen: Any, msg_list: Any) -> None:
+        """Worker for `run_shell_command` — runs the subprocess off the event loop."""
         try:
-            result = subprocess.run(
+            result = await asyncio.to_thread(
+                subprocess.run,
                 command,
                 shell=True,
                 capture_output=True,
@@ -507,11 +519,11 @@ class DeepApp(App):
         except Exception as e:
             output_text = f"**Error:** {e}"
 
-        # Use add_system_message to show + persist to session
+        # Use add_system_message to show + persist to session.
         try:
-            self.screen.add_system_message(output_text)  # type: ignore[attr-defined]
+            screen.add_system_message(output_text)
         except Exception:
-            # Fallback: just show without saving
+            # Fallback: just show without saving.
             assistant = msg_list.begin_assistant_message()
             assistant.append_text(output_text)
             assistant.finalize_text()
