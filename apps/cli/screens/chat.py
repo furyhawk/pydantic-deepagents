@@ -842,7 +842,9 @@ class ChatScreen(Screen):
 
     #: Commands that expect an inline free-text argument — selecting them from
     #: the picker stages `/cmd ` in the input instead of running with no arg.
-    _ARG_COMMANDS = frozenset({"/goal", "/export", "/theme"})
+    #: (Excludes commands whose no-arg form is itself useful, e.g. /theme lists
+    #: the available themes.)
+    _ARG_COMMANDS = frozenset({"/goal", "/export"})
 
     def on_command_selected(self, event: CommandSelected) -> None:
         """Open the command picker or handle a selected command."""
