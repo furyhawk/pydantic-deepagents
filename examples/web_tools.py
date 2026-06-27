@@ -6,12 +6,13 @@ and how to use custom capabilities for advanced control.
 
 import asyncio
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
 
 async def main():
     # Default: both web_search and web_fetch enabled
-    agent = create_deep_agent()
+    agent = create_deep_agent(model=get_model())
 
     deps = DeepAgentDeps(backend=StateBackend())
 
@@ -27,6 +28,7 @@ async def main():
 async def search_only():
     """Example with web search but no fetch."""
     agent = create_deep_agent(
+        model=get_model(),
         web_search=True,
         web_fetch=False,  # Can search but not fetch full pages
     )
@@ -44,6 +46,7 @@ async def custom_web_capabilities():
     from pydantic_ai.capabilities import WebSearch
 
     agent = create_deep_agent(
+        model=get_model(),
         web_search=False,  # Disable default
         web_fetch=False,  # Disable default
         capabilities=[

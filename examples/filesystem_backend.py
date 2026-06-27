@@ -8,6 +8,7 @@ This example shows how to:
 import asyncio
 from pathlib import Path
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, LocalBackend, create_deep_agent
 
 
@@ -22,7 +23,7 @@ async def main():
 
     # Create the agent
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="You are a file organization assistant.",
     )
 
