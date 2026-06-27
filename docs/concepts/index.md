@@ -1,8 +1,12 @@
 # Core Concepts
 
-Once you've run [your first agent](../index.md), it helps to know the few moving
-parts behind `create_deep_agent()`. There are only four, and they compose
-cleanly — learn these and the rest of the docs will feel obvious.
+Once you've run [your first agent](../learn/first-agent.md), it helps to know the
+few moving parts behind `create_deep_agent()`. There are only four, and they
+compose cleanly — learn these and the rest of the docs will feel obvious.
+
+!!! tip "Prefer to learn by doing?"
+    The [Tutorial — User Guide](../learn/index.md) builds these ideas up one
+    runnable step at a time. This section is the conceptual companion to it.
 
 pydantic-deep rests on four pillars:
 
@@ -179,6 +183,7 @@ This prevents context bloat and infinite recursion.
 
 ## Next Steps
 
+- [Tutorial — User Guide](../learn/index.md) - learn every feature, step by step
 - [Agents](agents.md) - Deep dive into agent creation
 - [Backends](backends.md) - Understanding storage options
 - [Toolsets](toolsets.md) - Available tools and customization
