@@ -253,6 +253,7 @@ class ChatScreen(Screen):
         Binding("ctrl+k", "show_todos", "TODOs"),
         Binding("ctrl+l", "clear_screen", "Clear"),
         Binding("ctrl+r", "search_messages", "Search"),
+        Binding("ctrl+p", "history_picker", "History"),
         # Copy the mouse-drag text selection to the clipboard. ctrl+c is taken by
         # interrupt, so Textual's built-in copy action gets ctrl+shift+c here.
         Binding("ctrl+shift+c", "copy_text", "Copy selection", show=False),
@@ -2166,5 +2167,22 @@ class ChatScreen(Screen):
                     children[child_idx].scroll_visible(animate=True)
 
         self.app.push_screen(SearchModal(), _handle_result)
+
+    def action_history_picker(self) -> None:
+        """Open the input-history picker (Ctrl+P) and stage the chosen prompt."""
+        from apps.cli.modals.history_picker import HistoryPickerModal
+        from apps.cli.widgets.input_area import _load_history
+
+        def _handle_result(result: str | None) -> None:
+            if not result:
+                return
+            with contextlib.suppress(Exception):
+                input_area = self.query_one(InputArea)
+                if "\n" in result:
+                    input_area.enter_multiline_with(result)
+                else:
+                    input_area.prefill(result)
+
+        self.app.push_screen(HistoryPickerModal(_load_history()), _handle_result)
 
     # on_resize is defined near on_mount - handles side panel visibility

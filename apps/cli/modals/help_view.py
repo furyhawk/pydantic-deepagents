@@ -57,6 +57,8 @@ _HELP_TEXT = """\
   [bold]Ctrl+V[/bold]       Attach image from clipboard
   [bold]Ctrl+K[/bold]       Toggle todos panel
   [bold]Ctrl+L[/bold]       Clear screen
+  [bold]Ctrl+P[/bold]       Search input history
+  [bold]Ctrl+R[/bold]       Search messages
   [bold]Ctrl+C[/bold]       Interrupt / exit
   [bold]Ctrl+D[/bold]       Exit
   [bold]PgUp/PgDn[/bold]    Scroll messages
