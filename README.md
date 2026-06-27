@@ -46,41 +46,31 @@ Both run on **[Pydantic AI](https://github.com/pydantic/pydantic-ai)**, work wit
 
 ## Two ways to use it
 
-<table>
-<tr>
-<td width="50%" valign="top">
+### 🖥️ 1. Use the assistant
 
-### 🖥️ Use the assistant
-
-No Python setup — installs `uv` + the CLI for you:
+A Claude-Code-style TUI in your terminal, on **any** model — no Python setup (the script installs `uv` + the CLI for you):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vstorm-co/pydantic-deep/main/install.sh | bash
 pydantic-deep
 ```
 
-A Claude-Code-style TUI in your terminal, on **any** model. <sub>Windows/manual: `pip install "pydantic-deep[cli]"`</sub>
+> Windows / manual: `pip install "pydantic-deep[cli]"`
 
-</td>
-<td width="50%" valign="top">
-
-### 🐍 Build your own
+### 🐍 2. Build your own
 
 One function call gives you a full deep agent:
 
 ```bash
 pip install pydantic-deep
 ```
+
 ```python
 from pydantic_deep import create_deep_agent
 
 agent = create_deep_agent(model="anthropic:claude-sonnet-4-6")
 result = await agent.run("Build a REST API for auth")
 ```
-
-</td>
-</tr>
-</table>
 
 ---
 
