@@ -10,13 +10,14 @@ import asyncio
 
 from pydantic_ai._agent_graph import CallToolsNode, End, ModelRequestNode, UserPromptNode
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
 
 async def main():
     # Create the agent
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="You are a helpful assistant.",
     )
 
@@ -67,9 +68,9 @@ async def main():
 
     # Show usage statistics
     print("\nUsage:")
-    print(f"  Input tokens: {result.usage().input_tokens}")
-    print(f"  Output tokens: {result.usage().output_tokens}")
-    print(f"  Total requests: {result.usage().requests}")
+    print(f"  Input tokens: {result.usage.input_tokens}")
+    print(f"  Output tokens: {result.usage.output_tokens}")
+    print(f"  Total requests: {result.usage.requests}")
 
     # Show created files
     print("\nFiles created:")

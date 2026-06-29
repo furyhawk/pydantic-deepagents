@@ -8,6 +8,7 @@ This example demonstrates:
 
 import asyncio
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 from pydantic_deep.types import SubAgentConfig
 
@@ -56,7 +57,7 @@ async def main():
 
     # Create the main agent with subagents
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="""
         You are a senior software engineer.
         Delegate specialized tasks to the appropriate subagents:
@@ -73,7 +74,7 @@ async def main():
     deps = DeepAgentDeps(backend=StateBackend())
 
     # First, create some code to work with
-    deps.backend.write(
+    await deps.backend.write(
         "/calculator.py",
         '''"""Simple calculator module."""
 
