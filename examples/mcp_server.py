@@ -9,16 +9,18 @@ Shows how to connect to MCP servers using pydantic-ai's MCP support:
 MCP tools appear as native tools alongside deep agent's built-in tools.
 """
 
-import os
 import asyncio
+from http import client
+import os
 from pathlib import Path
 
+from fastmcp.client import Client
+from fastmcp.client.transports import StdioTransport, StreamableHttpTransport
+from pydantic_ai.capabilities import MCP, PrefixTools
+from pydantic_ai.mcp import MCPToolset
 from pydantic_ai.models.openai import OpenAIResponsesModel
 from pydantic_ai.providers.openai import OpenAIProvider
-from pydantic_ai.capabilities import MCP, PrefixTools
-from pydantic_ai.mcp import MCPServerSSE, MCPToolset
 from pydantic_ai.toolsets import PrefixedToolset
-from fastmcp.client.transports import StdioTransport
 
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
@@ -119,10 +121,15 @@ async def local_mcp_via_stdio():
 
 async def remote_mcp_via_sse():
     """Connect to a remote MCP server via SSE transport."""
+    sse_client = Client(
+        StreamableHttpTransport(
+            url="http://localhost:3001/sse",
+        )
+    )
     agent = create_deep_agent(
         model=model,
         toolsets=[
-            MCPServerSSE(url="http://localhost:3001/sse"),
+            MCPToolset(client=sse_client),
         ],
     )
 
