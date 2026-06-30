@@ -21,6 +21,7 @@ from pydantic_ai import (
 )
 from pydantic_ai.messages import ModelMessage
 
+from examples.config import get_model
 from pydantic_deep import DeepAgentDeps, StateBackend, create_deep_agent
 
 # ANSI color codes
@@ -131,8 +132,12 @@ def handle_tool_call(state: StreamState, event: FunctionToolCallEvent) -> None:
 
 def handle_tool_result(event: FunctionToolResultEvent) -> None:
     """Handle tool result event."""
-    content = str(event.result.content)
-    display = truncate(content, 200).replace("\n", " ")
+    raw = event.content
+    if raw is None:
+        display = "<empty>"
+    else:
+        content = str(raw)
+        display = truncate(content, 200).replace("\n", " ")
     result_preview = truncate(display, 80)
     print(f"    {DIM}→ {result_preview}{RESET}", flush=True)
 
@@ -149,19 +154,20 @@ async def process_stream(
     state: StreamState,
 ) -> None:
     """Process the agent stream and display events."""
-    async for event in agent.run_stream_events(
+    async with agent.run_stream_events(
         user_input,
         deps=deps,
         message_history=state.message_history,
-    ):
-        if isinstance(event, PartDeltaEvent):
-            handle_text_delta(state, event)
-        elif isinstance(event, FunctionToolCallEvent):
-            handle_tool_call(state, event)
-        elif isinstance(event, FunctionToolResultEvent):
-            handle_tool_result(event)
-        elif isinstance(event, AgentRunResultEvent):
-            handle_final_result(state, event)
+    ) as events:
+        async for event in events:
+            if isinstance(event, PartDeltaEvent):
+                handle_text_delta(state, event)
+            elif isinstance(event, FunctionToolCallEvent):
+                handle_tool_call(state, event)
+            elif isinstance(event, FunctionToolResultEvent):
+                handle_tool_result(event)
+            elif isinstance(event, AgentRunResultEvent):
+                handle_final_result(state, event)
 
     if state.current_text and not state.current_text.endswith("\n"):
         print()
@@ -240,7 +246,7 @@ async def run_chat() -> None:
     print_header()
 
     agent = create_deep_agent(
-        model="anthropic:claude-sonnet-4-6",
+        model=get_model(),
         instructions="""You are a helpful AI assistant. You have access to:
 - TODO list for planning and tracking tasks
 - Filesystem for reading/writing files
